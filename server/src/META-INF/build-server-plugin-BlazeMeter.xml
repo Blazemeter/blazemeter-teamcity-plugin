@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/lang
+                           http://www.springframework.org/schema/lang/spring-lang-2.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	default-autowire="constructor">
+
+	<!-- Bean to store BlazeMeter settings -->
+	<bean id="blazeServerSettings" class="com.blaze.runner.BlazeMeterServerSettings" init-method="init"/>
+	
+	<!-- Main runner-->
+	<bean id="BlazeRunType" class="com.blaze.runner.BlazeRunType" depends-on="blazeServerSettings" />
+	
+	<!-- Edit settings controller -->	
+	<bean id="blazeMeterSettingsController" class="com.blaze.runner.BlazeMeterSettingsController"
+		init-method="register" depends-on="blazeServerSettings" />
+
+
+	<bean id="blazeBuildStartContextProcessor" class="com.blaze.runner.BlazeBuildStartContextProcessor" init-method="register"/>
+
+	<!-- Administration controllers -->
+	<bean id="userKeyControler" class="com.blaze.runner.BlazeRunTypeController" init-method="register">
+		<constructor-arg index="0" value="/saveuserkey.html" />
+		<constructor-arg index="1" value="userkey.jsp" />
+		<property name="mainSettings" ref="blazeServerSettings"/>
+	</bean>
+
+	<bean id="BlazeMeterAdminPage" class="com.blaze.runner.BlazeMeterAdminPage" init-method="register">
+		<constructor-arg index="1" value="blazeMeterTab" />
+		<constructor-arg index="2" value="userkey.jsp" />
+		<constructor-arg index="3" value="Blaze Meter" />
+		<property name="mainSettings" ref="blazeServerSettings"/>
+	</bean>
+	
+	<!-- BlazeMeter report extension -->
+	<bean id="blazeReportTab" class="com.blaze.runner.BlazeMeterReportTab"
+		init-method="register">
+		<property name="placeId" value="BUILD_RESULTS_TAB" />
+		<property name="pluginName" value="BlazeMeter" />
+		<property name="includeUrl" value="reportPage.jsp" />
+	</bean>
+</beans>

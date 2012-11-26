@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2011-2012 Marcel Milea
+  -->
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-autowire="constructor">
+  <bean name="blazeMeterRunner" class="com.blaze.agent.BlazeAgent" />
+  <bean name="blazeMeterListener" class="com.blaze.agent.AgentListener" />
+</beans>

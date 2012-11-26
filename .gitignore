@@ -1,0 +1,17 @@
+# Compiled source #
+###################
+*.class
+
+# Packages #
+*.zip
+
+# Logs and databases #
+*.log
+
+# Directories #
+bin/
+dist/
+out/
+temp/
+.classpath
+.project
