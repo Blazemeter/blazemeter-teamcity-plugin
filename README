@@ -1,0 +1,49 @@
+BlazeMeter plugin for TeamCity uses Ant to build the project. Also, you'll need the JDK 6 or later.
+
+
+1. CONFIGURATION:
+	- build.properties : make sure that the path points to TeamCity installation folder.
+
+
+2. BUILD THE PLUGIN
+
+Use the following command line to build the plugin (in the root directory):
+
+	ant build.xml
+
+This will create the 'dist' folder that contains the plugin in a zip file and also the unpacked version.
+
+To install the plugin just copy the generated 'BlazeMeter.zip' file to '[TeamCity Data Folder]/plugins' directory, and restart the TeamCity server and agents.
+
+
+3. PLUGIN USAGE
+
+First, you need to configure the BlazeMeter user key. This is used to communicate with BlazeMeter servers. You can get this key from your BlazeMeter user account.
+The user key configuration page is accesible from:
+
+	Administration -> Blaze Meter
+
+Next, you should add a new build step of type 'BlazeMeter'. The build step has the following configuration options:
+
+* BlazeMeter tests : select the test to run during this build step
+* Error percentage threshold : enter error percentages that specify if the build should be Unstable or Fail
+* Response time threshold : enter response time that specify if the build should be Unstable or Fail
+* Test duration : select how much the test should run
+* Data Folder : files from this folder will be uploaded to BlazeMeter. Paths can be:
+	* Absolute path (ex: in Windows: C:/Test/DataFolder, in Linux: /mnt/share/datafolder)
+	* Relative path. This is relative to checkout directory. Example: DataFolder , this assumes that your checkout structure contains the DataFolder in the main node.
+* Main JMX : main JMX name from the Data Folder
+
+
+4. STATISTICS
+
+To enable the BlazeMeter statistics graph you must add the following lines to main-config.xml file from [TeamCity Data]/config/ folder:
+
+
+	<graph title="BlazeMeter Statistics" seriesTitle="Blaze Metric Series" defaultFilters="showFailed" format="duration">
+		<valueType key="blazeAvgResponseTime" title="Average Response Time" />
+		<valueType key="blazeThresholdTime" title="Error Percentage" />
+	</graph> 
+
+
+The statistics are available in the Build Configuration Statistics page.
