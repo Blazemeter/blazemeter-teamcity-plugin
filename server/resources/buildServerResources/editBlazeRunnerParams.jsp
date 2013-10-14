@@ -12,9 +12,40 @@
       <c:when test="${not empty propertiesBean.properties['USER_KEY']}">
 		<c:set target="${blazeBean}" property="userKey" value="${propertiesBean.properties['USER_KEY']}" />
       </c:when>
-
       <c:otherwise>
       	<c:set target="${blazeBean}" property="userKey" value="${userKey}" />
+      </c:otherwise>
+</c:choose>
+<c:choose>
+      <c:when test="${not empty propertiesBean.properties['SERVER_NAME']}">
+		<c:set target="${blazeBean}" property="serverName" value="${propertiesBean.properties['SERVER_NAME']}" />
+      </c:when>
+      <c:otherwise>
+      	<c:set target="${blazeBean}" property="serverName" value="${serverName}" />
+      </c:otherwise>
+</c:choose>
+<c:choose>
+      <c:when test="${not empty propertiesBean.properties['SERVER_PORT']}">
+		<c:set target="${blazeBean}" property="serverPort" value="${propertiesBean.properties['SERVER_PORT']}" />
+      </c:when>
+      <c:otherwise>
+      	<c:set target="${blazeBean}" property="serverPort" value="${serverPort}" />
+      </c:otherwise>
+</c:choose>
+<c:choose>
+      <c:when test="${not empty propertiesBean.properties['USERNAME']}">
+		<c:set target="${blazeBean}" property="username" value="${propertiesBean.properties['USERNAME']}" />
+      </c:when>
+      <c:otherwise>
+      	<c:set target="${blazeBean}" property="username" value="${username}" />
+      </c:otherwise>
+</c:choose>
+<c:choose>
+      <c:when test="${not empty propertiesBean.properties['PASSWORD']}">
+		<c:set target="${blazeBean}" property="password" value="${propertiesBean.properties['PASSWORD']}" />
+      </c:when>      
+      <c:otherwise>
+      	<c:set target="${blazeBean}" property="password" value="${password}" />
       </c:otherwise>
 </c:choose>
 

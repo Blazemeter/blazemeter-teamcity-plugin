@@ -17,38 +17,50 @@ import org.json.JSONException;
  */
 public class BlazeBean {
 	private String userKey;
-	private BlazemeterApi api;
+	private String serverName;
+	private String serverPort;
+	private String username;
+	private String password;
+	
+	private BlazemeterApi blazemeterApi;
 	
 	//Default properties
 	public final static String DEFAULT_SETTINGS_DATA_FOLDER = "/DataFolder";	
 
 	private String session;
 	private String aggregate;
-	
+
 	public BlazeBean(){
-		api = new BlazemeterApi();
+		
 	}
 	
-	public BlazeBean(String userKey) {
-		api = new BlazemeterApi();
+	public BlazeBean(String userKey, String serverName, int serverPort, String username, String password) {
+		blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);
 		this.userKey = userKey;
 	}
-
+	
 	@NotNull
 	public String getDebugKey() {
 		return "Debug Key";
 	}
 	
+	private BlazemeterApi getAPI(){
+		if (blazemeterApi == null){
+			blazemeterApi = new BlazemeterApi(serverName, Integer.parseInt(serverPort), username, password);
+		}
+		
+		return blazemeterApi;
+	}
+	
 	public HashMap<String, String> getTests() {
 		try {
-			return api.getTestList(userKey);
+			return getAPI().getTestList(userKey);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 
 		HashMap<String, String> temp = new HashMap<String, String>();
-		temp.put("1233", "asdasd");
 		
 		return temp;
 	}
@@ -57,7 +69,7 @@ public class BlazeBean {
         org.json.JSONObject json;
         int countStartRequests = 0;
         do {
-            json = api.startTest(userKey, testId);
+            json = getAPI().startTest(userKey, testId);
             countStartRequests++;
             if (countStartRequests > 5) {
             	logger.error("Could not start BlazeMeter Test");
@@ -72,7 +84,7 @@ public class BlazeBean {
 					return false;
 				}
                 //Try again.
-				json = api.startTest(userKey, testId);
+				json = getAPI().startTest(userKey, testId);
                 if (!json.get("response_code").equals(200)) {
                 	logger.error("Could not start BlazeMeter Test -" + json.get("error").toString());
                     return false;
@@ -87,7 +99,7 @@ public class BlazeBean {
 
 	public boolean isReportReady(){
         //get testGetArchive information
-		org.json.JSONObject json = api.aggregateReport(userKey, session);
+		org.json.JSONObject json = getAPI().aggregateReport(userKey, session);
         try {
             if (json.get("response_code").equals(404))
                 return false;
@@ -103,11 +115,11 @@ public class BlazeBean {
 	@SuppressWarnings("static-access")
 	public boolean waitForReport(BuildProgressLogger logger){
         //get testGetArchive information
-		org.json.JSONObject json = api.aggregateReport(userKey, session);
+		org.json.JSONObject json = getAPI().aggregateReport(userKey, session);
         for (int i = 0; i < 200; i++) {
             try {
                 if (json.get("response_code").equals(404))
-                    json = api.aggregateReport(userKey, session);
+                    json = getAPI().aggregateReport(userKey, session);
                 else
                     break;
             } catch (JSONException e) {
@@ -140,7 +152,7 @@ public class BlazeBean {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-            json = api.aggregateReport(userKey, session);
+            json = getAPI().aggregateReport(userKey, session);
         }
 
         if (aggregate == null) {
@@ -197,11 +209,11 @@ public class BlazeBean {
 	}
 
 	public boolean uploadJMX(String testId, String filename, String pathname){
-		return api.uploadJmx(userKey, testId, filename, pathname);
+		return getAPI().uploadJmx(userKey, testId, filename, pathname);
 	}
 	
     public void uploadFile(String testId, String dataFolder, String fileName, BuildProgressLogger logger) {
-        org.json.JSONObject json = api.uploadFile(userKey, testId, fileName, dataFolder + File.separator + fileName);
+        org.json.JSONObject json = getAPI().uploadFile(userKey, testId, fileName, dataFolder + File.separator + fileName);
         try {
             if (!json.get("response_code").equals(new Integer(200))) {
                 logger.error("Could not upload file " + fileName + " " + json.get("error").toString());
@@ -216,7 +228,7 @@ public class BlazeBean {
 
     	int countStartRequests = 0;
         do {
-        	json = api.stopTest(userKey, testId);
+        	json = getAPI().stopTest(userKey, testId);
             countStartRequests++;
             if (countStartRequests > 5) {
             	logger.error("Could not stop BlazeMeter Test "+ testId);
@@ -240,7 +252,7 @@ public class BlazeBean {
     }
     
     public TestInfo getTestStatus(String testId){
-    	return api.getTestRunStatus(userKey, testId);
+    	return getAPI().getTestRunStatus(userKey, testId);
     }
     
 	public String getUserKey() {
@@ -249,6 +261,38 @@ public class BlazeBean {
 
 	public void setUserKey(String userKey) {
 		this.userKey = userKey;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public String getServerPort() {
+		return serverPort;
+	}
+
+	public void setServerPort(String serverPort) {
+		this.serverPort = serverPort;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getSession() {

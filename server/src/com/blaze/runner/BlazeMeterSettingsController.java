@@ -37,6 +37,10 @@ public class BlazeMeterSettingsController extends BaseController {
 	@Override
 	protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.getSession().setAttribute("userKey", mySettings.getUserKey());
+        request.getSession().setAttribute("serverName", mySettings.getServerName());
+        request.getSession().setAttribute("serverPort", mySettings.getServerPort());
+        request.getSession().setAttribute("username", mySettings.getUsername());
+        request.getSession().setAttribute("password", mySettings.getPassword());
         Map<String,Object> params = new HashMap<String,Object>();
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("editSettings.jsp"), params);
 	}

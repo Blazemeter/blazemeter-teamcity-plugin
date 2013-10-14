@@ -16,6 +16,11 @@ public interface BlazeMeterConstants {
 	public final static String BLAZE_METER_STATISTICS_NAME = "BlazeMeterStatistics";
 	public final static String USER_KEY = "USER_KEY";
 	
+	public final static String PROXY_SERVER_NAME = "SERVER_NAME";
+	public final static String PROXY_SERVER_PORT = "SERVER_PORT";
+	public final static String PROXY_USERNAME = "USERNAME";
+	public final static String PROXY_PASSWORD = "PASSWORD";
+	
 	//settings properties
 	public final static String SETTINGS_ALL_TESTS_ID = "all_tests";
 	public final static String SETTINGS_ERROR_THRESHOLD_UNSTABLE = "thr_unstable";

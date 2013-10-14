@@ -7,11 +7,17 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -29,18 +35,40 @@ import com.blaze.runner.BlazeMeterConstants;
  */
 public class BlazemeterApi {
     PrintStream logger = new PrintStream(System.out);
-
+    
+	private String serverName;
+	private int serverPort;
+	private String username;
+	private String password;
+	
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     DefaultHttpClient httpClient;
     BmUrlManager urlManager;
 
-    public BlazemeterApi() {
+    public BlazemeterApi(String serverName, int serverPort, String username, String password) {
+    	this.serverName = serverName;
+    	this.serverPort = serverPort;
+    	this.username = username;
+    	this.password = password;
         urlManager = new BmUrlManager("https://a.blazemeter.com");
         try {
             httpClient = new DefaultHttpClient();
+            configureProxy();
         } catch (Exception ex) {
             logger.format("error Instantiating HTTPClient. Exception received: %s", ex);
         }
+    }
+    
+    private void configureProxy(){
+    	// Configure the proxy if necessary
+        if (getServerName() != null && !getServerName().isEmpty() && getServerPort() > 0) {
+            if (getUsername() != null && !getUsername().isEmpty()){
+            	Credentials cred = new UsernamePasswordCredentials(getUsername(), getPassword());
+                httpClient.getCredentialsProvider().setCredentials(new AuthScope(getServerName(), getServerPort()), cred);
+            }
+            HttpHost proxyHost = new HttpHost(getServerName(), getServerPort());
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxyHost);
+        }    	
     }
 
     private HttpResponse getResponse(String url, JSONObject data) throws IOException {
@@ -63,7 +91,11 @@ public class BlazemeterApi {
             if ((statusCode >= 300) || (statusCode < 200)) {
                 throw new RuntimeException(String.format("Failed : %d %s", statusCode, error));
             }
-        } catch (Exception e) {
+        } 
+        catch (UnknownHostException uhe) {
+        	System.err.format("Unknown host '" + getServerName() + "', check proxy settings! \n");
+        }
+        catch (Exception e) {
             System.err.format("Wrong response: %s\n", e);
         }
 
@@ -377,8 +409,44 @@ public class BlazemeterApi {
 
         return testListOrdered;
     }
+    
+    
 
-    public static class BmUrlManager {
+    public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public int getServerPort() {
+		return serverPort;
+	}
+
+	public void setServerPort(int serverPort) {
+		this.serverPort = serverPort;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+
+	public static class BmUrlManager {
 
         private String SERVER_URL = "https://a.blazemeter.com/";
 

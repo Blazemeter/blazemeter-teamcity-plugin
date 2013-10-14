@@ -57,7 +57,12 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		logger = agentRunningBuild.getBuildLogger();
 		Map<String, String> buildSharedMap = agentRunningBuild.getSharedConfigParameters();
-		blazeBean = new BlazeBean(buildSharedMap.get(BlazeMeterConstants.USER_KEY));
+		blazeBean = new BlazeBean(
+				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
+				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
+				Integer.parseInt(buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_PORT)),
+				buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),
+				buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD));
 	}
 
 	private String validateParams(Map<String, String> params) {

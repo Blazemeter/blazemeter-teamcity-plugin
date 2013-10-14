@@ -34,10 +34,16 @@ public class AgentListener extends AgentLifeCycleAdapter{
 		stopTest(runningBuild);
 	}
 
-	private void stopTest(AgentRunningBuild runningBuild){
-		Map<String, String> buildSharedMap = runningBuild.getSharedConfigParameters();
-		blazeBean = new BlazeBean(buildSharedMap.get(BlazeMeterConstants.USER_KEY));
-		
+	private void stopTest(AgentRunningBuild runningBuild) {
+		Map<String, String> buildSharedMap = runningBuild
+				.getSharedConfigParameters();
+		blazeBean = new BlazeBean(
+				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
+				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
+				Integer.parseInt(buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_PORT)),
+				buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),
+				buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD));
+
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
 		String testId = runnerParams.get(BlazeMeterConstants.SETTINGS_ALL_TESTS_ID);
 		blazeBean.stopTest(testId, runningBuild.getBuildLogger());

@@ -42,6 +42,10 @@ public class BlazeMeterAdminPage extends AdminPage{
 		super.fillModel(model, request);
 		if (mainSettings != null){
 			model.put("user_key", mainSettings.getUserKey());
+			model.put("serverName", mainSettings.getServerName());
+			model.put("serverPort", mainSettings.getServerPort());
+			model.put("username", mainSettings.getUsername());
+			model.put("password", mainSettings.getPassword());
 		}
 	}
 

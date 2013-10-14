@@ -58,6 +58,10 @@ public class BlazeRunTypeController extends BaseController {
 			FileOutputStream fos = new FileOutputStream(keyFile);
 			prop.load(inFile);
 			prop.setProperty("user_key", mainSettings.getUserKey());
+			prop.setProperty("serverName", mainSettings.getServerName());
+			prop.setProperty("serverPort", mainSettings.getServerPort());
+			prop.setProperty("username", mainSettings.getUsername());
+			prop.setProperty("password", mainSettings.getPassword());
 			prop.store(fos, "");
 
 			fos.close();
@@ -117,7 +121,26 @@ public class BlazeRunTypeController extends BaseController {
 	 */
 	private void doAction(final HttpServletRequest request) throws Exception {
 		String user_key = request.getParameter("user_key");
+		String serverName = request.getParameter("serverName");
+		String serverPort = request.getParameter("serverPort");
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		mainSettings.setUserKey(user_key);
+		if (serverName != null) {
+			mainSettings.setServerName(serverName);
+		}
+		
+		if (serverPort != null) {
+			mainSettings.setServerPort(serverPort);
+		}
+		
+		if (username != null) {
+			mainSettings.setUsername(username);
+		}
+		
+		if (password != null) {
+			mainSettings.setPassword(password);
+		}
 
 		if (serverPaths != null) {
 			File keyFile = new File(serverPaths.getConfigDir() + "/userKeyFile.properties");

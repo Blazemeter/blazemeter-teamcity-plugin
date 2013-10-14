@@ -12,6 +12,10 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 public class BlazeMeterServerSettings {
 	public ServerPaths serverPaths;
 	private String userKey = "";
+	private String serverName = "";
+	private String serverPort = "";
+	private String username = "";
+	private String password = "";
 	
 	public BlazeMeterServerSettings(ServerPaths serverPaths){
 		this.serverPaths = serverPaths;
@@ -41,6 +45,10 @@ public class BlazeMeterServerSettings {
 			Properties prop = new Properties();
 			prop.load(inFile);
 			this.setUserKey(prop.getProperty("user_key"));
+			this.setServerName(prop.getProperty("serverName"));
+			this.setServerPort(prop.getProperty("serverPort"));
+			this.setUsername(prop.getProperty("username"));
+			this.setPassword(prop.getProperty("password"));
 			inFile.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -55,6 +63,38 @@ public class BlazeMeterServerSettings {
 
 	public void setUserKey(String userKey) {
 		this.userKey = userKey;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public String getServerPort() {
+		return serverPort;
+	}
+
+	public void setServerPort(String serverPort) {
+		this.serverPort = serverPort;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	
