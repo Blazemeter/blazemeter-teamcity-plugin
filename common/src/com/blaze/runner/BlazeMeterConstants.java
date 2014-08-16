@@ -10,8 +10,8 @@ public interface BlazeMeterConstants {
     }
 	
     //runner properties
-	public final static String RUNNER_DESCRIPTION = "Blaze Meter";
-	public final static String RUNNER_DISPLAY_NAME = "Blaze Meter";
+	public final static String RUNNER_DESCRIPTION = "BlazeMeter";
+	public final static String RUNNER_DISPLAY_NAME = "BlazeMeter";
 	public final static String RUNNER_TYPE = "BlazeMeter";
 	public final static String BLAZE_METER_STATISTICS_NAME = "BlazeMeterStatistics";
 	public final static String USER_KEY = "USER_KEY";
