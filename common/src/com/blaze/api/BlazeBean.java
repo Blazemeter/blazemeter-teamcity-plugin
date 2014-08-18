@@ -241,7 +241,7 @@ public class BlazeBean {
 				logger.message("Test stopped succesfully.");
 			} else {
 				String error = json.get("error").toString();
-				logger.error("Error stopping test. Reported error is: "+error);
+				logger.error("Error stopping test. Reported error is: "+error+" "+json.toString());
 				logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
 			}
 		} catch (JSONException e) {

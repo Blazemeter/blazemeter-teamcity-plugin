@@ -170,6 +170,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@Override
 	public void interrupt() {
 		logger.message("BlazeMeter agent interrupted.");
+        blazeBean.stopTest(testId,logger);
 		interrupted = true;
 	}
 
