@@ -252,8 +252,9 @@ public class BlazeAgentProcessor implements BuildProcess{
 			testInfo = blazeBean.getTestStatus(testId);
 			if (testInfo.getStatus().equals(BlazeMeterConstants.TestStatus.NotRunning)){
 				logger.warning("Test is finished earlier then estimated! Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
-				break;
-			} 
+                blazeBean.waitForReport(logger);
+                return BuildFinishedStatus.INTERRUPTED;
+            }
 			else
 			if (testInfo.getStatus().equals(BlazeMeterConstants.TestStatus.NotFound)){
 				logger.error("Test not found!");
@@ -267,7 +268,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		
-		logger.message("Test finised. Checking for test report...");
+		logger.message("Test finished. Checking for test report...");
 		
         //get testGetArchive information
         boolean waitForReport = blazeBean.waitForReport(logger);

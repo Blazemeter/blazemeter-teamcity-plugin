@@ -228,17 +228,18 @@ public class BlazeBean {
 
     	int countStartRequests = 0;
         do {
-        	json = getAPI().stopTest(userKey, testId);
+            json = getAPI().stopTest(userKey, testId);
+            logger.message("Attempt to stop test with result: "+json.toString());
             countStartRequests++;
             if (countStartRequests > 5) {
             	logger.error("Could not stop BlazeMeter Test "+ testId);
             	return ;
             }
         } while (json == null);
-        
+
         try {
 			if (json.get("response_code").equals(200)) {
-				logger.message("Test stopped succesfully.");
+				logger.message("Test stopped succesfully."+json.toString());
 			} else {
 				String error = json.get("error").toString();
 				logger.error("Error stopping test. Reported error is: "+error+" "+json.toString());
