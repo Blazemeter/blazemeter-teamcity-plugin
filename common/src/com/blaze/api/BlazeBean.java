@@ -46,7 +46,11 @@ public class BlazeBean {
 	
 	private BlazemeterApi getAPI(){
 		if (blazemeterApi == null){
-			blazemeterApi = new BlazemeterApi(serverName, Integer.parseInt(serverPort), username, password);
+            int serverPortInt=0;
+            if(serverPort!=null&&!serverPort.isEmpty()){
+                serverPortInt=Integer.parseInt(serverPort);
+            }
+			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password);
 		}
 		
 		return blazemeterApi;
