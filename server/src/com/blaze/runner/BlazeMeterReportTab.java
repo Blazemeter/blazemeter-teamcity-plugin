@@ -2,11 +2,13 @@ package com.blaze.runner;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts;
@@ -66,8 +68,21 @@ public class BlazeMeterReportTab extends ViewLogTab {
 	protected boolean isAvailable(@NotNull HttpServletRequest request,
 			@NotNull SBuild build) {
 		SBuild sbuild = this.getBuild(request);
-		
-		return super.isAvailable(request, build) && sbuild.isFinished();
+        boolean hasBZMstep=hasBZMstep(sbuild);
+		return super.isAvailable(request, build) && sbuild.isFinished()&&hasBZMstep;
 	}
+
+    private boolean hasBZMstep(@NotNull SBuild sbuild){
+        Iterator<SBuildRunnerDescriptor> descriptorIterator = sbuild.getBuildType().getBuildRunners().iterator();
+        boolean hasBZMstep=false;
+        while(descriptorIterator.hasNext()){
+            SBuildRunnerDescriptor descriptor=descriptorIterator.next();
+            if(descriptor.getType().equals("BlazeMeter")){
+                hasBZMstep=true;
+            }
+        }
+        return hasBZMstep;
+    }
+
 
 }
