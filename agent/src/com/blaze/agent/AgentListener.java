@@ -42,7 +42,8 @@ public class AgentListener extends AgentLifeCycleAdapter{
 				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
 				Integer.parseInt(buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_PORT)),
 				buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),
-				buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD));
+				buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD),
+                runningBuild.getBuildLogger());
 
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
 		String testId = runnerParams.get(BlazeMeterConstants.SETTINGS_ALL_TESTS_ID);

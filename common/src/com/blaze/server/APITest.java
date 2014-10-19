@@ -13,7 +13,7 @@ public class APITest {
 	}
 	
 	public void retrieveTest(){
-		BlazemeterApi bAPI = new BlazemeterApi(null, -1, null, null);
+		BlazemeterApi bAPI = new BlazemeterApi(null, -1, null, null,null);
 		try {
 			HashMap<String, String> tests = bAPI.getTestList(USER_KEY);
 			

@@ -21,7 +21,7 @@ public class BlazeBean {
 	private String serverPort;
 	private String username;
 	private String password;
-	
+    BuildProgressLogger logger;
 	private BlazemeterApi blazemeterApi;
 	
 	//Default properties
@@ -34,9 +34,11 @@ public class BlazeBean {
 		
 	}
 	
-	public BlazeBean(String userKey, String serverName, int serverPort, String username, String password) {
-		blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);
+	public BlazeBean(String userKey, String serverName, int serverPort, String username,
+                     String password, BuildProgressLogger logger) {
+		blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password, logger);
 		this.userKey = userKey;
+        this.logger = logger;
 	}
 	
 	@NotNull
@@ -50,7 +52,7 @@ public class BlazeBean {
             if(serverPort!=null&&!serverPort.isEmpty()){
                 serverPortInt=Integer.parseInt(serverPort);
             }
-			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password);
+			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password, logger);
 		}
 		
 		return blazemeterApi;
