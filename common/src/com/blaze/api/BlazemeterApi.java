@@ -35,7 +35,7 @@ import com.blaze.runner.BlazeMeterConstants;
  *
  */
 public class BlazemeterApi {
-    BuildProgressLogger logger=null;
+//    BuildProgressLogger logger=null;
 
 	private String serverName;
 	private int serverPort;
@@ -46,18 +46,20 @@ public class BlazemeterApi {
     DefaultHttpClient httpClient;
     BmUrlManager urlManager;
 
-    public BlazemeterApi(String serverName, int serverPort, String username, String password, BuildProgressLogger logger) {
+//    public BlazemeterApi(String serverName, int serverPort, String username, String password, BuildProgressLogger logger) {
+    public BlazemeterApi(String serverName, int serverPort, String username, String password) {
     	this.serverName = serverName;
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
-        this.logger = logger;
+//        this.logger = logger;
         urlManager = new BmUrlManager("https://a.blazemeter.com");
         try {
             httpClient = new DefaultHttpClient();
             configureProxy();
         } catch (Exception ex) {
-            logger.message("error Instantiating HTTPClient. Exception received: " + ex);
+            ex.printStackTrace();
+//            logger.message("error Instantiating HTTPClient. Exception received: " + ex);
         }
     }
     
@@ -75,9 +77,9 @@ public class BlazemeterApi {
 
     private HttpResponse getResponse(String url, JSONObject data) throws IOException {
 
-        logger.message("Requesting : " + url);
+//        logger.message("Requesting : " + url);
         if(data!=null){
-            logger.message("Request data : " + data.toString());
+//            logger.message("Request data : " + data.toString());
         }
         HttpPost postRequest = new HttpPost(url);
         postRequest.setHeader("Accept", "application/json");
@@ -110,7 +112,7 @@ public class BlazemeterApi {
     @SuppressWarnings("deprecation")
 	private HttpResponse getResponseForFileUpload(String url, File file) throws IOException {
 
-        logger.message("Requesting : " + url);
+//        logger.message("Requesting : " + url);
         HttpPost postRequest = new HttpPost(url);
         postRequest.setHeader("Accept", "application/json");
         postRequest.setHeader("Content-type", "application/json; charset=UTF-8");
@@ -142,13 +144,15 @@ public class BlazemeterApi {
             HttpResponse response = getResponseForFileUpload(url, file);
             if (response != null) {
                 String output = EntityUtils.toString(response.getEntity());
-                logger.message(output);
+//                logger.message(output);
                 jo = new JSONObject(output);
             }
         } catch (IOException e) {
-            logger.message("error decoding Json " + e);
+            e.printStackTrace();
+//            logger.message("error decoding Json " + e);
         } catch (JSONException e) {
-            logger.message("error decoding Json " + e);
+            e.printStackTrace();
+//            logger.message("error decoding Json " + e);
         }
         return jo;
     }
@@ -159,13 +163,15 @@ public class BlazemeterApi {
             HttpResponse response = getResponse(url, data);
             if (response != null) {
                 String output = EntityUtils.toString(response.getEntity());
-                logger.message(output);
+//                logger.message(output);
                 jo = new JSONObject(output);
             }
         } catch (IOException e) {
-            logger.message("error decoding Json " + e);
+           e.printStackTrace();
+//            logger.message("error decoding Json " + e);
         } catch (JSONException e) {
-            logger.message("error decoding Json " + e);
+            e.printStackTrace();
+//            logger.message("error decoding Json " + e);
         }
         return jo;
     }
@@ -290,7 +296,8 @@ public class BlazemeterApi {
                 ti.status = jo.getString("status");
             }
         } catch (Exception e) {
-            logger.message("error getting status " + e);
+            e.printStackTrace();
+//            logger.message("error getting status " + e);
             ti.status = BlazeMeterConstants.TestStatus.Error;
         }
         return ti;
@@ -301,13 +308,13 @@ public class BlazemeterApi {
         if (!validate(userKey, testId)) return null;
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        logger.message("Requesting " + url);
+//        logger.message("Requesting " + url);
         return getJson(url, null);
     }
 
     public int getTestCount(String userKey) throws JSONException, IOException {
         if (userKey == null || userKey.trim().isEmpty()) {
-            logger.message("getTests userKey is empty");
+//            logger.message("getTests userKey is empty");
             return 0;
         }
 
@@ -334,12 +341,12 @@ public class BlazemeterApi {
 
     private boolean validate(String userKey, String testId) {
         if (userKey == null || userKey.trim().isEmpty()) {
-            logger.message("startTest userKey is empty");
+//            logger.message("startTest userKey is empty");
             return false;
         }
 
         if (testId == null || testId.trim().isEmpty()) {
-            logger.message("testId is empty");
+//            logger.message("testId is empty");
             return false;
         }
         return true;
@@ -376,10 +383,10 @@ public class BlazemeterApi {
         LinkedHashMap<String, String> testListOrdered = null;
 
         if (userKey == null || userKey.trim().isEmpty()) {
-            logger.message("getTests userKey is empty");
+//            logger.message("getTests userKey is empty");
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-            logger.message(url);
+//            logger.message(url);
             JSONObject jo = getJson(url, null);
             try {
                 String r = jo.get("response_code").toString();
@@ -391,7 +398,7 @@ public class BlazemeterApi {
                         try {
                             en = arr.getJSONObject(i);
                         } catch (JSONException e) {
-                            logger.message("Error with the JSON while populating test list, " + e);
+//                            logger.message("Error with the JSON while populating test list, " + e);
                         }
                         String id;
                         String name;
@@ -403,13 +410,13 @@ public class BlazemeterApi {
 
                             }
                         } catch (JSONException ie) {
-                            logger.message("Error with the JSON while populating test list, " + ie);
+//                            logger.message("Error with the JSON while populating test list, " + ie);
                         }
                     }
                 }
             }
             catch (Exception e) {
-                logger.message("Error while populating test list, " + e);
+//                logger.message("Error while populating test list, " + e);
             }
         }
 

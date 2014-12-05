@@ -36,7 +36,7 @@ public class BlazeBean {
 	
 	public BlazeBean(String userKey, String serverName, int serverPort, String username,
                      String password, BuildProgressLogger logger) {
-		blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password, logger);
+		blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);
 		this.userKey = userKey;
         this.logger = logger;
 	}
@@ -52,7 +52,7 @@ public class BlazeBean {
             if(serverPort!=null&&!serverPort.isEmpty()){
                 serverPortInt=Integer.parseInt(serverPort);
             }
-			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password, logger);
+			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password);
 		}
 		
 		return blazemeterApi;
@@ -328,9 +328,8 @@ public class BlazeBean {
 	        fw.close();
 	        return true;
 		} catch (IOException e) {
-//			logger.error("Error: Requesting aggregate Test Result is not available");
+            e.printStackTrace();
 		}
 		return false;
 	}
-	
 }
