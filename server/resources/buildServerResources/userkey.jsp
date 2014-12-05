@@ -8,78 +8,88 @@
 <%@ include file="/include.jsp" %>
 <script type="text/javascript">
     function sendReqSave() {
-    
+
         var usrKey = $('user_key').value;
+        var blazeMeterUrl = $('blazeMeterUrl').value;
         var serverName = $('serverName').value;
         var serverPort = $('serverPort').value;
         var username = $('username').value;
         var password = $('password').value;
         usrKey = usrKey.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-        if(!usrKey || usrKey.length ==0) {
-        	alert("User key is empty!");
+        if (!usrKey || usrKey.length == 0) {
+            alert("User key is empty!");
             return;
         }
 
         BS.ajaxRequest($('BlazeMeterAdminPageForm').action, {
-            parameters: 'user_key='+ usrKey + '&serverName='+serverName + '&serverPort='+serverPort + '&username='+username + '&password='+password,
-            onComplete: function(transport) {
-              if (transport.responseXML) {
-                  $('refreshContainer').refresh();
-              }             
+            parameters: 'user_key=' + usrKey + '&blazeMeterUrl=' + blazeMeterUrl + '&serverName=' + serverName + '&serverPort=' + serverPort + '&username=' + username + '&password=' + password,
+            onComplete: function (transport) {
+                if (transport.responseXML) {
+                    $('refreshContainer').refresh();
+                }
             }
         });
-        return false;        
+        return false;
     }
 </script>
 
 <bs:refreshable containerId="refreshContainer" pageUrl="${pageUrl}">
 
 
-<h2>Set BlazeMeter User key:</h2>
-<form id="BlazeMeterAdminPageForm" action="/saveuserkey.html" method="post" onSubmit="">
-<div> 
-	<table class="runnerFormTable">
-	  <tr>
-	    <th><label>BlazeMeter User Key</label></th>
-	    <td><input type="text" id="user_key" name="user_key" value="<c:out value="${user_key}"/>" />
-	      <span class="error_user_key"><bs:messages key="blazeMessage"/></span>
-	      <span class="smallNote">BlazeMeter User Key</span>
-	    </td>
-	  </tr>
-	<table class="runnerFormTable">
-	  <tr>
-	    <td><label>Server:</label></td>
-	    <td><input type="text" id="serverName" name="serverName" value="<c:out value="${serverName}"/>" />
-	      <span class="error_serverName"><bs:messages key="blazeMessage"/></span>
-	      <span class="smallNote">BlazeMeter Proxy Server</span>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td><label>Port:</label></td>
-	    <td><input type="text" id="serverPort" name="serverPort" value="<c:out value="${serverPort}"/>" />
-	      <span class="error_serverPort"><bs:messages key="blazeMessage"/></span>
-	      <span class="smallNote">BlazeMeter Proxy Port</span>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td><label>Username:</label></td>
-	    <td><input type="text" id="username" name="username" value="<c:out value="${username}"/>" />
-	      <span class="error_username"><bs:messages key="blazeMessage"/></span>
-	      <span class="smallNote">BlazeMeter Proxy Username</span>
-	    </td>
-	  </tr>
-	  <tr>
-	    <td><label>Password:</label></td>
-	    <td><input type="password" id="password" name="password" value="<c:out value="${password}"/>" />
-	      <span class="error_password"><bs:messages key="blazeMessage"/></span>
-	      <span class="smallNote">BlazeMeter Proxy Password</span>
-	    </td>
-	  </tr>
-	  
-	</table>
-    <div class="saveButtonsBlock">
-    	<input type="button" name="submitBlazeMeterAdminPageForm" value="Save" onclick="return sendReqSave();" class="btn btn_primary submitButton"/>
-	</div>
-</div>
-</form>
+    <h3>Set BlazeMeter configuration:</h3>
+
+    <form id="BlazeMeterAdminPageForm" action="/saveuserkey.html" method="post" onSubmit="">
+        <div>
+            <table class="runnerFormTable">
+                <tr>
+                    <td><label>BlazeMeter User Key:</label></td>
+                    <td><input type="text" id="user_key" name="user_key" value="<c:out value="${user_key}"/>"/>
+                        <span class="error_user_key"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter User Key</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>BlazeMeter URL:</label></td>
+                    <td><input type="text" id="blazeMeterUrl" name="blazeMeterUrl"
+                               value="<c:out value="${blazeMeterUrl}"/>"/>
+                        <span class="error_blazeMeterUrl"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter URL</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Server:</label></td>
+                    <td><input type="text" id="serverName" name="serverName" value="<c:out value="${serverName}"/>"/>
+                        <span class="error_serverName"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter Proxy Server</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Port:</label></td>
+                    <td><input type="text" id="serverPort" name="serverPort" value="<c:out value="${serverPort}"/>"/>
+                        <span class="error_serverPort"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter Proxy Port</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Username:</label></td>
+                    <td><input type="text" id="username" name="username" value="<c:out value="${username}"/>"/>
+                        <span class="error_username"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter Proxy Username</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>Password:</label></td>
+                    <td><input type="password" id="password" name="password" value="<c:out value="${password}"/>"/>
+                        <span class="error_password"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter Proxy Password</span>
+                    </td>
+                </tr>
+
+            </table>
+            <div class="saveButtonsBlock">
+                <input type="button" name="submitBlazeMeterAdminPageForm" value="Save" onclick="return sendReqSave();"
+                       class="btn btn_primary submitButton"/>
+            </div>
+        </div>
+    </form>
 </bs:refreshable>

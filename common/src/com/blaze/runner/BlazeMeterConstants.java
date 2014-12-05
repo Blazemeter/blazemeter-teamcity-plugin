@@ -15,7 +15,8 @@ public interface BlazeMeterConstants {
 	public final static String RUNNER_TYPE = "BlazeMeter";
 	public final static String BLAZE_METER_STATISTICS_NAME = "BlazeMeterStatistics";
 	public final static String USER_KEY = "USER_KEY";
-	
+	public final static String BLAZEMETER_URL = "BLAZEMETER_URL";
+
 	public final static String PROXY_SERVER_NAME = "SERVER_NAME";
 	public final static String PROXY_SERVER_PORT = "SERVER_PORT";
 	public final static String PROXY_USERNAME = "USERNAME";

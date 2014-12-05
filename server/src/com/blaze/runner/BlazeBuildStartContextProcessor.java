@@ -18,6 +18,7 @@ public class BlazeBuildStartContextProcessor implements BuildStartContextProcess
 	@Override
 	public void updateParameters(@NotNull BuildStartContext buildStartContext) {
 		buildStartContext.addSharedParameter(BlazeMeterConstants.USER_KEY, pluginSettings.getUserKey());
+		buildStartContext.addSharedParameter(BlazeMeterConstants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
 		buildStartContext.addSharedParameter(BlazeMeterConstants.PROXY_SERVER_NAME, pluginSettings.getServerName());
 		buildStartContext.addSharedParameter(BlazeMeterConstants.PROXY_SERVER_PORT, pluginSettings.getServerPort());
 		buildStartContext.addSharedParameter(BlazeMeterConstants.PROXY_USERNAME, pluginSettings.getUsername());

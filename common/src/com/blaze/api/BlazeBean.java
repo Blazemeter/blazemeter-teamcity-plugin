@@ -16,17 +16,17 @@ import org.json.JSONException;
  *
  */
 public class BlazeBean {
-	private String userKey;
+    //Default properties
+    public final static String DEFAULT_SETTINGS_DATA_FOLDER = "/DataFolder";
+
+    private String userKey;
+	private String blazeMeterUrl;
 	private String serverName;
 	private String serverPort;
 	private String username;
 	private String password;
-    BuildProgressLogger logger;
+    private BuildProgressLogger logger;
 	private BlazemeterApi blazemeterApi;
-	
-	//Default properties
-	public final static String DEFAULT_SETTINGS_DATA_FOLDER = "/DataFolder";	
-
 	private String session;
 	private String aggregate;
 
@@ -34,10 +34,12 @@ public class BlazeBean {
 		
 	}
 	
-	public BlazeBean(String userKey, String serverName, int serverPort, String username,
-                     String password, BuildProgressLogger logger) {
-		blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);
+	public BlazeBean(String userKey, String blazeMeterUrl, String serverName,
+                     int serverPort, String username,
+                      String password, BuildProgressLogger logger) {
+		this.blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);
 		this.userKey = userKey;
+        this.blazeMeterUrl = blazeMeterUrl;
         this.logger = logger;
 	}
 	

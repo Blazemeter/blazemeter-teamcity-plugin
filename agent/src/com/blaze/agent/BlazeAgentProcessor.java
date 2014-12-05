@@ -64,10 +64,11 @@ public class BlazeAgentProcessor implements BuildProcess{
         }
         blazeBean = new BlazeBean(
 				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
-				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
+                buildSharedMap.get(BlazeMeterConstants.BLAZEMETER_URL),
+                buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
 				proxyPortInt,
                 buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),
-				buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD),
+                buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD),
                 logger);
 	}
 

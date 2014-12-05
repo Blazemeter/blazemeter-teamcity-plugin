@@ -37,6 +37,7 @@ public class BlazeMeterSettingsController extends BaseController {
 	@Override
 	protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.getSession().setAttribute("userKey", mySettings.getUserKey());
+        request.getSession().setAttribute("blazeMeterUrl", mySettings.getBlazeMeterUrl());
         request.getSession().setAttribute("serverName", mySettings.getServerName());
         request.getSession().setAttribute("serverPort", mySettings.getServerPort());
         request.getSession().setAttribute("username", mySettings.getUsername());

@@ -39,6 +39,7 @@ public class AgentListener extends AgentLifeCycleAdapter{
 				.getSharedConfigParameters();
 		blazeBean = new BlazeBean(
 				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
+                buildSharedMap.get(BlazeMeterConstants.BLAZEMETER_URL),
 				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
 				Integer.parseInt(buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_PORT)),
 				buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),

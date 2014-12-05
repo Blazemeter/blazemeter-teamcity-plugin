@@ -12,6 +12,7 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 public class BlazeMeterServerSettings {
 	public ServerPaths serverPaths;
 	private String userKey = "";
+	private String blazeMeterUrl = "";
 	private String serverName = "";
 	private String serverPort = "";
 	private String username = "";
@@ -45,6 +46,7 @@ public class BlazeMeterServerSettings {
 			Properties prop = new Properties();
 			prop.load(inFile);
 			this.setUserKey(prop.getProperty("user_key"));
+			this.setBlazeMeterUrl(prop.getProperty("blazeMeterUrl"));
 			this.setServerName(prop.getProperty("serverName"));
 			this.setServerPort(prop.getProperty("serverPort"));
 			this.setUsername(prop.getProperty("username"));
@@ -97,5 +99,11 @@ public class BlazeMeterServerSettings {
 		this.password = password;
 	}
 
-	
+    public String getBlazeMeterUrl() {
+        return blazeMeterUrl;
+    }
+
+    public void setBlazeMeterUrl(String blazeMeterUrl) {
+        this.blazeMeterUrl = blazeMeterUrl;
+    }
 }
