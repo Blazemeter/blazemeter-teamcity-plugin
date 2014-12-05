@@ -7,63 +7,63 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/blazeRunnerController.html"/>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
-<jsp:useBean id="blazeBean" class="com.blaze.api.BZMServiceManager"/>
+<jsp:useBean id="bzmServiceManager" class="com.blaze.api.BzmServiceManager"/>
 <c:choose>
       <c:when test="${not empty propertiesBean.properties['USER_KEY']}">
-		<c:set target="${blazeBean}" property="userKey" value="${propertiesBean.properties['USER_KEY']}" />
+		<c:set target="${bzmServiceManager}" property="userKey" value="${propertiesBean.properties['USER_KEY']}" />
       </c:when>
       <c:otherwise>
-      	<c:set target="${blazeBean}" property="userKey" value="${userKey}" />
+      	<c:set target="${bzmServiceManager}" property="userKey" value="${userKey}" />
       </c:otherwise>
 </c:choose>
 <c:choose>
     <c:when test="${not empty propertiesBean.properties['BLAZEMETER_URL']}">
-        <c:set target="${blazeBean}" property="blazeMeterUrl" value="${propertiesBean.properties['BLAZEMETER_URL']}" />
+        <c:set target="${bzmServiceManager}" property="blazeMeterUrl" value="${propertiesBean.properties['BLAZEMETER_URL']}" />
     </c:when>
     <c:otherwise>
-        <c:set target="${blazeBean}" property="blazeMeterUrl" value="${blazeMeterUrl}" />
+        <c:set target="${bzmServiceManager}" property="blazeMeterUrl" value="${blazeMeterUrl}" />
     </c:otherwise>
 </c:choose>
 <c:choose>
       <c:when test="${not empty propertiesBean.properties['SERVER_NAME']}">
-		<c:set target="${blazeBean}" property="serverName" value="${propertiesBean.properties['SERVER_NAME']}" />
+		<c:set target="${bzmServiceManager}" property="serverName" value="${propertiesBean.properties['SERVER_NAME']}" />
       </c:when>
       <c:otherwise>
-      	<c:set target="${blazeBean}" property="serverName" value="${serverName}" />
+      	<c:set target="${bzmServiceManager}" property="serverName" value="${serverName}" />
       </c:otherwise>
 </c:choose>
 <c:choose>
       <c:when test="${not empty propertiesBean.properties['SERVER_PORT']}">
-		<c:set target="${blazeBean}" property="serverPort" value="${propertiesBean.properties['SERVER_PORT']}" />
+		<c:set target="${bzmServiceManager}" property="serverPort" value="${propertiesBean.properties['SERVER_PORT']}" />
       </c:when>
       <c:otherwise>
-      	<c:set target="${blazeBean}" property="serverPort" value="${serverPort}" />
+      	<c:set target="${bzmServiceManager}" property="serverPort" value="${serverPort}" />
       </c:otherwise>
 </c:choose>
 <c:choose>
       <c:when test="${not empty propertiesBean.properties['USERNAME']}">
-		<c:set target="${blazeBean}" property="username" value="${propertiesBean.properties['USERNAME']}" />
+		<c:set target="${bzmServiceManager}" property="username" value="${propertiesBean.properties['USERNAME']}" />
       </c:when>
       <c:otherwise>
-      	<c:set target="${blazeBean}" property="username" value="${username}" />
+      	<c:set target="${bzmServiceManager}" property="username" value="${username}" />
       </c:otherwise>
 </c:choose>
 <c:choose>
       <c:when test="${not empty propertiesBean.properties['PASSWORD']}">
-		<c:set target="${blazeBean}" property="password" value="${propertiesBean.properties['PASSWORD']}" />
+		<c:set target="${bzmServiceManager}" property="password" value="${propertiesBean.properties['PASSWORD']}" />
       </c:when>      
       <c:otherwise>
-      	<c:set target="${blazeBean}" property="password" value="${password}" />
+      	<c:set target="${bzmServiceManager}" property="password" value="${password}" />
       </c:otherwise>
 </c:choose>
 
 
 <l:settingsGroup title="BlazeMeter">
   <tr>
-    <th><label for="${blazeBean.debugKey}">BlazeMeter tests: <l:star/></label></th>
+    <th><label for="${bzmServiceManager.debugKey}">BlazeMeter tests: <l:star/></label></th>
     <td>
     <props:selectProperty name="all_tests">
-    	<c:forEach var="test" items="${blazeBean.tests}">
+    	<c:forEach var="test" items="${bzmServiceManager.tests}">
 	    	<props:option value="${test.value}" selected="false" title="${test.key}" id="${test.value}">
 	    		${test.key}
 	    	</props:option>

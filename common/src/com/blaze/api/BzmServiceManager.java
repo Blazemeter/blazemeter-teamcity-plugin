@@ -17,7 +17,7 @@ import org.json.JSONException;
  * @author Marcel Milea
  *
  */
-public class BZMServiceManager {
+public class BzmServiceManager {
     //Default properties
     public final static String DEFAULT_SETTINGS_DATA_FOLDER = "/DataFolder";
 
@@ -32,11 +32,11 @@ public class BZMServiceManager {
 	private String session;
 	private String aggregate;
 
-	public BZMServiceManager(){
+	public BzmServiceManager(){
 		
 	}
 	
-	public BZMServiceManager(String userKey, String blazeMeterUrl, String serverName,
+	public BzmServiceManager(String userKey, String blazeMeterUrl, String serverName,
                              int serverPort, String username,
                              String password, BuildProgressLogger logger) {
 		this.blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);

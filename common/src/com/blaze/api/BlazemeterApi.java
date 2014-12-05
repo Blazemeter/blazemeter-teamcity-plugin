@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -46,7 +45,6 @@ public class BlazemeterApi {
     DefaultHttpClient httpClient;
     BmUrlManager urlManager;
 
-//    public BlazemeterApi(String serverName, int serverPort, String username, String password, BuildProgressLogger logger) {
     public BlazemeterApi(String serverName, int serverPort, String username, String password) {
     	this.serverName = serverName;
     	this.serverPort = serverPort;
