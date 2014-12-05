@@ -11,12 +11,12 @@ import jetbrains.buildServer.util.EventDispatcher;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.blaze.api.BlazeBean;
+import com.blaze.api.BZMServiceManager;
 import com.blaze.runner.BlazeMeterConstants;
 
 public class AgentListener extends AgentLifeCycleAdapter{
 	
-	private BlazeBean blazeBean;
+	private BZMServiceManager BZMServiceManager;
 	
 	public AgentListener(@NotNull final EventDispatcher<AgentLifeCycleListener> dispatcher){
 		dispatcher.addListener(this);
@@ -37,7 +37,7 @@ public class AgentListener extends AgentLifeCycleAdapter{
 	private void stopTest(AgentRunningBuild runningBuild) {
 		Map<String, String> buildSharedMap = runningBuild
 				.getSharedConfigParameters();
-		blazeBean = new BlazeBean(
+		BZMServiceManager = new BZMServiceManager(
 				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
                 buildSharedMap.get(BlazeMeterConstants.BLAZEMETER_URL),
 				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
@@ -48,6 +48,6 @@ public class AgentListener extends AgentLifeCycleAdapter{
 
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
 		String testId = runnerParams.get(BlazeMeterConstants.SETTINGS_ALL_TESTS_ID);
-		blazeBean.stopTest(testId, runningBuild.getBuildLogger());
+		BZMServiceManager.stopTest(testId, runningBuild.getBuildLogger());
 	}
 }

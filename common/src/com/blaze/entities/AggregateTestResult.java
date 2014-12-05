@@ -1,4 +1,4 @@
-package com.blaze.api;
+package com.blaze.entities;
 
 import java.io.IOException;
 

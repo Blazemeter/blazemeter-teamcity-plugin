@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.blaze.api.BZMServiceManager;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -17,8 +18,7 @@ import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import jetbrains.buildServer.util.PropertiesUtil;
 
-import com.blaze.api.BlazeBean;
-import com.blaze.api.TestInfo;
+import com.blaze.entities.TestInfo;
 import com.blaze.runner.BlazeMeterConstants;
 
 /**
@@ -27,7 +27,7 @@ import com.blaze.runner.BlazeMeterConstants;
  */
 public class BlazeAgentProcessor implements BuildProcess{
 	private static final int CHECK_INTERVAL = 60000;
-	private BlazeBean blazeBean;
+	private BZMServiceManager BZMServiceManager;
 	private AgentRunningBuild agentRunningBuild;
 	private BuildRunnerContext buildRunnerContext;
 	private ArtifactsWatcher artifactsWatcher;
@@ -62,7 +62,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         if(proxyPortStr!=null&&!proxyPortStr.isEmpty()){
             proxyPortInt=Integer.parseInt(proxyPortStr);
         }
-        blazeBean = new BlazeBean(
+        BZMServiceManager = new BZMServiceManager(
 				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
                 buildSharedMap.get(BlazeMeterConstants.BLAZEMETER_URL),
                 buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
@@ -79,7 +79,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 			return "No test was defined in the configuration page.";
 		} else {
 			//verify if the test still exists on BlazeMeter server
-			HashMap<String, String> tests = blazeBean.getTests();
+			HashMap<String, String> tests = BZMServiceManager.getTests();
 			if (tests != null){
 				if (!tests.values().contains(testId)) {
 					return "Test removed from BlazeMeter server.";
@@ -172,7 +172,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@Override
 	public void interrupt() {
 		logger.message("BlazeMeter agent interrupted.");
-        blazeBean.stopTest(testId,logger);
+        BZMServiceManager.stopTest(testId,logger);
 		interrupted = true;
 	}
 
@@ -213,7 +213,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
 		logger.message("Attempting to start test with id:"+testId);
-		boolean started = blazeBean.startTest(testId, logger);
+		boolean started = BZMServiceManager.startTest(testId, logger);
 		
 		if (!started){
 			return BuildFinishedStatus.FINISHED_FAILED;
@@ -226,7 +226,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 				}
 				FileWriter fw;
 				fw = new FileWriter(file);
-				fw.write(blazeBean.getSession());
+				fw.write(BZMServiceManager.getSession());
 				fw.flush();
 				fw.close();
 				artifactsWatcher.addNewArtifactsPath(file.getAbsolutePath());
@@ -251,10 +251,10 @@ public class BlazeAgentProcessor implements BuildProcess{
 			}
 			
 			logger.message("Check if the test is still running. Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
-			testInfo = blazeBean.getTestStatus(testId);
+			testInfo = BZMServiceManager.getTestStatus(testId);
 			if (testInfo.getStatus().equals(BlazeMeterConstants.TestStatus.NotRunning)){
 				logger.warning("Test is finished earlier then estimated! Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
-                blazeBean.waitForReport(logger);
+                BZMServiceManager.waitForReport(logger);
                 return BuildFinishedStatus.INTERRUPTED;
             }
 			else
@@ -266,20 +266,20 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		//BlazeMeter test stopped due to user test duration setup reached
 		logger.message("Stopping test...");
-		blazeBean.stopTest(testId, logger);
+		BZMServiceManager.stopTest(testId, logger);
 		
 		logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		
 		logger.message("Test finished. Checking for test report...");
 		
         //get testGetArchive information
-        boolean waitForReport = blazeBean.waitForReport(logger);
+        boolean waitForReport = BZMServiceManager.waitForReport(logger);
         
         if (waitForReport){
-        	int reportStatus = blazeBean.getReport(errorFailedThreshold, errorUnstableThreshold, responseTimeFailedThreshold, responseTimeUnstableThreshold, logger);
+        	int reportStatus = BZMServiceManager.getReport(errorFailedThreshold, errorUnstableThreshold, responseTimeFailedThreshold, responseTimeUnstableThreshold, logger);
 
         	if (reportStatus != -1){
-            	blazeBean.publishReportArtifact(agentRunningBuild.getAgentTempDirectory().getAbsolutePath() + File.separator + "teamcity-info.xml");
+            	BZMServiceManager.publishReportArtifact(agentRunningBuild.getAgentTempDirectory().getAbsolutePath() + File.separator + "teamcity-info.xml");
            		artifactsWatcher.addNewArtifactsPath(agentRunningBuild.getAgentTempDirectory().getAbsolutePath() + File.separator + "teamcity-info.xml");
         	}
         	
@@ -326,11 +326,11 @@ public class BlazeAgentProcessor implements BuildProcess{
                 file = listOfFiles[i].getName();
                 if (file.endsWith(mainJMX)){
                 	logger.message("Uploading main JMX "+mainJMX);
-                    blazeBean.uploadJMX(testId, mainJMX, dataFolder + File.separator + mainJMX);
+                    BZMServiceManager.uploadJMX(testId, mainJMX, dataFolder + File.separator + mainJMX);
                 }
                 else {
                 	logger.message("Uploading data files "+file);
-                	blazeBean.uploadFile(testId, dataFolder, file, logger);
+                	BZMServiceManager.uploadFile(testId, dataFolder, file, logger);
                 }
             }
         }
