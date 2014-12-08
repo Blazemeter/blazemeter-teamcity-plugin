@@ -10,7 +10,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 
-import com.blaze.runner.BlazeMeterConstants;
+import com.blaze.runner.Constants;
 
 public class BlazeAgent implements AgentBuildRunner {
 	private AgentBuildRunnerInfo runnerInfo;
@@ -38,7 +38,7 @@ public class BlazeAgent implements AgentBuildRunner {
 
 			@Override
 			public String getType() {
-				return BlazeMeterConstants.RUNNER_TYPE;
+				return Constants.RUNNER_TYPE;
 			}
 
 			@Override

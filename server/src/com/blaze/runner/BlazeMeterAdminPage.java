@@ -29,7 +29,7 @@ public class BlazeMeterAdminPage extends AdminPage{
 
 	@Override
 	public String getGroup() {
-		return BlazeMeterConstants.RUNNER_TYPE;
+		return Constants.RUNNER_TYPE;
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class BlazeMeterAdminPage extends AdminPage{
 
 	@Override
 	public String getPluginName() {
-		return BlazeMeterConstants.RUNNER_TYPE;
+		return Constants.RUNNER_TYPE;
 	}
 
 }

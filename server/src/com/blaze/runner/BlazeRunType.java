@@ -35,17 +35,17 @@ public class BlazeRunType extends RunType {
 
 	@Override
 	public String getDescription() {
-		return BlazeMeterConstants.RUNNER_DISPLAY_NAME;
+		return Constants.RUNNER_DISPLAY_NAME;
 	}
 
 	@Override
 	public String getDisplayName() {
-		return BlazeMeterConstants.RUNNER_DISPLAY_NAME;
+		return Constants.RUNNER_DISPLAY_NAME;
 	}
 
 	@Override
 	public String getType() {
-		return BlazeMeterConstants.RUNNER_TYPE;
+		return Constants.RUNNER_TYPE;
 	}
 
 	@Nullable
@@ -58,21 +58,21 @@ public class BlazeRunType extends RunType {
 	}
 
 	private void setupDefaultProperties(Map<String, String> params) {
-		params.put(BlazeMeterConstants.SETTINGS_DATA_FOLDER, BlazeMeterConstants.DEFAULT_SETTINGS_DATA_FOLDER);
+		params.put(Constants.SETTINGS_DATA_FOLDER, Constants.DEFAULT_SETTINGS_DATA_FOLDER);
 
 		if (pluginSettings != null) {
-			params.remove(BlazeMeterConstants.USER_KEY);
-			params.remove(BlazeMeterConstants.BLAZEMETER_URL);
-			params.remove(BlazeMeterConstants.PROXY_SERVER_NAME);
-			params.remove(BlazeMeterConstants.PROXY_SERVER_PORT);
-			params.remove(BlazeMeterConstants.PROXY_USERNAME);
-			params.remove(BlazeMeterConstants.PROXY_PASSWORD);
-			params.put(BlazeMeterConstants.USER_KEY, pluginSettings.getUserKey());
-			params.put(BlazeMeterConstants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
-			params.put(BlazeMeterConstants.PROXY_SERVER_NAME, pluginSettings.getServerName());
-			params.put(BlazeMeterConstants.PROXY_SERVER_PORT, pluginSettings.getServerPort());
-			params.put(BlazeMeterConstants.PROXY_USERNAME, pluginSettings.getUsername());
-			params.put(BlazeMeterConstants.PROXY_PASSWORD, pluginSettings.getPassword());
+			params.remove(Constants.USER_KEY);
+			params.remove(Constants.BLAZEMETER_URL);
+			params.remove(Constants.PROXY_SERVER_NAME);
+			params.remove(Constants.PROXY_SERVER_PORT);
+			params.remove(Constants.PROXY_USERNAME);
+			params.remove(Constants.PROXY_PASSWORD);
+			params.put(Constants.USER_KEY, pluginSettings.getUserKey());
+			params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
+			params.put(Constants.PROXY_SERVER_NAME, pluginSettings.getServerName());
+			params.put(Constants.PROXY_SERVER_PORT, pluginSettings.getServerPort());
+			params.put(Constants.PROXY_USERNAME, pluginSettings.getUsername());
+			params.put(Constants.PROXY_PASSWORD, pluginSettings.getPassword());
 		}
 	}
 

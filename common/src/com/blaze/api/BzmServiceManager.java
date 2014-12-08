@@ -31,17 +31,19 @@ public class BzmServiceManager {
 	private BlazemeterApi blazemeterApi;
 	private String session;
 	private String aggregate;
+//    private BmUrlManager bmUrlManager;
 
 	public BzmServiceManager(){
-		
-	}
+    }
 	
 	public BzmServiceManager(String userKey, String blazeMeterUrl, String serverName,
                              int serverPort, String username,
                              String password, BuildProgressLogger logger) {
-		this.blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password);
+//        this.bmUrlManager = new BmUrlManager(blazeMeterUrl);
 		this.userKey = userKey;
         this.blazeMeterUrl = blazeMeterUrl;
+        this.blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password,this.blazeMeterUrl);
+//        this.bmUrlManager=new BmUrlManager(this.blazeMeterUrl);
         this.logger = logger;
 	}
 	
@@ -56,7 +58,7 @@ public class BzmServiceManager {
             if(serverPort!=null&&!serverPort.isEmpty()){
                 serverPortInt=Integer.parseInt(serverPort);
             }
-			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password);
+			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password,this.blazeMeterUrl);
 		}
 		
 		return blazemeterApi;
@@ -336,4 +338,12 @@ public class BzmServiceManager {
 		}
 		return false;
 	}
+
+    public String getBlazeMeterUrl() {
+        return blazeMeterUrl;
+    }
+
+    public void setBlazeMeterUrl(String blazeMeterUrl) {
+        this.blazeMeterUrl = blazeMeterUrl;
+    }
 }

@@ -12,7 +12,7 @@ import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
 
 import com.blaze.api.BzmServiceManager;
-import com.blaze.runner.BlazeMeterConstants;
+import com.blaze.runner.Constants;
 
 public class AgentListener extends AgentLifeCycleAdapter{
 	
@@ -38,16 +38,16 @@ public class AgentListener extends AgentLifeCycleAdapter{
 		Map<String, String> buildSharedMap = runningBuild
 				.getSharedConfigParameters();
 		bzmServiceManager = new BzmServiceManager(
-				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
-                buildSharedMap.get(BlazeMeterConstants.BLAZEMETER_URL),
-				buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
-				Integer.parseInt(buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_PORT)),
-				buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),
-				buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD),
+				buildSharedMap.get(Constants.USER_KEY),
+                buildSharedMap.get(Constants.BLAZEMETER_URL),
+				buildSharedMap.get(Constants.PROXY_SERVER_NAME),
+				Integer.parseInt(buildSharedMap.get(Constants.PROXY_SERVER_PORT)),
+				buildSharedMap.get(Constants.PROXY_USERNAME),
+				buildSharedMap.get(Constants.PROXY_PASSWORD),
                 runningBuild.getBuildLogger());
 
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
-		String testId = runnerParams.get(BlazeMeterConstants.SETTINGS_ALL_TESTS_ID);
+		String testId = runnerParams.get(Constants.SETTINGS_ALL_TESTS_ID);
 		bzmServiceManager.stopTest(testId, runningBuild.getBuildLogger());
 	}
 }

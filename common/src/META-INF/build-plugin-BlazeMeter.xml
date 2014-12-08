@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2011-2012 Marcel Milea
+  -->
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-autowire="constructor">
+  <bean name="blazemeterAPI" class="com.blaze.api.BlazemeterApi" />
+  <bean name="bmUrlManager" class="com.blaze.api.BmUrlManager" />
+  <bean name="bzmServiceManager" class="com.blaze.api.BzmServiceManager" />
+</beans>

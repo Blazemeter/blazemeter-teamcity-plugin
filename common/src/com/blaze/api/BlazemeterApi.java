@@ -26,7 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.blaze.runner.BlazeMeterConstants;
+import com.blaze.runner.Constants;
 
 /**
  * 
@@ -45,13 +45,13 @@ public class BlazemeterApi {
     DefaultHttpClient httpClient;
     BmUrlManager urlManager;
 
-    public BlazemeterApi(String serverName, int serverPort, String username, String password) {
+    public BlazemeterApi(String serverName, int serverPort, String username, String password, String bzmUrl) {
     	this.serverName = serverName;
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
 //        this.logger = logger;
-        urlManager = new BmUrlManager("https://a.blazemeter.com");
+        urlManager = new BmUrlManager(bzmUrl);
         try {
             httpClient = new DefaultHttpClient();
             configureProxy();
@@ -278,7 +278,7 @@ public class BlazemeterApi {
         TestInfo ti = new TestInfo();
 
         if (!validate(userKey, testId)) {
-            ti.setStatus(BlazeMeterConstants.TestStatus.NotFound);
+            ti.setStatus(Constants.TestStatus.NotFound);
             return ti;
         }
 
@@ -287,7 +287,7 @@ public class BlazemeterApi {
             JSONObject jo = getJson(url, null);
 
             if (jo.get("status") == "Test not found")
-                ti.setStatus(BlazeMeterConstants.TestStatus.NotFound);
+                ti.setStatus(Constants.TestStatus.NotFound);
             else {
                 ti.setId(jo.getString("test_id"));
                 ti.setName( jo.getString("test_name"));
@@ -296,7 +296,7 @@ public class BlazemeterApi {
         } catch (Exception e) {
             e.printStackTrace();
 //            logger.message("error getting status " + e);
-            ti.setStatus(BlazeMeterConstants.TestStatus.Error);
+            ti.setStatus(Constants.TestStatus.Error);
         }
         return ti;
     }

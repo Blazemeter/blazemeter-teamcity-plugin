@@ -19,7 +19,7 @@ import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import jetbrains.buildServer.util.PropertiesUtil;
 
 import com.blaze.entities.TestInfo;
-import com.blaze.runner.BlazeMeterConstants;
+import com.blaze.runner.Constants;
 
 /**
  * @author Marcel Milea
@@ -57,24 +57,24 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		logger = agentRunningBuild.getBuildLogger();
 		Map<String, String> buildSharedMap = agentRunningBuild.getSharedConfigParameters();
-		String proxyPortStr=buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_PORT);
+		String proxyPortStr=buildSharedMap.get(Constants.PROXY_SERVER_PORT);
         int proxyPortInt=0;
         if(proxyPortStr!=null&&!proxyPortStr.isEmpty()){
             proxyPortInt=Integer.parseInt(proxyPortStr);
         }
         bzmServiceManager = new BzmServiceManager(
-				buildSharedMap.get(BlazeMeterConstants.USER_KEY),
-                buildSharedMap.get(BlazeMeterConstants.BLAZEMETER_URL),
-                buildSharedMap.get(BlazeMeterConstants.PROXY_SERVER_NAME),
+				buildSharedMap.get(Constants.USER_KEY),
+                buildSharedMap.get(Constants.BLAZEMETER_URL),
+                buildSharedMap.get(Constants.PROXY_SERVER_NAME),
 				proxyPortInt,
-                buildSharedMap.get(BlazeMeterConstants.PROXY_USERNAME),
-                buildSharedMap.get(BlazeMeterConstants.PROXY_PASSWORD),
+                buildSharedMap.get(Constants.PROXY_USERNAME),
+                buildSharedMap.get(Constants.PROXY_PASSWORD),
                 logger);
 	}
 
 	private String validateParams(Map<String, String> params) {
 		
-		testId = params.get(BlazeMeterConstants.SETTINGS_ALL_TESTS_ID);
+		testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
 		if (isNullorEmpty(testId)) {
 			return "No test was defined in the configuration page.";
 		} else {
@@ -86,7 +86,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 				}
 			}
 		}
-		String testDrt = params.get(BlazeMeterConstants.SETTINGS_TEST_DURATION);
+		String testDrt = params.get(Constants.SETTINGS_TEST_DURATION);
 		if (isNullorEmpty(testDrt)) {
 			return "Test duration not set.";
 		} else {
@@ -97,23 +97,23 @@ public class BlazeAgentProcessor implements BuildProcess{
 			}
 		}
 
-		String errorUnstable = params.get(BlazeMeterConstants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
-		String errorFail = params.get(BlazeMeterConstants.SETTINGS_ERROR_THRESHOLD_FAIL);
-		String timeUnstable = params.get(BlazeMeterConstants.SETTINGS_RESPONSE_TIME_UNSTABLE);
-		String timeFail = params.get(BlazeMeterConstants.SETTINGS_RESPONSE_TIME_FAIL);
+		String errorUnstable = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
+		String errorFail = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
+		String timeUnstable = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
+		String timeFail = params.get(Constants.SETTINGS_RESPONSE_TIME_FAIL);
 
 		errorFailedThreshold = Integer.valueOf(errorFail);
 		errorUnstableThreshold = Integer.valueOf(errorUnstable);
 		responseTimeFailedThreshold = Integer.valueOf(timeFail);
 		responseTimeUnstableThreshold = Integer.valueOf(timeUnstable);
 		
-		dataFolder = params.get(BlazeMeterConstants.SETTINGS_DATA_FOLDER);
+		dataFolder = params.get(Constants.SETTINGS_DATA_FOLDER);
 		if (PropertiesUtil.isEmptyOrNull(dataFolder)){
 			dataFolder = "";
 		}
 		
 		dataFolder = dataFolder.trim();
-		mainJMX = params.get(BlazeMeterConstants.SETTINGS_MAIN_JMX);
+		mainJMX = params.get(Constants.SETTINGS_MAIN_JMX);
 		
 		logger.warning("File separator should be " + File.separator);
 
@@ -252,13 +252,13 @@ public class BlazeAgentProcessor implements BuildProcess{
 			
 			logger.message("Check if the test is still running. Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
 			testInfo = bzmServiceManager.getTestStatus(testId);
-			if (testInfo.getStatus().equals(BlazeMeterConstants.TestStatus.NotRunning)){
+			if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
 				logger.warning("Test is finished earlier then estimated! Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
                 bzmServiceManager.waitForReport(logger);
                 return BuildFinishedStatus.INTERRUPTED;
             }
 			else
-			if (testInfo.getStatus().equals(BlazeMeterConstants.TestStatus.NotFound)){
+			if (testInfo.getStatus().equals(Constants.TestStatus.NotFound)){
 				logger.error("Test not found!");
 				return BuildFinishedStatus.FINISHED_FAILED;
 			}
