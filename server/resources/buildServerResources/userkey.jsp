@@ -57,6 +57,22 @@
                     </td>
                 </tr>
                 <tr>
+                    <td><label>BlazeMeter API version:</label></td>
+                    <td>
+                    <select type="text" id="apiVersion" name="apiVersion"
+                            value="<c:out value="${apiVersion}"/>">
+                        <option value="autoDetect">Auto Detect</option>
+                        <option value="v3">V3(force)</option>
+                        <option value="v2">V2(deprecated)</option>
+                    </select>
+                    </td>
+                    <%--<td><input type="text" id="apiVersion" name="apiVersion"
+                               value="<c:out value="${apiVersion}"/>"/>
+                        <span class="error_blazeMeterUrl"><bs:messages key="blazeMessage"/></span>
+                        <span class="smallNote">BlazeMeter API version</span>
+                    </td>--%>
+                </tr>
+                <tr>
                     <td><label>Server:</label></td>
                     <td><input type="text" id="serverName" name="serverName" value="<c:out value="${serverName}"/>"/>
                         <span class="error_serverName"><bs:messages key="blazeMessage"/></span>
