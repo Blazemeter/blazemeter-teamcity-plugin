@@ -59,6 +59,7 @@ public class BlazeRunTypeController extends BaseController {
 			prop.load(inFile);
 			prop.setProperty("user_key", mainSettings.getUserKey());
 			prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
+			prop.setProperty("blazeMeterApiVersion", mainSettings.getBlazeMeterApiVersion());
 			prop.setProperty("serverName", mainSettings.getServerName());
 			prop.setProperty("serverPort", mainSettings.getServerPort());
 			prop.setProperty("username", mainSettings.getUsername());
@@ -123,6 +124,7 @@ public class BlazeRunTypeController extends BaseController {
 	private void doAction(final HttpServletRequest request) throws Exception {
 		String user_key = request.getParameter("user_key");
 		String blazeMeterUrl = request.getParameter("blazeMeterUrl");
+		String blazeMeterApiVersion = request.getParameter("blazeMeterApiVersion");
 		String serverName = request.getParameter("serverName");
 		String serverPort = request.getParameter("serverPort");
 		String username = request.getParameter("username");
@@ -133,6 +135,10 @@ public class BlazeRunTypeController extends BaseController {
 		}
         if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
+        }
+
+        if (blazeMeterApiVersion != null) {
+            mainSettings.setBlazeMeterApiVersion(blazeMeterApiVersion);
         }
 
         if (serverPort != null) {

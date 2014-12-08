@@ -25,6 +25,14 @@
     </c:otherwise>
 </c:choose>
 <c:choose>
+    <c:when test="${not empty propertiesBean.properties['BLAZEMETER_API_VERSION']}">
+        <c:set target="${bzmServiceManager}" property="blazeMeterApiVersion" value="${propertiesBean.properties['BLAZEMETER_API_VERSION']}" />
+    </c:when>
+    <c:otherwise>
+        <c:set target="${bzmServiceManager}" property="blazeMeterApiVersion" value="${blazeMeterApiVersion}" />
+    </c:otherwise>
+</c:choose>
+<c:choose>
       <c:when test="${not empty propertiesBean.properties['SERVER_NAME']}">
 		<c:set target="${bzmServiceManager}" property="serverName" value="${propertiesBean.properties['SERVER_NAME']}" />
       </c:when>

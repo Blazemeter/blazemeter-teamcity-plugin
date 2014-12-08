@@ -63,12 +63,14 @@ public class BlazeRunType extends RunType {
 		if (pluginSettings != null) {
 			params.remove(Constants.USER_KEY);
 			params.remove(Constants.BLAZEMETER_URL);
+			params.remove(Constants.BLAZEMETER_API_VERSION);
 			params.remove(Constants.PROXY_SERVER_NAME);
 			params.remove(Constants.PROXY_SERVER_PORT);
 			params.remove(Constants.PROXY_USERNAME);
 			params.remove(Constants.PROXY_PASSWORD);
 			params.put(Constants.USER_KEY, pluginSettings.getUserKey());
 			params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
+			params.put(Constants.BLAZEMETER_API_VERSION, pluginSettings.getBlazeMeterApiVersion());
 			params.put(Constants.PROXY_SERVER_NAME, pluginSettings.getServerName());
 			params.put(Constants.PROXY_SERVER_PORT, pluginSettings.getServerPort());
 			params.put(Constants.PROXY_USERNAME, pluginSettings.getUsername());

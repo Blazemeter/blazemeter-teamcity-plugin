@@ -8,9 +8,9 @@
 <%@ include file="/include.jsp" %>
 <script type="text/javascript">
     function sendReqSave() {
-
         var usrKey = $('user_key').value;
         var blazeMeterUrl = $('blazeMeterUrl').value;
+        var blazeMeterApiVersion = $('blazeMeterApiVersion').value;
         var serverName = $('serverName').value;
         var serverPort = $('serverPort').value;
         var username = $('username').value;
@@ -22,7 +22,13 @@
         }
 
         BS.ajaxRequest($('BlazeMeterAdminPageForm').action, {
-            parameters: 'user_key=' + usrKey + '&blazeMeterUrl=' + blazeMeterUrl + '&serverName=' + serverName + '&serverPort=' + serverPort + '&username=' + username + '&password=' + password,
+            parameters: 'user_key=' + usrKey
+                    + '&blazeMeterUrl=' + blazeMeterUrl
+                    + '&blazeMeterApiVersion=' + blazeMeterApiVersion
+                    + '&serverName=' + serverName
+                    + '&serverPort=' + serverPort
+                    + '&username=' + username
+                    + '&password=' + password,
             onComplete: function (transport) {
                 if (transport.responseXML) {
                     $('refreshContainer').refresh();
@@ -59,18 +65,14 @@
                 <tr>
                     <td><label>BlazeMeter API version:</label></td>
                     <td>
-                    <select type="text" id="apiVersion" name="apiVersion"
-                            value="<c:out value="${apiVersion}"/>">
+                    <select type="text" id="blazeMeterApiVersion" name="blazeMeterApiVersion">
                         <option value="autoDetect">Auto Detect</option>
                         <option value="v3">V3(force)</option>
                         <option value="v2">V2(deprecated)</option>
                     </select>
-                    </td>
-                    <%--<td><input type="text" id="apiVersion" name="apiVersion"
-                               value="<c:out value="${apiVersion}"/>"/>
                         <span class="error_blazeMeterUrl"><bs:messages key="blazeMessage"/></span>
                         <span class="smallNote">BlazeMeter API version</span>
-                    </td>--%>
+                    </td>
                 </tr>
                 <tr>
                     <td><label>Server:</label></td>

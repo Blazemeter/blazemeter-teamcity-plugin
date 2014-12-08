@@ -13,6 +13,7 @@ public class BlazeMeterServerSettings {
 	public ServerPaths serverPaths;
 	private String userKey = "";
 	private String blazeMeterUrl = "";
+	private String blazeMeterApiVersion = "";
 	private String serverName = "";
 	private String serverPort = "";
 	private String username = "";
@@ -47,6 +48,7 @@ public class BlazeMeterServerSettings {
 			prop.load(inFile);
 			this.setUserKey(prop.getProperty("user_key"));
 			this.setBlazeMeterUrl(prop.getProperty("blazeMeterUrl"));
+			this.setBlazeMeterApiVersion(prop.getProperty("blazeMeterApiVersion"));
 			this.setServerName(prop.getProperty("serverName"));
 			this.setServerPort(prop.getProperty("serverPort"));
 			this.setUsername(prop.getProperty("username"));
@@ -105,5 +107,13 @@ public class BlazeMeterServerSettings {
 
     public void setBlazeMeterUrl(String blazeMeterUrl) {
         this.blazeMeterUrl = blazeMeterUrl;
+    }
+
+    public String getBlazeMeterApiVersion() {
+        return blazeMeterApiVersion;
+    }
+
+    public void setBlazeMeterApiVersion(String blazeMeterApiVersion) {
+        this.blazeMeterApiVersion = blazeMeterApiVersion;
     }
 }
