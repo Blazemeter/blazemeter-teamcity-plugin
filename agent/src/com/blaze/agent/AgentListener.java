@@ -37,15 +37,8 @@ public class AgentListener extends AgentLifeCycleAdapter{
 	private void stopTest(AgentRunningBuild runningBuild) {
 		Map<String, String> buildSharedMap = runningBuild
 				.getSharedConfigParameters();
-		bzmServiceManager = new BzmServiceManager(
-				buildSharedMap.get(Constants.USER_KEY),
-                buildSharedMap.get(Constants.BLAZEMETER_URL),
-				buildSharedMap.get(Constants.PROXY_SERVER_NAME),
-				Integer.parseInt(buildSharedMap.get(Constants.PROXY_SERVER_PORT)),
-				buildSharedMap.get(Constants.PROXY_USERNAME),
-				buildSharedMap.get(Constants.PROXY_PASSWORD),
-                runningBuild.getBuildLogger());
 
+		bzmServiceManager = BzmServiceManager.getBzmServiceManager(buildSharedMap,runningBuild.getBuildLogger());
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
 		String testId = runnerParams.get(Constants.SETTINGS_ALL_TESTS_ID);
 		bzmServiceManager.stopTest(testId, runningBuild.getBuildLogger());

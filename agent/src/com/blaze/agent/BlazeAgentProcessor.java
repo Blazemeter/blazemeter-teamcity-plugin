@@ -62,14 +62,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         if(proxyPortStr!=null&&!proxyPortStr.isEmpty()){
             proxyPortInt=Integer.parseInt(proxyPortStr);
         }
-        bzmServiceManager = new BzmServiceManager(
-				buildSharedMap.get(Constants.USER_KEY),
-                buildSharedMap.get(Constants.BLAZEMETER_URL),
-                buildSharedMap.get(Constants.PROXY_SERVER_NAME),
-				proxyPortInt,
-                buildSharedMap.get(Constants.PROXY_USERNAME),
-                buildSharedMap.get(Constants.PROXY_PASSWORD),
-                logger);
+        bzmServiceManager = BzmServiceManager.getBzmServiceManager(buildSharedMap,logger);
 	}
 
 	private String validateParams(Map<String, String> params) {

@@ -1,6 +1,5 @@
 package com.blaze.api;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,7 +17,7 @@ import com.blaze.runner.Constants;
  * @author 
  *
  */
-public class BlazemeterApiV2Impl {
+public class BlazemeterApiV2Impl implements BlazemeterApi {
 //    BuildProgressLogger logger=null;
 
 	private String serverName;
@@ -58,6 +57,7 @@ public class BlazemeterApiV2Impl {
      *                 //     * @throws java.io.IOException
      *                 //     * @throws org.json.JSONException
      */
+    @Override
     public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) {
 
         if (!validate(userKey, testId)) return false;
@@ -77,6 +77,7 @@ public class BlazemeterApiV2Impl {
         return true;
     }
 
+    @Override
     public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) {
 
         if (!validate(userKey, testId)) return null;
@@ -92,9 +93,9 @@ public class BlazemeterApiV2Impl {
         }
 
         return this.bzmHttpClient.getJson(url, jmxData);
-    } 
+    }
 
-
+    @Override
     public TestInfo getTestRunStatus(String userKey, String testId) {
         TestInfo ti = new TestInfo();
 
@@ -122,6 +123,7 @@ public class BlazemeterApiV2Impl {
         return ti;
     }
 
+    @Override
     public synchronized JSONObject startTest(String userKey, String testId) {
 
         if (!validate(userKey, testId)) return null;
@@ -151,6 +153,7 @@ public class BlazemeterApiV2Impl {
      *                //     * @throws IOException
      *                //     * @throws ClientProtocolException
      */
+    @Override
     public JSONObject stopTest(String userKey, String testId) {
         if (!validate(userKey, testId)) return null;
 
@@ -164,6 +167,7 @@ public class BlazemeterApiV2Impl {
      *                 //     * @throws IOException
      *                 //     * @throws ClientProtocolException
      */
+    @Override
     public JSONObject aggregateReport(String userKey, String reportId) {
         if (!validate(userKey, reportId)) return null;
 
@@ -171,6 +175,7 @@ public class BlazemeterApiV2Impl {
         return this.bzmHttpClient.getJson(url, null);
     }
 
+    @Override
     public HashMap<String, String> getTestList(String userKey) throws IOException {
 
         LinkedHashMap<String, String> testListOrdered = null;
