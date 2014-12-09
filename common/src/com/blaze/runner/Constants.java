@@ -36,5 +36,5 @@ public interface Constants {
 	
 	//Default properties
 	public final static String DEFAULT_SETTINGS_DATA_FOLDER = "DataFolder";
-	
+	public final static String BZM_PROPERTIES_FILE="/userKeyFile.properties";
 }

@@ -154,7 +154,7 @@ public class BlazeRunTypeController extends BaseController {
 		}
 
 		if (serverPaths != null) {
-			File keyFile = new File(serverPaths.getConfigDir() + "/userKeyFile.properties");
+			File keyFile = new File(serverPaths.getConfigDir() + Constants.BZM_PROPERTIES_FILE);
 			if (keyFile.exists()) {
 				saveSettings(keyFile);
 			} else {

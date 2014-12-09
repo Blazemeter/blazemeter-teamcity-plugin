@@ -28,8 +28,7 @@ public class BlazeMeterServerSettings {
 	}
 	
 	public void loadProperties() {
-//		System.out.println("BlazeMeter load propertis from " + serverPaths.getConfigDir()+"/userKeyFile.properties");
-		File keyFile = new File(serverPaths.getConfigDir()+"/userKeyFile.properties");
+		File keyFile = new File(serverPaths.getConfigDir()+Constants.BZM_PROPERTIES_FILE);
 		if (!keyFile.exists()){
     		try {
 				boolean created = keyFile.createNewFile();

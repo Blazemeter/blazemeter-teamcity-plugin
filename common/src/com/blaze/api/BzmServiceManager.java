@@ -19,7 +19,7 @@ import org.json.JSONException;
  */
 public class BzmServiceManager {
     public enum ApiVersion {
-        v3, v2
+        v3, v2,autoDetect
     }
     private static BzmServiceManager bzmServiceManager=null;
     //Default properties
@@ -81,10 +81,13 @@ public class BzmServiceManager {
                 serverPortInt = Integer.parseInt(serverPort);
             }
             switch (ApiVersion.valueOf(this.blazeMeterApiVersion)) {
-                case v2:
+                case autoDetect:
                     blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
                     break;
                 case v3:
+                    blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
+                    break;
+                case v2:
                     blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
                     break;
             }
