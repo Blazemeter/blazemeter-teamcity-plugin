@@ -29,7 +29,7 @@ public class BzmServiceManager {
 	private String username;
 	private String password;
     private BuildProgressLogger logger;
-	private BlazemeterApi blazemeterApi;
+	private BlazemeterApiV2Impl blazemeterApiV2Impl;
 	private String session;
 	private String aggregate;
 
@@ -41,7 +41,7 @@ public class BzmServiceManager {
                              String password, BuildProgressLogger logger) {
 		this.userKey = userKey;
         this.blazeMeterUrl = blazeMeterUrl;
-        this.blazemeterApi = new BlazemeterApi(serverName, serverPort, username, password,this.blazeMeterUrl);
+        this.blazemeterApiV2Impl = new BlazemeterApiV2Impl(serverName, serverPort, username, password,this.blazeMeterUrl);
         this.logger = logger;
 	}
 	
@@ -50,16 +50,16 @@ public class BzmServiceManager {
 		return "Debug Key";
 	}
 	
-	private BlazemeterApi getAPI(){
-		if (blazemeterApi == null){
+	private BlazemeterApiV2Impl getAPI(){
+		if (blazemeterApiV2Impl == null){
             int serverPortInt=0;
             if(serverPort!=null&&!serverPort.isEmpty()){
                 serverPortInt=Integer.parseInt(serverPort);
             }
-			blazemeterApi = new BlazemeterApi(serverName, serverPortInt, username, password,this.blazeMeterUrl);
+			blazemeterApiV2Impl = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password,this.blazeMeterUrl);
 		}
 		
-		return blazemeterApi;
+		return blazemeterApiV2Impl;
 	}
 	
 	public HashMap<String, String> getTests() {

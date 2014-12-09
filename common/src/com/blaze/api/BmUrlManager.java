@@ -119,4 +119,17 @@ public class BmUrlManager {
         return SERVER_URL+String.format("/api/rest/blazemeter/testGetReport.json/?app_key=%s&user_key=%s&report_id=%s&get_aggregate=true&",
                 appKey, userKey, reportId)+CLIENT_IDENTIFICATION;
     }
+
+
+    public String getUrlForTestList(String appKey, String userKey) {
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return SERVER_URL+String.format("/api/rest/blazemeter/getTests.json/?app_key=%s&user_key=%s&test_id=all", appKey, userKey);
+
+    }
+
 }
