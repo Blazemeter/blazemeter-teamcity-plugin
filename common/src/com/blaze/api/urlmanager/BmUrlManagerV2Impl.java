@@ -1,4 +1,4 @@
-package com.blaze.api;
+package com.blaze.api.urlmanager;
 
 import com.blaze.runner.Constants;
 
@@ -9,7 +9,7 @@ import java.net.URLEncoder;
 /**
  * Created by dzmitrykashlach on 5/12/14.
  */
-public class BmUrlManager {
+public class BmUrlManagerV2Impl implements BmUrlManager{
 
     private String SERVER_URL = Constants.DEFAULT_BZM_SERVER;
     private static String CLIENT_IDENTIFICATION = "_clientId=CI_TEAMCITY&_clientVersion=SNAPSHOT-201408281729&​";
@@ -25,14 +25,16 @@ public class BmUrlManager {
         }
     }
 
-    public BmUrlManager(String blazeMeterUrl) {
+    public BmUrlManagerV2Impl(String blazeMeterUrl) {
         SERVER_URL = blazeMeterUrl;
     }
 
+    @Override
     public String getServerUrl() {
         return SERVER_URL;
     }
 
+    @Override
     public String getTests(String appKey, String userKey){
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -44,7 +46,7 @@ public class BmUrlManager {
                 appKey, userKey)+CLIENT_IDENTIFICATION;
     }
 
-
+    @Override
     public String testStatus(String appKey, String userKey, String testId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -57,6 +59,7 @@ public class BmUrlManager {
                 appKey, userKey, testId)+CLIENT_IDENTIFICATION;
     }
 
+    @Override
     public String scriptUpload(String appKey, String userKey, String testId, String fileName) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -70,6 +73,7 @@ public class BmUrlManager {
                 appKey, userKey, testId, fileName)+CLIENT_IDENTIFICATION;
     }
 
+    @Override
     public String fileUpload(String appKey, String userKey, String testId, String fileName) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -83,6 +87,7 @@ public class BmUrlManager {
                 appKey, userKey, testId, fileName)+CLIENT_IDENTIFICATION;
     }
 
+    @Override
     public String testStart(String appKey, String userKey, String testId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -95,6 +100,7 @@ public class BmUrlManager {
                 appKey, userKey, testId)+CLIENT_IDENTIFICATION;
     }
 
+    @Override
     public String testStop(String appKey, String userKey, String testId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -107,7 +113,7 @@ public class BmUrlManager {
                 appKey, userKey, testId)+CLIENT_IDENTIFICATION;
     }
 
-
+    @Override
     public String testAggregateReport(String appKey, String userKey, String reportId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -120,7 +126,7 @@ public class BmUrlManager {
                 appKey, userKey, reportId)+CLIENT_IDENTIFICATION;
     }
 
-
+    @Override
     public String getUrlForTestList(String appKey, String userKey) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");

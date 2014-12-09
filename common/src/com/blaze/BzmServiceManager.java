@@ -1,4 +1,4 @@
-package com.blaze.api;
+package com.blaze;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.blaze.api.BlazemeterApi;
+import com.blaze.api.BlazemeterApiV2Impl;
+import com.blaze.api.BlazemeterApiV3Impl;
 import com.blaze.entities.AggregateTestResult;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
@@ -82,10 +85,10 @@ public class BzmServiceManager {
             }
             switch (ApiVersion.valueOf(this.blazeMeterApiVersion)) {
                 case autoDetect:
-                    blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
+                    blazemeterAPI = new BlazemeterApiV3Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
                     break;
                 case v3:
-                    blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
+                    blazemeterAPI = new BlazemeterApiV3Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
                     break;
                 case v2:
                     blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);

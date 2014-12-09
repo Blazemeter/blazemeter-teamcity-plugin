@@ -1,42 +1,42 @@
 package com.blaze.api;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
 import com.blaze.Utils;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
+import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
+import com.blaze.runner.Constants;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.blaze.runner.Constants;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * 
  * @author 
  *
  */
-public class BlazemeterApiV2Impl implements BlazemeterApi {
+public class BlazemeterApiV3Impl implements BlazemeterApi {
 //    BuildProgressLogger logger=null;
 
 	private String serverName;
 	private int serverPort;
 	private String username;
 	private String password;
-	
+
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     BzmHttpClient bzmHttpClient;
-    BmUrlManagerV2Impl urlManager;
+    BmUrlManagerV3Impl urlManager;
 
-    public BlazemeterApiV2Impl(String serverName, int serverPort, String username, String password, String bzmUrl) {
+    public BlazemeterApiV3Impl(String serverName, int serverPort, String username, String password, String bzmUrl) {
     	this.serverName = serverName;
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
 //        this.logger = logger;
-        urlManager = new BmUrlManagerV2Impl(bzmUrl);
+        urlManager = new BmUrlManagerV3Impl(bzmUrl);
         try {
             bzmHttpClient = new BzmHttpClient(this.serverName,this.username,this.password,this.serverPort);
             bzmHttpClient.configureProxy();

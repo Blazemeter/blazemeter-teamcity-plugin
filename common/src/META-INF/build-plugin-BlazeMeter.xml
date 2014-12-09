@@ -6,5 +6,5 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans default-autowire="constructor">
-  <bean name="bzmServiceManager" class="com.blaze.api.BzmServiceManager" />
+  <bean name="bzmServiceManager" class="com.blaze.BzmServiceManager" />
 </beans>

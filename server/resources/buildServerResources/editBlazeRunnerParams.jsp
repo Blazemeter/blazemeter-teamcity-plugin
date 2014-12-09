@@ -7,7 +7,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/blazeRunnerController.html"/>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
-<jsp:useBean id="bzmServiceManager" class="com.blaze.api.BzmServiceManager"/>
+<jsp:useBean id="bzmServiceManager" class="com.blaze.BzmServiceManager"/>
 <c:choose>
       <c:when test="${not empty propertiesBean.properties['USER_KEY']}">
 		<c:set target="${bzmServiceManager}" property="userKey" value="${propertiesBean.properties['USER_KEY']}" />

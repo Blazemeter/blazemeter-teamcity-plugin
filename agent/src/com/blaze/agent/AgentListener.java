@@ -11,7 +11,7 @@ import jetbrains.buildServer.util.EventDispatcher;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.blaze.api.BzmServiceManager;
+import com.blaze.BzmServiceManager;
 import com.blaze.runner.Constants;
 
 public class AgentListener extends AgentLifeCycleAdapter{
