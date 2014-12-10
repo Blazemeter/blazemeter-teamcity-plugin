@@ -40,7 +40,7 @@ public class BzmServiceManager {
     private String session;
     private String aggregate;
 
-    private BzmServiceManager() {
+    public BzmServiceManager() {
     }
 
     private BzmServiceManager(Map<String, String> buildSharedMap,BuildProgressLogger logger) {
