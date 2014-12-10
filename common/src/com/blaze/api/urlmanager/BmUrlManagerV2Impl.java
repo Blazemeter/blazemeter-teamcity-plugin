@@ -114,7 +114,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
     }
 
     @Override
-    public String testAggregateReport(String appKey, String userKey, String reportId) {
+    public String testReport(String appKey, String userKey, String reportId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");

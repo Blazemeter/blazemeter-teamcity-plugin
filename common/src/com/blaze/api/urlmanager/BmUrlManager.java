@@ -19,7 +19,7 @@ public interface BmUrlManager {
 
     public String testStop(String appKey, String userKey, String testId);
 
-    public String testAggregateReport(String appKey, String userKey, String reportId);
+    public String testReport(String appKey, String userKey, String reportId);
 
     public String getUrlForTestList(String appKey, String userKey);
 }

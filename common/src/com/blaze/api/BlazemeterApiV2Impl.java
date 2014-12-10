@@ -172,7 +172,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     public JSONObject aggregateReport(String userKey, String reportId) {
         if (!validate(userKey, reportId)) return null;
 
-        String url = this.urlManager.testAggregateReport(APP_KEY, userKey, reportId);
+        String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
         return this.bzmHttpClient.getJson(url, null);
     }
 
