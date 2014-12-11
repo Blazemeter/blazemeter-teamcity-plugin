@@ -73,7 +73,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return false;
         }
 
-        this.bzmHttpClient.getJson(url, jmxData);
+        this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.GET);
         return true;
     }
 
@@ -92,7 +92,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             System.err.format(e.getMessage());
         }
 
-        return this.bzmHttpClient.getJson(url, jmxData);
+        return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.GET);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
         try {
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null);
+            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
 
             if (jo.get("status") == "Test not found")
                 ti.setStatus(Constants.TestStatus.NotFound);
@@ -130,7 +130,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
 //        logger.message("Requesting " + url);
-        return this.bzmHttpClient.getJson(url, null);
+        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
     }
 
 
@@ -158,7 +158,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (!validate(userKey, testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getJson(url, null);
+        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
     }
 
     /**
@@ -172,49 +172,47 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (!validate(userKey, reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        return this.bzmHttpClient.getJson(url, null);
+        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
     }
 
     @Override
     public HashMap<String, String> getTestList(String userKey) throws IOException {
 
-        LinkedHashMap<String, String> testListOrdered = null;
+        LinkedHashMap testListOrdered = null;
 
         if (userKey == null || userKey.trim().isEmpty()) {
-//            logger.message("getTests userKey is empty");
+//            logger.warn("ERROR: getTests apiKey is empty");
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-//            logger.message(url);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null);
+//            logger.info("Getting testList with URL=" + url);
+            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
             try {
-                String r = jo.get("response_code").toString();
-                if (r.equals("200")) {
-                    JSONArray arr = (JSONArray) jo.get("tests");
-                    testListOrdered = new LinkedHashMap<String, String>(arr.length());
-                    for (int i = 0; i < arr.length(); i++) {
+                JSONArray result = (JSONArray) jo.get("result");
+                if (result != null && result.length() > 0) {
+                    testListOrdered = new LinkedHashMap<String, Integer>(result.length());
+                    for (int i = 0; i < result.length(); i++) {
                         JSONObject en = null;
                         try {
-                            en = arr.getJSONObject(i);
+                            en = result.getJSONObject(i);
                         } catch (JSONException e) {
-//                            logger.message("Error with the JSON while populating test list, " + e);
+//                            logger.warn("Error with the JSON while populating test list, " + e);
                         }
-                        String id;
+                        int id;
                         String name;
                         try {
                             if (en != null) {
-                                id = en.getString("test_id");
-                                name = en.getString("test_name").replaceAll("&", "&amp;");
+                                id = en.getInt("id");
+                                name = en.getString("name").replaceAll("&", "&amp;");
                                 testListOrdered.put(name, id);
 
                             }
                         } catch (JSONException ie) {
-//                            logger.message("Error with the JSON while populating test list, " + ie);
+//                            logger.warn("Error with the JSON while populating test list, ", ie);
                         }
                     }
                 }
-            }
-            catch (Exception e) {
-//                logger.message("Error while populating test list, " + e);
+            } catch (Exception e) {
+//                logger.warn("Error while populating test list, ", e);
             }
         }
 

@@ -125,19 +125,17 @@ public class BzmServiceManager {
         } while (json == null);
 
         try {
-            if (!json.get("response_code").equals(200)) {
-                if (json.get("response_code").equals(500) && json.get("error").toString().startsWith("Test already running")) {
-                    logger.error("Test already running, please stop it first");
-                    return false;
-                }
-                //Try again.
-                json = getAPI().startTest(userKey, testId);
+            if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
                 if (!json.get("response_code").equals(200)) {
-                    logger.error("Could not start BlazeMeter Test -" + json.get("error").toString());
-                    return false;
+                    if (json.get("response_code").equals(500) && json.get("error").toString().startsWith("Test already running")) {
+                        logger.error("Test already running, please stop it first");
+                        return false;
+                    }
                 }
+                session = json.get("session_id").toString();
+            }else{
+                session = json.getJSONObject("result").getJSONArray("sessionsId").getString(0);
             }
-            session = json.get("session_id").toString();
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
         }

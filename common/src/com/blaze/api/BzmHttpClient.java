@@ -5,7 +5,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
@@ -22,6 +25,8 @@ import java.net.UnknownHostException;
  * Created by dzmitrykashlach on 9/12/14.
  */
 public class BzmHttpClient {
+    public enum Method {GET, POST, PUT}
+
     DefaultHttpClient httpClient;
     String serverName;
     String userName;
@@ -50,13 +55,41 @@ public class BzmHttpClient {
         }
     }
 
-    public HttpResponse getResponse(String url, JSONObject data) throws IOException {
+    public HttpResponse getResponse(String url, JSONObject data,Method method) throws Exception {
+        HttpResponse response = null;
+        HttpRequestBase request = null;
 
 //        logger.message("Requesting : " + url);
         if(data!=null){
 //            logger.message("Request data : " + data.toString());
         }
+        if (method == Method.GET) {
+            request = new HttpGet(url);
+        } else if (method == Method.POST) {
+            request = new HttpPost(url);
+            if (data != null) {
+                ((HttpPost) request).setEntity(new StringEntity(data.toString()));
+            }
+        } else if (method == Method.PUT) {
+            request = new HttpPut(url);
+            if (data != null) {
+                ((HttpPut) request).setEntity(new StringEntity(data.toString()));
+            }
+        }
+        else {
+            throw new Exception("Unsupported method: " + method.toString());
+        }
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Content-type", "application/json; charset=UTF-8");
+
+        response = this.httpClient.execute(request);
+
         HttpPost postRequest = new HttpPost(url);
+
+
+
+
+
         postRequest.setHeader("Accept", "application/json");
         postRequest.setHeader("Content-type", "application/json; charset=UTF-8");
 
@@ -64,7 +97,7 @@ public class BzmHttpClient {
             postRequest.setEntity(new StringEntity(data.toString()));
         }
 
-        HttpResponse response = null;
+//        HttpResponse response = null;
         try {
             response = this.httpClient.execute(postRequest);
 
@@ -112,19 +145,19 @@ public class BzmHttpClient {
         return response;
     }
 
-    public JSONObject getJson(String url, JSONObject data) {
+    public JSONObject getJson(String url, JSONObject data,Method method) {
         JSONObject jo = null;
         try {
-            HttpResponse response = this.getResponse(url, data);
+            HttpResponse response = this.getResponse(url, data, method);
             if (response != null) {
                 String output = EntityUtils.toString(response.getEntity());
 //                logger.message(output);
                 jo = new JSONObject(output);
             }
-        } catch (IOException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
 //            logger.message("error decoding Json " + e);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
 //            logger.message("error decoding Json " + e);
         }

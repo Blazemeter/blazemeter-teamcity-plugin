@@ -74,7 +74,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
             return false;
         }
 
-        this.bzmHttpClient.getJson(url, jmxData);
+        this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
         return true;
     }
 
@@ -93,7 +93,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
             System.err.format(e.getMessage());
         }
 
-        return this.bzmHttpClient.getJson(url, jmxData);
+        return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
         try {
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null);
+            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
 
             if (jo.get("status") == "Test not found")
                 ti.setStatus(Constants.TestStatus.NotFound);
@@ -131,7 +131,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
 //        logger.message("Requesting " + url);
-        return this.bzmHttpClient.getJson(url, null);
+        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
     }
 
 
@@ -159,7 +159,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (!validate(userKey, testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getJson(url, null);
+        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
     }
 
     /**
@@ -173,7 +173,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (!validate(userKey, reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        return this.bzmHttpClient.getJson(url, null);
+        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
 //            logger.message(url);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null);
+            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
             try {
                 String r = jo.get("response_code").toString();
                 if (r.equals("200")) {
