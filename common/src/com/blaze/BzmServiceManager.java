@@ -132,9 +132,9 @@ public class BzmServiceManager {
                         return false;
                     }
                 }
-                session = json.get("session_id").toString();
+                this.session = json.get("session_id").toString();
             }else{
-                session = json.getJSONObject("result").getJSONArray("sessionsId").getString(0);
+                this.session = json.getJSONObject("result").getJSONArray("sessionsId").getString(0);
             }
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
@@ -283,12 +283,24 @@ public class BzmServiceManager {
         } while (json == null);
 
         try {
-            if (json.get("response_code").equals(200)) {
-                logger.message("Test stopped succesfully." + json.toString());
-            } else {
-                String error = json.get("error").toString();
-                logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
-                logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
+            if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
+
+
+                if (json.get("response_code").equals(200)) {
+                    logger.message("Test stopped succesfully." + json.toString());
+                } else {
+                    String error = json.get("error").toString();
+                    logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
+                    logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
+                }
+            }else{
+                if (json.getJSONArray("result").length()>0) {
+                    logger.message("Test stopped succesfully." + json.toString());
+                } else {
+                    String error = json.get("result").toString();
+                    logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
+                }
+
             }
         } catch (JSONException e) {
             logger.error("Error: Exception while stopping BlazeMeter Test [" + e.getMessage() + "]");

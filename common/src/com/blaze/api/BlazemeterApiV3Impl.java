@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
  *
  */
 public class BlazemeterApiV3Impl implements BlazemeterApi {
-//    BuildProgressLogger logger=null;
 
 	private String serverName;
 	private int serverPort;
@@ -34,7 +33,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
-//        this.logger = logger;
         urlManager = new BmUrlManagerV3Impl(bzmUrl);
         try {
             bzmHttpClient = new BzmHttpClient(this.serverName,this.username,this.password,this.serverPort);
@@ -115,9 +113,21 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                 ti.setName( jo.getString("test_name"));
                 ti.setStatus(jo.getString("status"));
             }
+            JSONObject result = (JSONObject) jo.get("result");
+            if (result.get("dataUrl") == null) {
+                ti.setStatus(Constants.TestStatus.NotFound);
+            } else {
+                ti.setId(result.getString("testId"));
+                ti.setName(result.getString("name"));
+                if (!result.getString("status").equals("ENDED")) {
+                    ti.setStatus(Constants.TestStatus.Running);
+                } else {
+                    ti.setStatus(Constants.TestStatus.NotRunning);
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-//            logger.message("error getting status " + e);
             ti.setStatus(Constants.TestStatus.Error);
         }
         return ti;
@@ -129,19 +139,16 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (!validate(userKey, testId)) return null;
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-//        logger.message("Requesting " + url);
         return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
     }
 
 
     private boolean validate(String userKey, String testId) {
         if (userKey == null || userKey.trim().isEmpty()) {
-//            logger.message("startTest userKey is empty");
             return false;
         }
 
         if (testId == null || testId.trim().isEmpty()) {
-//            logger.message("testId is empty");
             return false;
         }
         return true;
@@ -181,10 +188,8 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         LinkedHashMap testListOrdered = null;
 
         if (userKey == null || userKey.trim().isEmpty()) {
-//            logger.warn("ERROR: getTests apiKey is empty");
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-//            logger.info("Getting testList with URL=" + url);
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
             try {
                 JSONArray result = (JSONArray) jo.get("result");
@@ -195,7 +200,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                         try {
                             en = result.getJSONObject(i);
                         } catch (JSONException e) {
-//                            logger.warn("Error with the JSON while populating test list, " + e);
                         }
                         int id;
                         String name;
@@ -207,12 +211,10 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
                             }
                         } catch (JSONException ie) {
-//                            logger.warn("Error with the JSON while populating test list, ", ie);
                         }
                     }
                 }
             } catch (Exception e) {
-//                logger.warn("Error while populating test list, ", e);
             }
         }
 
