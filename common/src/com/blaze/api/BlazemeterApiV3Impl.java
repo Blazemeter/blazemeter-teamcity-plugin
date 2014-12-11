@@ -105,14 +105,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         try {
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
-
-            if (jo.get("status") == "Test not found")
-                ti.setStatus(Constants.TestStatus.NotFound);
-            else {
-                ti.setId(jo.getString("test_id"));
-                ti.setName( jo.getString("test_name"));
-                ti.setStatus(jo.getString("status"));
-            }
             JSONObject result = (JSONObject) jo.get("result");
             if (result.get("dataUrl") == null) {
                 ti.setStatus(Constants.TestStatus.NotFound);
