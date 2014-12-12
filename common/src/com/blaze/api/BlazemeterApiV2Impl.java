@@ -19,8 +19,6 @@ import com.blaze.runner.Constants;
  *
  */
 public class BlazemeterApiV2Impl implements BlazemeterApi {
-//    BuildProgressLogger logger=null;
-
 	private String serverName;
 	private int serverPort;
 	private String username;
@@ -35,15 +33,9 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
-//        this.logger = logger;
         urlManager = new BmUrlManagerV2Impl(bzmUrl);
-        try {
             bzmHttpClient = new BzmHttpClient(this.serverName,this.username,this.password,this.serverPort);
             bzmHttpClient.configureProxy();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-//            logger.message("error Instantiating HTTPClient. Exception received: " + ex);
-        }
     }
 
 
@@ -59,53 +51,34 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
      *                 //     * @throws org.json.JSONException
      */
     @Override
-    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) {
-
+    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) throws JSONException {
+        boolean upLoadJMX=false;
         if (!validate(userKey, testId)) return false;
-
         String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = Utils.getFileContents(pathName);
-
-        try {
-            jmxData.put("data", fileCon);
-        } catch (JSONException e) {
-            System.err.format(e.getMessage());
-            return false;
-        }
-
-        this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
-        return true;
+        jmxData.put("data", fileCon);
+        upLoadJMX=this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST)!=null;
+        return upLoadJMX;
     }
 
     @Override
-    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) {
-
+    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) throws JSONException {
         if (!validate(userKey, testId)) return null;
-
         String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = Utils.getFileContents(pathName);
-
-        try {
-            jmxData.put("data", fileCon);
-        } catch (JSONException e) {
-            System.err.format(e.getMessage());
-        }
-
+        jmxData.put("data", fileCon);
         return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
     }
 
     @Override
-    public TestInfo getTestRunStatus(String userKey, String testId) {
+    public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException {
         TestInfo ti = new TestInfo();
-
         if (!validate(userKey, testId)) {
             ti.setStatus(Constants.TestStatus.NotFound);
             return ti;
         }
-
-        try {
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
 
@@ -116,11 +89,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
                 ti.setName( jo.getString("test_name"));
                 ti.setStatus(jo.getString("status"));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-//            logger.message("error getting status " + e);
             ti.setStatus(Constants.TestStatus.Error);
-        }
         return ti;
     }
 
@@ -130,19 +99,16 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (!validate(userKey, testId)) return null;
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-//        logger.message("Requesting " + url);
         return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
     }
 
 
     private boolean validate(String userKey, String testId) {
         if (userKey == null || userKey.trim().isEmpty()) {
-//            logger.message("startTest userKey is empty");
             return false;
         }
 
         if (testId == null || testId.trim().isEmpty()) {
-//            logger.message("testId is empty");
             return false;
         }
         return true;
@@ -177,46 +143,29 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public HashMap<String, String> getTestList(String userKey) throws IOException {
-
+    public HashMap<String, String> getTestList(String userKey) throws IOException, JSONException {
         LinkedHashMap<String, String> testListOrdered = null;
-
         if (userKey == null || userKey.trim().isEmpty()) {
-//            logger.message("getTests userKey is empty");
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-//            logger.message(url);
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
-            try {
                 String r = jo.get("response_code").toString();
                 if (r.equals("200")) {
                     JSONArray arr = (JSONArray) jo.get("tests");
                     testListOrdered = new LinkedHashMap<String, String>(arr.length());
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject en = null;
-                        try {
                             en = arr.getJSONObject(i);
-                        } catch (JSONException e) {
-//                            logger.message("Error with the JSON while populating test list, " + e);
-                        }
                         String id;
                         String name;
-                        try {
                             if (en != null) {
                                 id = en.getString("test_id");
                                 name = en.getString("test_name").replaceAll("&", "&amp;");
                                 testListOrdered.put(name, id);
 
                             }
-                        } catch (JSONException ie) {
-//                            logger.message("Error with the JSON while populating test list, " + ie);
-                        }
                     }
                 }
-            }
-            catch (Exception e) {
-//                logger.message("Error while populating test list, " + e);
-            }
         }
 
         return testListOrdered;

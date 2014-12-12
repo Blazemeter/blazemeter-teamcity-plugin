@@ -56,53 +56,33 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                 //     * @throws org.json.JSONException
      */
     @Override
-    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) {
-
+    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) throws JSONException{
         if (!validate(userKey, testId)) return false;
-
         String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = Utils.getFileContents(pathName);
-
-        try {
-            jmxData.put("data", fileCon);
-        } catch (JSONException e) {
-            System.err.format(e.getMessage());
-            return false;
-        }
-
+        jmxData.put("data", fileCon);
         this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.GET);
         return true;
     }
 
     @Override
-    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) {
-
+    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) throws JSONException{
         if (!validate(userKey, testId)) return null;
-
         String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = Utils.getFileContents(pathName);
-
-        try {
-            jmxData.put("data", fileCon);
-        } catch (JSONException e) {
-            System.err.format(e.getMessage());
-        }
-
+        jmxData.put("data", fileCon);
         return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.GET);
     }
 
     @Override
-    public TestInfo getTestRunStatus(String userKey, String testId) {
+    public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException{
         TestInfo ti = new TestInfo();
-
         if (!validate(userKey, testId)) {
             ti.setStatus(Constants.TestStatus.NotFound);
             return ti;
         }
-
-        try {
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
             JSONObject result = (JSONObject) jo.get("result");
@@ -117,16 +97,11 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                     ti.setStatus(Constants.TestStatus.NotRunning);
                 }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            ti.setStatus(Constants.TestStatus.Error);
-        }
         return ti;
     }
 
     @Override
-    public synchronized JSONObject startTest(String userKey, String testId) {
+    public synchronized JSONObject startTest(String userKey, String testId) throws JSONException{
 
         if (!validate(userKey, testId)) return null;
 
@@ -153,7 +128,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject stopTest(String userKey, String testId) {
+    public JSONObject stopTest(String userKey, String testId) throws JSONException{
         if (!validate(userKey, testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
@@ -167,7 +142,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                 //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject aggregateReport(String userKey, String reportId) {
+    public JSONObject aggregateReport(String userKey, String reportId) throws JSONException{
         if (!validate(userKey, reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
@@ -175,7 +150,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public HashMap<String, String> getTestList(String userKey) throws IOException {
+    public HashMap<String, String> getTestList(String userKey) throws IOException, JSONException{
 
         LinkedHashMap testListOrdered = null;
 
@@ -183,33 +158,23 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
-            try {
                 JSONArray result = (JSONArray) jo.get("result");
                 if (result != null && result.length() > 0) {
                     testListOrdered = new LinkedHashMap<String, Integer>(result.length());
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject en = null;
-                        try {
                             en = result.getJSONObject(i);
-                        } catch (JSONException e) {
-                        }
                         int id;
                         String name;
-                        try {
                             if (en != null) {
                                 id = en.getInt("id");
                                 name = en.getString("name").replaceAll("&", "&amp;");
                                 testListOrdered.put(name, id);
-
                             }
-                        } catch (JSONException ie) {
-                        }
+                        return testListOrdered;
                     }
                 }
-            } catch (Exception e) {
-            }
         }
-
         return testListOrdered;
     }
     

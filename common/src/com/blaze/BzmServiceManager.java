@@ -100,31 +100,30 @@ public class BzmServiceManager {
     }
 
     public HashMap<String, String> getTests() {
+        HashMap<String,String>tests=new HashMap<>();
         try {
-            return getAPI().getTestList(userKey);
+            tests= getAPI().getTestList(userKey);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.exception(e);
+        } catch (JSONException e) {
+            logger.exception(e);
         }
-
-        HashMap<String, String> temp = new HashMap<String, String>();
-
-        return temp;
+        return tests;
     }
 
     public boolean startTest(String testId, BuildProgressLogger logger) {
         org.json.JSONObject json;
         int countStartRequests = 0;
+        try {
         do {
             json = getAPI().startTest(userKey, testId);
             countStartRequests++;
             if (countStartRequests > 5) {
-                logger.error("Could not start BlazeMeter Test");
+                logger.error("Could not start BlazeMeter Test with 5 attempts");
                 return false;
             }
         } while (json == null);
 
-        try {
             if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
                 if (!json.get("response_code").equals(200)) {
                     if (json.get("response_code").equals(500) && json.get("error").toString().startsWith("Test already running")) {
@@ -138,40 +137,30 @@ public class BzmServiceManager {
             }
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
+            logger.exception(e);
         }
         return true;
     }
 
-    public boolean isReportReady() {
-        //get testGetArchive information
-        org.json.JSONObject json = getAPI().aggregateReport(userKey, session);
-        try {
-            if (json.get("response_code").equals(404))
-                return false;
-            else if (json.get("response_code").equals(200)) {
-                return true;
-            }
-        } catch (JSONException e) {
-        }
-        return false;
-    }
 
     @SuppressWarnings("static-access")
     public boolean waitForReport(BuildProgressLogger logger) {
         //get testGetArchive information
-        org.json.JSONObject json = getAPI().aggregateReport(userKey, session);
+        org.json.JSONObject json = null;
         for (int i = 0; i < 200; i++) {
             try {
+                json = getAPI().aggregateReport(userKey, session);
                 if (json.get("response_code").equals(404))
                     json = getAPI().aggregateReport(userKey, session);
                 else
                     break;
             } catch (JSONException e) {
+                logger.exception(e);
             } finally {
                 try {
                     Thread.currentThread().sleep(5 * 1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.exception(e);
                 }
             }
         }
@@ -186,6 +175,7 @@ public class BzmServiceManager {
                 aggregate = json.getJSONObject("report").get("aggregate").toString();
             } catch (JSONException e) {
                 logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
+                logger.exception(e);
             }
 
             if (!aggregate.equals("null"))
@@ -193,10 +183,12 @@ public class BzmServiceManager {
 
             try {
                 Thread.sleep(2 * 1000);
+                json = getAPI().aggregateReport(userKey, session);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.exception(e);
+            } catch (JSONException e) {
+                logger.exception(e);
             }
-            json = getAPI().aggregateReport(userKey, session);
         }
 
         if (aggregate == null) {
@@ -219,6 +211,7 @@ public class BzmServiceManager {
             aggregateTestResult = AggregateTestResult.generate(aggregate);
 
         } catch (IOException e) {
+            logger.exception(e);
             logger.error("Error: Requesting aggregate Test Result is not available");
             return -1;
         }
@@ -254,35 +247,34 @@ public class BzmServiceManager {
     }
 
     public boolean uploadJMX(String testId, String filename, String pathname) {
-        return getAPI().uploadJmx(userKey, testId, filename, pathname);
+        boolean uploadJMX=false;
+        try {
+            uploadJMX=getAPI().uploadJmx(userKey, testId, filename, pathname);
+        } catch (JSONException e) {
+            logger.exception(e);
+        }
+        return uploadJMX;
     }
 
     public void uploadFile(String testId, String dataFolder, String fileName, BuildProgressLogger logger) {
-        org.json.JSONObject json = getAPI().uploadFile(userKey, testId, fileName, dataFolder + File.separator + fileName);
         try {
+            org.json.JSONObject json = getAPI().uploadFile(userKey, testId, fileName, dataFolder + File.separator + fileName);
             if (!json.get("response_code").equals(new Integer(200))) {
                 logger.error("Could not upload file " + fileName + " " + json.get("error").toString());
             }
         } catch (JSONException e) {
+            logger.exception(e);
             logger.error("Could not upload file " + fileName + " " + e.getMessage());
         }
     }
 
     public boolean stopTest(String testId, BuildProgressLogger logger) {
         org.json.JSONObject json;
-
         int countStartRequests = 0;
-        do {
-            json = getAPI().stopTest(userKey, testId);
-            logger.message("Attempt to stop test with result: " + json.toString());
-            countStartRequests++;
-            if (countStartRequests > 5) {
-                logger.error("Could not stop BlazeMeter Test " + testId);
-                return false;
-            }
-        } while (json == null);
 
         try {
+            json = getAPI().stopTest(userKey, testId);
+            logger.message("Attempt to stop test with result: " + json.toString());
             if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
 
 
@@ -306,14 +298,20 @@ public class BzmServiceManager {
             }
         } catch (JSONException e) {
             logger.error("Error: Exception while stopping BlazeMeter Test [" + e.getMessage() + "]");
-            logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
+            logger.exception(e);
             return false;
          }
         return true;
     }
 
     public TestInfo getTestStatus(String testId) {
-        return getAPI().getTestRunStatus(userKey, testId);
+        TestInfo ti=null;
+        try {
+            ti=getAPI().getTestRunStatus(userKey, testId);
+        } catch (JSONException e) {
+            logger.exception(e);
+        }
+        return ti;
     }
 
     public String getUserKey() {
@@ -382,7 +380,7 @@ public class BzmServiceManager {
             fw.close();
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.exception(e);
         }
         return false;
     }
