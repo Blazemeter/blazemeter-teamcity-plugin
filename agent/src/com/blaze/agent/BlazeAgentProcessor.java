@@ -246,16 +246,12 @@ public class BlazeAgentProcessor implements BuildProcess{
 			logger.message("Check if the test is still running. Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
 			String apiVersion=bzmServiceManager.getBlazeMeterApiVersion();
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
-			if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
+			logger.message("TestInfo="+testInfo.toString());
+            if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
 				logger.warning("Test is finished earlier then estimated! Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
-                bzmServiceManager.waitForReport(logger);
+//              bzmServiceManager.waitForReport(logger);
                 return BuildFinishedStatus.INTERRUPTED;
             }
-			else
-			if (testInfo.getStatus().equals(Constants.TestStatus.NotFound)){
-				logger.error("Test not found!");
-				return BuildFinishedStatus.FINISHED_FAILED;
-			}
 		}
 		
 		//BlazeMeter test stopped due to user test duration setup reached

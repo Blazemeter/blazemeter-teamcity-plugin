@@ -109,7 +109,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             if (result.get("dataUrl") == null) {
                 ti.setStatus(Constants.TestStatus.NotFound);
             } else {
-                ti.setId(result.getString("testId"));
+                ti.setId(String.valueOf(result.getInt("testId")));
                 ti.setName(result.getString("name"));
                 if (!result.getString("status").equals("ENDED")) {
                     ti.setStatus(Constants.TestStatus.Running);

@@ -268,7 +268,7 @@ public class BzmServiceManager {
         }
     }
 
-    public void stopTest(String testId, BuildProgressLogger logger) {
+    public boolean stopTest(String testId, BuildProgressLogger logger) {
         org.json.JSONObject json;
 
         int countStartRequests = 0;
@@ -278,7 +278,7 @@ public class BzmServiceManager {
             countStartRequests++;
             if (countStartRequests > 5) {
                 logger.error("Could not stop BlazeMeter Test " + testId);
-                return;
+                return false;
             }
         } while (json == null);
 
@@ -296,17 +296,20 @@ public class BzmServiceManager {
             }else{
                 if (json.getJSONArray("result").length()>0) {
                     logger.message("Test stopped succesfully." + json.toString());
+                    return true;
                 } else {
                     String error = json.get("result").toString();
                     logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
+                    return false;
                 }
 
             }
         } catch (JSONException e) {
             logger.error("Error: Exception while stopping BlazeMeter Test [" + e.getMessage() + "]");
             logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
-        }
-
+            return false;
+         }
+        return true;
     }
 
     public TestInfo getTestStatus(String testId) {

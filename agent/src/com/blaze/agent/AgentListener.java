@@ -41,6 +41,8 @@ public class AgentListener extends AgentLifeCycleAdapter{
 		bzmServiceManager = BzmServiceManager.getBzmServiceManager(buildSharedMap,runningBuild.getBuildLogger());
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
 		String testId = runnerParams.get(Constants.SETTINGS_ALL_TESTS_ID);
-		bzmServiceManager.stopTest(testId, runningBuild.getBuildLogger());
+		if(bzmServiceManager.stopTest(testId, runningBuild.getBuildLogger())){
+
+        }
 	}
 }
