@@ -142,11 +142,14 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                 //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject aggregateReport(String userKey, String reportId) throws JSONException{
+    public JSONObject testReport(String userKey, String reportId) throws JSONException{
         if (!validate(userKey, reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
+        JSONObject summary = (JSONObject) this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET).getJSONObject("result")
+                    .getJSONArray("summary")
+                    .get(0);
+        return summary;
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.blaze.BzmServiceManager;
+import com.blaze.testresult.TestResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -211,27 +212,11 @@ public class BlazeAgentProcessor implements BuildProcess{
 		if (!started){
 			return BuildFinishedStatus.FINISHED_FAILED;
 		} else {
-			try {
-				//TODO nu cred ca e nevoie de file.separator
-				File file = new File(agentRunningBuild.getAgentTempDirectory().getAbsolutePath()+File.separator+"blaze_session.id");
-				if (!file.exists()){
-					file.createNewFile();
-				}
-				FileWriter fw;
-				fw = new FileWriter(file);
-				fw.write(bzmServiceManager.getSession());
-				fw.flush();
-				fw.close();
-				artifactsWatcher.addNewArtifactsPath(file.getAbsolutePath());
-			} catch (IOException e) {
-				logger.error("Failed to save test session id! Error is:"+e.getMessage());
-				return BuildFinishedStatus.FINISHED_FAILED;
-			}
-			
 			logger.message("Test started. Waiting " + testDuration + " minutes to finish!");
+
 		}
 		
-		long totalWaitTime = (testDuration+2) * 60 * 1000;//the duration is in minutes so we multiply to get the value in ms
+		long totalWaitTime = (testDuration) * 60 * 1000;//the duration is in minutes so we multiply to get the value in ms
 		long nrOfCheckInterval = totalWaitTime / CHECK_INTERVAL;//
 		long currentCheck = 0;
 		
@@ -249,7 +234,6 @@ public class BlazeAgentProcessor implements BuildProcess{
 			logger.message("TestInfo="+testInfo.toString());
             if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
 				logger.warning("Test is finished earlier then estimated! Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
-//              bzmServiceManager.waitForReport(logger);
                 return BuildFinishedStatus.INTERRUPTED;
             }
 		}
@@ -262,29 +246,17 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		logger.message("Test finished. Checking for test report...");
 		
-        //get testGetArchive information
-        boolean waitForReport = bzmServiceManager.waitForReport(logger);
-        
-        if (waitForReport){
-        	int reportStatus = bzmServiceManager.getReport(errorFailedThreshold, errorUnstableThreshold, responseTimeFailedThreshold, responseTimeUnstableThreshold, logger);
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            logger.exception(e);
+        }
+        TestResult testResult = bzmServiceManager.getReport(logger);
 
-        	if (reportStatus != -1){
-            	bzmServiceManager.publishReportArtifact(agentRunningBuild.getAgentTempDirectory().getAbsolutePath() + File.separator + "teamcity-info.xml");
-           		artifactsWatcher.addNewArtifactsPath(agentRunningBuild.getAgentTempDirectory().getAbsolutePath() + File.separator + "teamcity-info.xml");
-        	}
-        	
-        	switch (reportStatus) {
-        		case -1:
-        			return BuildFinishedStatus.FINISHED_FAILED;
-        		case 0:
-        			return BuildFinishedStatus.FINISHED_SUCCESS;
-        		case 1:
-        			return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
-        		default: 
-        			return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
-        	}
-        } else {
-        	return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+        if(testResult==null){
+            return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+        }else{
+            return BuildFinishedStatus.FINISHED_SUCCESS;
         }
 	}
 	

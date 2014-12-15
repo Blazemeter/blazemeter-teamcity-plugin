@@ -135,7 +135,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
      *                 //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject aggregateReport(String userKey, String reportId) {
+    public JSONObject testReport(String userKey, String reportId) {
         if (!validate(userKey, reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);

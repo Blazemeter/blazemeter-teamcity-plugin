@@ -9,13 +9,15 @@ import java.util.Map;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.api.BlazemeterApiV2Impl;
 import com.blaze.api.BlazemeterApiV3Impl;
-import com.blaze.entities.AggregateTestResult;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import com.blaze.testresult.TestResult;
+import com.blaze.testresult.TestResultFactory;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author Marcel Milea
@@ -38,7 +40,7 @@ public class BzmServiceManager {
     private BuildProgressLogger logger;
     private BlazemeterApi blazemeterAPI;
     private String session;
-    private String aggregate;
+    private JSONObject aggregate;
 
     public BzmServiceManager() {
     }
@@ -143,61 +145,6 @@ public class BzmServiceManager {
     }
 
 
-    @SuppressWarnings("static-access")
-    public boolean waitForReport(BuildProgressLogger logger) {
-        //get testGetArchive information
-        org.json.JSONObject json = null;
-        for (int i = 0; i < 200; i++) {
-            try {
-                json = getAPI().aggregateReport(userKey, session);
-                if (json.get("response_code").equals(404))
-                    json = getAPI().aggregateReport(userKey, session);
-                else
-                    break;
-            } catch (JSONException e) {
-                logger.exception(e);
-            } finally {
-                try {
-                    Thread.currentThread().sleep(5 * 1000);
-                } catch (InterruptedException e) {
-                    logger.exception(e);
-                }
-            }
-        }
-
-        aggregate = null;
-
-        for (int i = 0; i < 30; i++) {
-            try {
-                if (!json.get("response_code").equals(200)) {
-                    logger.error("Error: Requesting aggregate report response code:" + json.get("response_code"));
-                }
-                aggregate = json.getJSONObject("report").get("aggregate").toString();
-            } catch (JSONException e) {
-                logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
-                logger.exception(e);
-            }
-
-            if (!aggregate.equals("null"))
-                break;
-
-            try {
-                Thread.sleep(2 * 1000);
-                json = getAPI().aggregateReport(userKey, session);
-            } catch (InterruptedException e) {
-                logger.exception(e);
-            } catch (JSONException e) {
-                logger.exception(e);
-            }
-        }
-
-        if (aggregate == null) {
-            logger.error("Error: Requesting aggregate is not available");
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * Get report results.
@@ -205,45 +152,21 @@ public class BzmServiceManager {
      * @param logger
      * @return -1 fail, 0 success, 1 unstable
      */
-    public int getReport(int errorFailedThreshold, int errorUnstableThreshold, int responseTimeFailedThreshold, int responseTimeUnstableThreshold, BuildProgressLogger logger) {
-        AggregateTestResult aggregateTestResult;
+    public TestResult getReport(BuildProgressLogger logger) {
+        TestResultFactory testResultFactory = TestResultFactory.getTestResultFactory();
+        testResultFactory.setVersion(ApiVersion.valueOf(blazeMeterApiVersion));
+        TestResult testResult = null;
         try {
-            aggregateTestResult = AggregateTestResult.generate(aggregate);
+            this.aggregate=getAPI().testReport(this.userKey,this.session);
+            testResult = testResultFactory.getTestResult(this.aggregate);
 
+        } catch (JSONException e) {
+            logger.exception(e);
         } catch (IOException e) {
             logger.exception(e);
-            logger.error("Error: Requesting aggregate Test Result is not available");
-            return -1;
+        }finally {
+            return testResult;
         }
-
-        if (aggregateTestResult == null) {
-            logger.error("Error: Requesting aggregate Test Result is not available");
-            return -1;
-        }
-
-        double thresholdTolerance = 0.00005; //null hypothesis
-        double errorPercent = aggregateTestResult.getErrorPercentage();
-        double AverageResponseTime = aggregateTestResult.getAverage();
-
-        if (errorFailedThreshold >= 0 && errorPercent - errorFailedThreshold > thresholdTolerance) {
-            logger.error("Test ended with failure on error percentage threshold");
-            return -1;
-        } else if (errorUnstableThreshold >= 0
-                && errorPercent - errorUnstableThreshold > thresholdTolerance) {
-            logger.error("Test ended with unstable on error percentage threshold");
-            return 1;
-        }
-
-        if (responseTimeFailedThreshold >= 0 && AverageResponseTime - responseTimeFailedThreshold > thresholdTolerance) {
-            logger.error("Test ended with failure on response time threshold");
-            return -1;
-        } else if (responseTimeUnstableThreshold >= 0
-                && AverageResponseTime - responseTimeUnstableThreshold > thresholdTolerance) {
-            logger.error("Test ended with unstable on response time threshold");
-            return 1;
-        }
-
-        return 0;
     }
 
     public boolean uploadJMX(String testId, String filename, String pathname) {
@@ -356,33 +279,6 @@ public class BzmServiceManager {
 
     public String getSession() {
         return session;
-    }
-
-    public boolean publishReportArtifact(String pathname) {
-        AggregateTestResult aggregateTestResult;
-        try {
-            aggregateTestResult = AggregateTestResult.generate(aggregate);
-            if (aggregateTestResult == null) {
-                return false;
-            }
-
-            double errorPercent = aggregateTestResult.getErrorPercentage();
-            double AverageResponseTime = aggregateTestResult.getAverage();
-
-            File file = new File(pathname);
-            file.createNewFile();
-            FileWriter fw = new FileWriter(file);
-            fw.write("<build>");
-            fw.write("<statisticValue key=\"blazeAvgResponseTime\" value=\"" + AverageResponseTime + "\"/>");
-            fw.write("<statisticValue key=\"blazeThresholdTime\" value=\"" + errorPercent + "\"/>");
-            fw.write("</build>");
-            fw.flush();
-            fw.close();
-            return true;
-        } catch (IOException e) {
-            logger.exception(e);
-        }
-        return false;
     }
 
     public String getBlazeMeterUrl() {

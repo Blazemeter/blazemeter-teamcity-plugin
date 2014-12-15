@@ -109,18 +109,9 @@
   <tr>
     <th><label>Test duration<l:star/></label></th>
     <td>
-    	<props:selectProperty name="test_duration">
-			<props:option value="60" selected="false" title="60 Minutes" id="test_duration_60">
-	    		60 Minutes
-	    	</props:option>
-			<props:option value="120" selected="false" title="120 Minutes" id="test_duration_120">
-	    		120 Minutes
-	    	</props:option>    	
-			<props:option value="180" selected="false" title="180 Minutes" id="test_duration_180">
-	    		180 Minutes
-	    	</props:option>    	
-    	</props:selectProperty>
-		<span class="smallNote">Duration of the BlazeMeter test. BlazeMeter will count the time to a minimum of an hour.</span>
+        <props:textProperty name="test_duration" />
+        <span class="error" id="error_data_folder"></span>
+        <span class="smallNote">Duration of the BlazeMeter test.</span>
     </td>
   </tr>
 </l:settingsGroup>
