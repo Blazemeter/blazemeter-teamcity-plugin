@@ -207,9 +207,9 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
 		logger.message("Attempting to start test with id:"+testId);
-		boolean started = bzmServiceManager.startTest(testId, logger);
+		String session = bzmServiceManager.startTest(testId, 5, logger);
 		
-		if (!started){
+		if (session.isEmpty()){
 			return BuildFinishedStatus.FINISHED_FAILED;
 		} else {
 			logger.message("Test started. Waiting " + testDuration + " minutes to finish!");
@@ -233,7 +233,7 @@ public class BlazeAgentProcessor implements BuildProcess{
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
             if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
-				logger.warning("Test is finished earlier then estimated! Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
+				logger.warning("Test is finished earlier then estimated! Time passed since start:" + ((currentCheck * CHECK_INTERVAL) / 1000 / 60) + " minutes.");
                 return BuildFinishedStatus.INTERRUPTED;
             }
 		}

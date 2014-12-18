@@ -113,16 +113,18 @@ public class BzmServiceManager {
         return tests;
     }
 
-    public boolean startTest(String testId, BuildProgressLogger logger) {
+    public String startTest(String testId, int attempts, BuildProgressLogger logger) {
         org.json.JSONObject json;
         int countStartRequests = 0;
+        String session=null;
         try {
         do {
             json = getAPI().startTest(userKey, testId);
             countStartRequests++;
-            if (countStartRequests > 5) {
-                logger.error("Could not start BlazeMeter Test with 5 attempts");
-                return false;
+            if (countStartRequests > attempts) {
+                logger.error("Could not start BlazeMeter Test with "+attempts+" attempts");
+                session="";
+                return session;
             }
         } while (json == null);
 
@@ -130,18 +132,20 @@ public class BzmServiceManager {
                 if (!json.get("response_code").equals(200)) {
                     if (json.get("response_code").equals(500) && json.get("error").toString().startsWith("Test already running")) {
                         logger.error("Test already running, please stop it first");
-                        return false;
+                        session="";
+                        return session;
                     }
                 }
-                this.session = json.get("session_id").toString();
+                session = json.get("session_id").toString();
             }else{
-                this.session = json.getJSONObject("result").getJSONArray("sessionsId").getString(0);
+                session = json.getJSONObject("result").getJSONArray("sessionsId").getString(0);
             }
+            this.session=session;
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
             logger.exception(e);
         }
-        return true;
+        return session;
     }
 
 
