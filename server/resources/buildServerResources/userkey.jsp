@@ -66,7 +66,7 @@
                     <td><label>BlazeMeter API version:</label></td>
                     <td>
                     <select type="text" id="blazeMeterApiVersion" name="blazeMeterApiVersion">
-                        <option value="autoDetect">Auto Detect</option>
+                        <%--<option value="autoDetect">Auto Detect</option>--%>
                         <option value="v3">V3(force)</option>
                         <option value="v2">V2(deprecated)</option>
                     </select>

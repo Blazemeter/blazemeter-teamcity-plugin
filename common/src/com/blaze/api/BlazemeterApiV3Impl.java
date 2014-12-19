@@ -163,14 +163,14 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
                 JSONArray result = (JSONArray) jo.get("result");
                 if (result != null && result.length() > 0) {
-                    testListOrdered = new LinkedHashMap<String, Integer>(result.length());
+                    testListOrdered = new LinkedHashMap<String, String>(result.length());
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject en = null;
                             en = result.getJSONObject(i);
-                        int id;
+                        String id;
                         String name;
                             if (en != null) {
-                                id = en.getInt("id");
+                                id = String.valueOf(en.getInt("id"));
                                 name = en.getString("name").replaceAll("&", "&amp;");
                                 testListOrdered.put(name, id);
                             }

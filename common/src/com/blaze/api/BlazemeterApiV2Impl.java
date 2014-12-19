@@ -89,7 +89,6 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
                 ti.setName( jo.getString("test_name"));
                 ti.setStatus(jo.getString("status"));
             }
-            ti.setStatus(Constants.TestStatus.Error);
         return ti;
     }
 

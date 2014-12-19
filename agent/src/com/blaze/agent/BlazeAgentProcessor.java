@@ -75,7 +75,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 			//verify if the test still exists on BlazeMeter server
 			HashMap<String, String> tests = bzmServiceManager.getTests();
 			if (tests != null){
-				if (!tests.values().contains(Integer.valueOf(testId))) {
+				if (!tests.values().contains(testId)) {
 					return "Test removed from BlazeMeter server.";
 				}
 			}

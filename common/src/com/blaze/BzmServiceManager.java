@@ -80,7 +80,9 @@ public class BzmServiceManager {
     }
 
     private BlazemeterApi getAPI() {
-        if (blazemeterAPI == null) {
+        if (blazemeterAPI == null||
+                (this.blazeMeterApiVersion.equals("v3")&this.blazemeterAPI instanceof BlazemeterApiV2Impl)||
+                        this.blazeMeterApiVersion.equals("v2")&this.blazemeterAPI instanceof BlazemeterApiV3Impl) {
             int serverPortInt = 0;
             if (serverPort != null && !serverPort.isEmpty()) {
                 serverPortInt = Integer.parseInt(serverPort);
