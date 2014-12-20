@@ -138,4 +138,9 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
 
     }
 
+    @Override
+    public String getTestInfo(String appKey, String userKey, String testId) {
+        return Constants.NOT_IMPLEMENTED;
+    }
+
 }

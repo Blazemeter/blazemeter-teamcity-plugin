@@ -1,6 +1,7 @@
 package com.blaze.api;
 
 import com.blaze.entities.TestInfo;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,4 +26,9 @@ public interface BlazemeterApi {
     public JSONObject testReport(String userKey, String reportId) throws JSONException;
 
     public HashMap<String, String> getTestList(String userKey) throws IOException, JSONException;
+
+    public JSONObject putTestInfo(String apiKey,String testId, JSONObject data,BuildProgressLogger logger);
+
+    public JSONObject getTestInfo(String apiKey,String testId, BuildProgressLogger logger);
+
 }

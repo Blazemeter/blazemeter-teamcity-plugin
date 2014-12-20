@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import com.blaze.Utils;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.entities.TestInfo;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,11 +20,12 @@ import com.blaze.runner.Constants;
  *
  */
 public class BlazemeterApiV2Impl implements BlazemeterApi {
+
 	private String serverName;
 	private int serverPort;
 	private String username;
 	private String password;
-	
+
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     BzmHttpClient bzmHttpClient;
     BmUrlManagerV2Impl urlManager;
@@ -204,4 +206,13 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 		this.password = password;
 	}
 
+    @Override
+    public JSONObject putTestInfo(String apiKey,String testId, JSONObject data,BuildProgressLogger logger) {
+        return null;
+    }
+
+    @Override
+    public JSONObject getTestInfo(String apiKey,String testId, BuildProgressLogger logger) {
+        return null;
+    }
 }

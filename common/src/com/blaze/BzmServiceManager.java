@@ -150,6 +150,10 @@ public class BzmServiceManager {
         return session;
     }
 
+    public void updateTest(String testId, int testDuration, BuildProgressLogger logger) {
+        Utils.updateTest(userKey,getAPI(),testId,testDuration,logger);
+    }
+
 
 
     /**

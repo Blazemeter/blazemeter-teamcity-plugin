@@ -1,8 +1,6 @@
 package com.blaze.agent;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -183,7 +181,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@Override
 	public void start() throws RunBuildException {
 		logger.message("BlazeMeter agent started.");
-		
+
 		logger.activityStarted("Parameter validation", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		Map<String, String> runnerParams = buildRunnerContext.getRunnerParameters();
 		validationError = validateParams(runnerParams);
@@ -206,8 +204,10 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@SuppressWarnings("static-access")
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
-		logger.message("Attempting to start test with id:"+testId);
-		String session = bzmServiceManager.startTest(testId, 5, logger);
+        logger.message("Attempting to update test with id:"+testId);
+        bzmServiceManager.updateTest(testId,testDuration,logger);
+        logger.message("Attempting to start test with id:"+testId);
+        String session = bzmServiceManager.startTest(testId, 5, logger);
 		
 		if (session.isEmpty()){
 			return BuildFinishedStatus.FINISHED_FAILED;

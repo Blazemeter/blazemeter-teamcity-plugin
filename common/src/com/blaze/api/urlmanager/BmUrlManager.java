@@ -22,4 +22,7 @@ public interface BmUrlManager {
     public String testReport(String appKey, String userKey, String reportId);
 
     public String getUrlForTestList(String appKey, String userKey);
+
+    public String getTestInfo(String appKey, String userKey, String testId);
+
 }

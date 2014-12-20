@@ -4,6 +4,7 @@ import com.blaze.Utils;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -180,8 +181,28 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
         return testListOrdered;
     }
-    
-    
+
+    @Override
+    public JSONObject getTestInfo(String apiKey,String testId,BuildProgressLogger logger){
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            logger.message("ERROR: User apiKey is empty");
+            return null;
+        }
+        String url = this.urlManager.getTestInfo(APP_KEY, apiKey, testId);
+        JSONObject jo = this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET);
+        return jo;
+    }
+
+    @Override
+    public JSONObject putTestInfo(String apiKey,String testId, JSONObject data,BuildProgressLogger logger){
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            logger.message("ERROR: User apiKey is empty");
+            return null;
+        }
+        String url = this.urlManager.getTestInfo(APP_KEY, apiKey,testId);
+        JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.PUT);
+        return jo;
+    }
 
     public String getServerName() {
 		return serverName;
@@ -214,5 +235,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+
 
 }
