@@ -6,6 +6,8 @@ import java.util.Map;
 
 import com.blaze.BzmServiceManager;
 import com.blaze.testresult.TestResult;
+import com.blaze.testresult.TestResultV2Impl;
+import com.blaze.testresult.TestResultV3Impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -235,29 +237,23 @@ public class BlazeAgentProcessor implements BuildProcess{
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
             if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
-				logger.warning("Test is finished earlier then estimated! Time passed since start:" + ((currentCheck * CHECK_INTERVAL) / 1000 / 60) + " minutes.");
-                return BuildFinishedStatus.INTERRUPTED;
+                logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
+                logger.message("Test is finished earlier then estimated! Time passed since start:" + ((currentCheck * CHECK_INTERVAL) / 1000 / 60) + " minutes.");
+                break;
             }
 		}
-		
-		//BlazeMeter test stopped due to user test duration setup reached
-		logger.message("Stopping test...");
-		bzmServiceManager.stopTest(testId, logger);
-		
-		logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-		
 		logger.message("Test finished. Checking for test report...");
-		
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            logger.exception(e);
-        }
+        logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestResult testResult = bzmServiceManager.getReport(logger);
 
         if(testResult==null){
+            logger.message("Failed to get report from server...");
             return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
         }else{
+            logger.message(DefaultMessagesInfo.MSG_BLOCK_START);
+            logger.message("Test report is received...");
+            logger.message(testResult.toString());
+            logger.message(DefaultMessagesInfo.MSG_BLOCK_END);
             return BuildFinishedStatus.FINISHED_SUCCESS;
         }
 	}
