@@ -176,8 +176,8 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                                 name = en.getString("name").replaceAll("&", "&amp;");
                                 testListOrdered.put(name, id);
                             }
-                        return testListOrdered;
                     }
+                    return testListOrdered;
                 }
         }
         return testListOrdered;

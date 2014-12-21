@@ -82,7 +82,7 @@
     </td>
   </tr>
 
-  <%--<tr>
+  <tr>
     <th><label>Error percentage threshold<l:star/></label></th>
     <td>
       <div class="posRel" style="width:80px">Unstable: </div>
@@ -105,7 +105,7 @@
       <span class="error" id="error_resp_fail"></span>
       <span class="smallNote">Define the response times that specify the build as unstable or failed.</span>
     </td>
-  </tr>--%>
+  </tr>
   <tr>
     <th><label>Test duration<l:star/></label></th>
     <td>
