@@ -213,7 +213,9 @@ public class BlazeAgentProcessor implements BuildProcess{
 			return BuildFinishedStatus.FINISHED_FAILED;
 		} else {
 			logger.message("Test started. Waiting " + testDuration + " minutes to finish!");
-
+			if(bzmServiceManager.getBlazeMeterApiVersion().equals("v3")){
+                logger.message("Test report is available at "+bzmServiceManager.getBlazeMeterUrl()+ "/app/#report/" + session + "/loadreport");
+            }
 		}
 		
 		long totalWaitTime = (testDuration) * 60 * 1000;//the duration is in minutes so we multiply to get the value in ms
