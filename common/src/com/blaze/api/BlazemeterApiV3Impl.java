@@ -59,12 +59,13 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     @Override
     public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) throws JSONException{
         if (!validate(userKey, testId)) return false;
+        boolean upLoadJMX=false;
         String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = Utils.getFileContents(pathName);
         jmxData.put("data", fileCon);
-        this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.GET);
-        return true;
+        upLoadJMX=this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST)!=null;
+        return upLoadJMX;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         JSONObject jmxData = new JSONObject();
         String fileCon = Utils.getFileContents(pathName);
         jmxData.put("data", fileCon);
-        return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.GET);
+        return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
     }
 
     @Override
