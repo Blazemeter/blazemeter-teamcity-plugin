@@ -6,8 +6,6 @@ import java.util.Map;
 
 import com.blaze.BzmServiceManager;
 import com.blaze.testresult.TestResult;
-import com.blaze.testresult.TestResultV2Impl;
-import com.blaze.testresult.TestResultV3Impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -250,10 +248,8 @@ public class BlazeAgentProcessor implements BuildProcess{
             logger.message("Failed to get report from server...");
             return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
         }else{
-            logger.message(DefaultMessagesInfo.MSG_BLOCK_START);
             logger.message("Test report is received...");
             logger.message(testResult.toString());
-            logger.message(DefaultMessagesInfo.MSG_BLOCK_END);
             return BuildFinishedStatus.FINISHED_SUCCESS;
         }
 	}
