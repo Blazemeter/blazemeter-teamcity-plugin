@@ -23,6 +23,7 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 		final String testDuration = (String) properties.get(Constants.SETTINGS_TEST_DURATION);
 		String dataFolder = (String) properties.get(Constants.SETTINGS_DATA_FOLDER);
 		final String mainJMX = (String) properties.get(Constants.SETTINGS_MAIN_JMX);
+/*
 
 		if (PropertiesUtil.isEmptyOrNull(errThUnstable)) {
 			result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE,
@@ -37,7 +38,21 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 			}
 		}
 
-		if (PropertiesUtil.isEmptyOrNull(errThFail)) {
+*/
+
+        if (!PropertiesUtil.isEmptyOrNull(errThUnstable)) {
+            try {
+                Integer.parseInt(errThUnstable);
+            } catch (NumberFormatException nfe) {
+                result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE,
+                        "Error threshold unstable is not a number."));
+
+            }
+        }
+
+
+/*
+        if (PropertiesUtil.isEmptyOrNull(errThFail)) {
 			result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_FAIL, "Error threshold failure empty."));
 		} else {
 			try {
@@ -48,11 +63,20 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 
 			}
 		}
+*/
 
-		if (PropertiesUtil.isEmptyOrNull(errRespTimeUnstable)) {
-			result.add(new InvalidProperty(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE,
-					"Error response time unstable empty."));
-		} else {
+        if (!PropertiesUtil.isEmptyOrNull(errThUnstable)) {
+            try {
+                Integer.parseInt(errThUnstable);
+            } catch (NumberFormatException nfe) {
+                result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE,
+                        "Error threshold unstable is not a number."));
+
+            }
+        }
+
+
+		if (!PropertiesUtil.isEmptyOrNull(errRespTimeUnstable)) {
 			try {
 				Integer.parseInt(errRespTimeUnstable);
 			} catch (NumberFormatException nfe) {
@@ -62,9 +86,7 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 			}
 		}
 
-		if (PropertiesUtil.isEmptyOrNull(errRespTimeFail)) {
-			result.add(new InvalidProperty(Constants.SETTINGS_RESPONSE_TIME_FAIL, "Error response time failure empty."));
-		} else {
+		if (!PropertiesUtil.isEmptyOrNull(errRespTimeFail)) {
 			try {
 				Integer.parseInt(errRespTimeFail);
 			} catch (NumberFormatException nfe) {

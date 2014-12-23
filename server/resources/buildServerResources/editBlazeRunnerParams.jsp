@@ -83,7 +83,8 @@
   </tr>
 
   <tr>
-    <th><label>Error percentage threshold<l:star/></label></th>
+    <%--<th><label>Error percentage threshold<l:star/></label></th>--%>
+    <th><label>Error percentage threshold</label></th>
     <td>
       <div class="posRel" style="width:80px">Unstable: </div>
       <props:textProperty name="thr_unstable" />
@@ -95,7 +96,8 @@
     </td>
   </tr>
   <tr>
-    <th><label>Response time threshold<l:star/></label></th>
+    <%--<th><label>Response time threshold<l:star/></label></th>--%>
+    <th><label>Response time threshold</label></th>
     <td>
       <div class="posRel" style="width:80px">Unstable: </div>
       <props:textProperty name="resp_unstable" />
@@ -107,7 +109,7 @@
     </td>
   </tr>
   <tr>
-    <th><label>Test duration<l:star/></label></th>
+    <th><label>Test duration(min)<l:star/></label></th>
     <td>
         <props:textProperty name="test_duration" />
         <span class="error" id="error_data_folder"></span>
