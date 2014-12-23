@@ -81,8 +81,15 @@
     <span class="smallNote">Select the test to execute.</span>
     </td>
   </tr>
-
-  <tr>
+    <tr>
+        <th><label>Test duration(min)<l:star/></label></th>
+        <td>
+            <props:textProperty name="test_duration" />
+            <span class="error" id="error_data_folder"></span>
+            <span class="smallNote">Duration of the BlazeMeter test.</span>
+        </td>
+    </tr>
+  <tr style="display:none">
     <%--<th><label>Error percentage threshold<l:star/></label></th>--%>
     <th><label>Error percentage threshold</label></th>
     <td>
@@ -95,7 +102,7 @@
       <span class="smallNote">Define the errors percentage threshold that specify the build as unstable or failed.</span>
     </td>
   </tr>
-  <tr>
+  <tr style="display:none">
     <%--<th><label>Response time threshold<l:star/></label></th>--%>
     <th><label>Response time threshold</label></th>
     <td>
@@ -108,14 +115,7 @@
       <span class="smallNote">Define the response times that specify the build as unstable or failed.</span>
     </td>
   </tr>
-  <tr>
-    <th><label>Test duration(min)<l:star/></label></th>
-    <td>
-        <props:textProperty name="test_duration" />
-        <span class="error" id="error_data_folder"></span>
-        <span class="smallNote">Duration of the BlazeMeter test.</span>
-    </td>
-  </tr>
+
 </l:settingsGroup>
 <%--
 <l:settingsGroup title="BlazeMeter Advanced">

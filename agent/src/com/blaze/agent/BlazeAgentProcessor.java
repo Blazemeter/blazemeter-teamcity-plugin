@@ -89,7 +89,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 			}
 		}
 
-		String errorUnstable = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
+	/*	String errorUnstable = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
 		String errorFail = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
 		String timeUnstable = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
 		String timeFail = params.get(Constants.SETTINGS_RESPONSE_TIME_FAIL);
@@ -98,7 +98,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 		errorUnstableThreshold = Integer.valueOf(errorUnstable);
 		responseTimeFailedThreshold = Integer.valueOf(timeFail);
 		responseTimeUnstableThreshold = Integer.valueOf(timeUnstable);
-		
+	*/
 		dataFolder = params.get(Constants.SETTINGS_DATA_FOLDER);
 		if (PropertiesUtil.isEmptyOrNull(dataFolder)){
 			dataFolder = "";
