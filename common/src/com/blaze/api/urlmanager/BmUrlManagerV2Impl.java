@@ -12,18 +12,6 @@ import java.net.URLEncoder;
 public class BmUrlManagerV2Impl implements BmUrlManager{
 
     private String SERVER_URL = Constants.DEFAULT_BZM_SERVER;
-    private static String CLIENT_IDENTIFICATION = "_clientId=CI_TEAMCITY&_clientVersion=SNAPSHOT-201408281729&​";
-
-    static{
-        try{
-            CLIENT_IDENTIFICATION= URLEncoder.encode(CLIENT_IDENTIFICATION, "UTF-8");
-            CLIENT_IDENTIFICATION=CLIENT_IDENTIFICATION.substring(0,59);
-            CLIENT_IDENTIFICATION= URLDecoder.decode(CLIENT_IDENTIFICATION, "UTF-8");
-
-        }catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
 
     public BmUrlManagerV2Impl(String blazeMeterUrl) {
         SERVER_URL = blazeMeterUrl;
@@ -127,19 +115,12 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
     }
 
     @Override
-    public String getUrlForTestList(String appKey, String userKey) {
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return SERVER_URL+String.format("/api/rest/blazemeter/getTests.json/?app_key=%s&user_key=%s&test_id=all", appKey, userKey);
-
+    public String getTestInfo(String appKey, String userKey, String testId) {
+        return Constants.NOT_IMPLEMENTED;
     }
 
     @Override
-    public String getTestInfo(String appKey, String userKey, String testId) {
+    public String getTresholds(String appKey, String userKey, String sessionId) {
         return Constants.NOT_IMPLEMENTED;
     }
 

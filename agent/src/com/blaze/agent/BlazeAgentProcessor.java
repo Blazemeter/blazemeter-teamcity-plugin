@@ -208,9 +208,10 @@ public class BlazeAgentProcessor implements BuildProcess{
         bzmServiceManager.updateTest(testId,testDuration,logger);
         logger.message("Attempting to start test with id:"+testId);
         String session = bzmServiceManager.startTest(testId, 5, logger);
-		
+		BuildFinishedStatus result=null;
 		if (session.isEmpty()){
-			return BuildFinishedStatus.FINISHED_FAILED;
+            result = BuildFinishedStatus.FINISHED_FAILED;
+			return result;
 		} else {
 			logger.message("Test started. Waiting " + testDuration + " minutes to finish!");
 			if(bzmServiceManager.getBlazeMeterApiVersion().equals("v3")){
@@ -250,9 +251,15 @@ public class BlazeAgentProcessor implements BuildProcess{
         }else{
             logger.message("Test report is received...");
             logger.message(testResult.toString());
-            return BuildFinishedStatus.FINISHED_SUCCESS;
         }
-	}
+
+        result= bzmServiceManager.validateServerTresholds()?
+                BuildFinishedStatus.FINISHED_SUCCESS:
+                BuildFinishedStatus.FINISHED_FAILED;
+            logger.message("Server tresholds validation "+(result.equals(BuildFinishedStatus.FINISHED_SUCCESS)?
+            "passed":"failed"));
+        return result;
+    }
 	
 	/**
 	 * Upload main JMX file and all the files from the data folder

@@ -1,9 +1,13 @@
 package com.blaze.api.urlmanager;
 
+import com.blaze.utils.Utils;
+
 /**
  * Created by dzmitrykashlach on 9/12/14.
  */
 public interface BmUrlManager {
+    String CLIENT_IDENTIFICATION = "_clientId=CI_TEAMCITY&_clientVersion="
+            + Utils.getVersion()+"&​";
 
     public String getServerUrl();
 
@@ -21,8 +25,8 @@ public interface BmUrlManager {
 
     public String testReport(String appKey, String userKey, String reportId);
 
-    public String getUrlForTestList(String appKey, String userKey);
-
     public String getTestInfo(String appKey, String userKey, String testId);
+
+    public String getTresholds(String appKey, String userKey, String sessionId);
 
 }

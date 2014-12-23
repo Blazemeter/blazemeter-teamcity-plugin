@@ -1,4 +1,4 @@
-package com.blaze;
+package com.blaze.utils;
 
 import com.blaze.api.BlazemeterApi;
 import jetbrains.buildServer.agent.BuildProgressLogger;
@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Created by dzmitrykashlach on 9/12/14.
@@ -69,5 +70,15 @@ public class Utils {
         } catch (Exception e) {
             logger.message("Received JSONException while saving testDuration: "+ e);
         }
+    }
+
+    public static String getVersion() {
+        Properties props = new Properties();
+        try {
+            props.load(Utils.class.getResourceAsStream("version.properties"));
+        } catch (IOException ex) {
+            props.setProperty("version", "N/A");
+        }
+        return props.getProperty("version");
     }
 }

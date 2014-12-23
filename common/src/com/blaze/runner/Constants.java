@@ -37,5 +37,5 @@ public interface Constants {
 	//Default properties
 	public final static String DEFAULT_SETTINGS_DATA_FOLDER = "DataFolder";
 	public final static String BZM_PROPERTIES_FILE="/userKeyFile.properties";
-    public final static String NOT_IMPLEMENTED="This call is not implemented for V2. Please, select API V3";
+    public final static String NOT_IMPLEMENTED="This call is not implemented.";
 }

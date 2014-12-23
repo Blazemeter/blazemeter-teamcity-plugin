@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import com.blaze.Utils;
+import com.blaze.utils.Utils;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.entities.TestInfo;
 import jetbrains.buildServer.agent.BuildProgressLogger;
@@ -25,6 +25,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 	private int serverPort;
 	private String username;
 	private String password;
+    private final JSONObject not_implemented;
 
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     BzmHttpClient bzmHttpClient;
@@ -38,6 +39,14 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         urlManager = new BmUrlManagerV2Impl(bzmUrl);
             bzmHttpClient = new BzmHttpClient(this.serverName,this.username,this.password,this.serverPort);
             bzmHttpClient.configureProxy();
+        not_implemented=new JSONObject();
+        try {
+            not_implemented.put(Constants.NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
+        } catch (JSONException je) {
+            je.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 
@@ -213,6 +222,11 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
     @Override
     public JSONObject getTestInfo(String apiKey,String testId, BuildProgressLogger logger) {
-        return null;
+        return not_implemented;
+    }
+
+    @Override
+    public JSONObject getTresholds(String userKey, String sessionId) {
+        return not_implemented;
     }
 }

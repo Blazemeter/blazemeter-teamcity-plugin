@@ -1,6 +1,6 @@
 package com.blaze.api;
 
-import com.blaze.Utils;
+import com.blaze.utils.Utils;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
@@ -40,7 +40,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             bzmHttpClient.configureProxy();
         } catch (Exception ex) {
             ex.printStackTrace();
-//            logger.message("error Instantiating HTTPClient. Exception received: " + ex);
         }
     }
 
@@ -238,5 +237,13 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 	}
 
 
-
+    @Override
+    public JSONObject getTresholds(String userKey, String sessionId){
+        if (userKey == null || userKey.trim().isEmpty()) {
+            return null;
+        }
+        String url = this.urlManager.getTresholds(APP_KEY, userKey, sessionId);
+        JSONObject jo = this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET);
+        return jo;
+    }
 }

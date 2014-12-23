@@ -1,7 +1,6 @@
 package com.blaze;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +12,7 @@ import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
+import com.blaze.utils.Utils;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import org.jetbrains.annotations.NotNull;
@@ -151,7 +151,7 @@ public class BzmServiceManager {
     }
 
     public void updateTest(String testId, int testDuration, BuildProgressLogger logger) {
-        Utils.updateTest(userKey,getAPI(),testId,testDuration,logger);
+        Utils.updateTest(userKey, getAPI(), testId, testDuration, logger);
     }
 
 
@@ -246,6 +246,19 @@ public class BzmServiceManager {
         }
         return ti;
     }
+
+    public boolean validateServerTresholds() {
+        JSONObject jo = this.getAPI().getTresholds(userKey,session);
+        boolean success=false;
+        try {
+            logger.message("Treshold object = " + jo.toString());
+            success=jo.getJSONObject("result").getJSONObject("data").getBoolean("success");
+        } catch (JSONException je) {
+            logger.warning("Error: Failed to get tresholds: " + je + "\n" + jo.toString());
+        }
+        return success;
+    }
+
 
     public String getUserKey() {
         return userKey;
