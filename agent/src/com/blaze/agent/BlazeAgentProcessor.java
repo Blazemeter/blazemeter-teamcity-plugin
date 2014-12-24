@@ -210,8 +210,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         String session = bzmServiceManager.startTest(testId, 5, logger);
 		BuildFinishedStatus result=null;
 		if (session.isEmpty()){
-            result = BuildFinishedStatus.FINISHED_FAILED;
-			return result;
+			return BuildFinishedStatus.FINISHED_FAILED;
 		} else {
 			logger.message("Test started. Waiting " + testDuration + " minutes to finish!");
 			if(bzmServiceManager.getBlazeMeterApiVersion().equals("v3")){
@@ -243,22 +242,36 @@ public class BlazeAgentProcessor implements BuildProcess{
 		}
 		logger.message("Test finished. Checking for test report...");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
+        try {
+            Thread.sleep(240000);
+        } catch (InterruptedException e) {
+            logger.warning("Interrupted during waiting for test report...");
+            logger.exception(e);
+        }
         TestResult testResult = bzmServiceManager.getReport(logger);
 
         if(testResult==null){
-            logger.message("Failed to get report from server...");
+            logger.warning("Failed to get report from server...");
             return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
         }else{
             logger.message("Test report is received...");
             logger.message(testResult.toString());
+            return BuildFinishedStatus.FINISHED_SUCCESS;
         }
 
-        result= bzmServiceManager.validateServerTresholds()?
-                BuildFinishedStatus.FINISHED_SUCCESS:
-                BuildFinishedStatus.FINISHED_FAILED;
-            logger.message("Server tresholds validation "+(result.equals(BuildFinishedStatus.FINISHED_SUCCESS)?
-            "passed":"failed"));
-        return result;
+        /*String treshOldsValidation=bzmServiceManager.validateServerTresholds();
+        if(treshOldsValidation==null){
+            logger.warning("Tresholds are not available for this test: check settings on server");
+            return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+        }
+        if(treshOldsValidation.equals("false")){
+            logger.warning("Tresholds validation result: false");
+            return BuildFinishedStatus.FINISHED_FAILED;
+        }
+        if(treshOldsValidation.equals("true")){
+            logger.warning("Tresholds validation result: success");
+            return BuildFinishedStatus.FINISHED_SUCCESS;
+        }*/
     }
 	
 	/**

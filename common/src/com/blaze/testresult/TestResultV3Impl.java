@@ -44,7 +44,6 @@ public class TestResultV3Impl extends TestResult {
                "\nhits=" + hits +
                "\nerrors percentage=" + errorPercentage+
                "\naverage=" + average +
-               "\naverage=" + average +
                "\nmin=" + min +
                "\nmax=" + max+"\n"+
                "#################################################";

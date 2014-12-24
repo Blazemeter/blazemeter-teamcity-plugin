@@ -247,16 +247,24 @@ public class BzmServiceManager {
         return ti;
     }
 
-    public boolean validateServerTresholds() {
+    public String validateServerTresholds() {
         JSONObject jo = this.getAPI().getTresholds(userKey,session);
-        boolean success=false;
+        String tresholdsValidation=null;
+        JSONObject result=null;
         try {
-            logger.message("Treshold object = " + jo.toString());
-            success=jo.getJSONObject("result").getJSONObject("data").getBoolean("success");
+            result=jo.getJSONObject("result");
         } catch (JSONException je) {
-            logger.warning("Error: Failed to get tresholds: " + je + "\n" + jo.toString());
+            logger.warning("Tresholds are not available for this test: " + je + "\n" + jo.toString());
         }
-        return success;
+        try {
+            tresholdsValidation=String.valueOf(result.getJSONObject("data").getBoolean("success"));
+        } catch (JSONException je) {
+            logger.warning("Tresholds are not available for this test: " + je + "\n" + jo.toString());
+        }  catch (NullPointerException npe) {
+            logger.warning("Tresholds are not available for this test: " + npe + "\n" );
+        }
+
+        return tresholdsValidation;
     }
 
 
