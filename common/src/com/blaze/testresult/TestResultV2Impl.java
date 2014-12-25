@@ -31,11 +31,11 @@ public class TestResultV2Impl extends TestResult {
 
     @Override
     public String toString() {
-        return "####### AggregateTestResult ########" +
-                "\n average=" + average +
-                ",\n min=" + min +
-                ",\n max=" + max +
-                ",\n errorPercentage=" + errorPercentage;
+        return "####### Aggregate Test Result ########" +
+                "\n Average=" + average +
+                ",\n Min=" + min +
+                ",\n Max=" + max +
+                ",\n ErrorPercentage=" + errorPercentage;
     }
 
     public double getStd() {

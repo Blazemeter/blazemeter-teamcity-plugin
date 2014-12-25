@@ -27,6 +27,7 @@ import com.blaze.runner.Constants;
  */
 public class BlazeAgentProcessor implements BuildProcess{
 	private static final int CHECK_INTERVAL = 60000;
+	private static final int INIT_TEST_TIMEOUT = 900000;
 	private BzmServiceManager bzmServiceManager;
 	private AgentRunningBuild agentRunningBuild;
 	private BuildRunnerContext buildRunnerContext;
@@ -229,25 +230,31 @@ public class BlazeAgentProcessor implements BuildProcess{
 		logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		TestInfo testInfo;
         String apiVersion=bzmServiceManager.getBlazeMeterApiVersion();
-		long testStart=0;
+        long testInitStart=System.currentTimeMillis();
+		boolean initTimeOutPassed=false;
         do{
             sleep(CHECK_INTERVAL);
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
             logger.message("Check if the test is initialized...");
-
-        }while (!testInfo.getStatus().equals(Constants.TestStatus.Running));
-        testStart=System.currentTimeMillis();
-        logger.message("Approximate test duration "+(testDuration!=-1?testDuration+"will be minutes":"is not defined on server"));
+        initTimeOutPassed=System.currentTimeMillis()>testInitStart+INIT_TEST_TIMEOUT;
+        }while (!(testInfo.getStatus().equals(Constants.TestStatus.Running)|initTimeOutPassed));
+        if(initTimeOutPassed&!testInfo.getStatus().equals(Constants.TestStatus.Running)){
+            logger.warning("Failed to initialize test "+testId);
+            logger.warning("Build will be aborted");
+            return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+        }
+        logger.message("Approximate test duration "+(testDuration!=-1?testDuration+" minutes":"is not defined on server"));
+        long testRunStart=System.currentTimeMillis();
 
         do{
 		    sleep(CHECK_INTERVAL);
-			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testStart) / 1000 / 60) + " minutes.");
+			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
         }while (!testInfo.getStatus().equals(Constants.TestStatus.NotRunning));
 
         logger.message("Test finished. Checking for test report...");
-        logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testStart) / 1000 / 60) + " minutes.");
+        logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         sleep(240000);
         TestResult testResult = bzmServiceManager.getReport(logger);
