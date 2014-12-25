@@ -219,38 +219,37 @@ public class BlazeAgentProcessor implements BuildProcess{
 		if (session.isEmpty()){
 			return BuildFinishedStatus.FINISHED_FAILED;
 		} else {
-			logger.message("Test started. Waiting " + testDuration + " minutes to finish!");
+			logger.message("Test initialization is started... Waiting for DATA_RECEIVED status");
 			if(bzmServiceManager.getBlazeMeterApiVersion().equals("v3")){
-                logger.message("Test report is available at "+bzmServiceManager.getBlazeMeterUrl()+ "/app/#report/" + session + "/loadreport");
+                logger.message("Test report will be available at "+bzmServiceManager.getBlazeMeterUrl()+ "/app/#report/" + session + "/loadreport");
             }
 		}
 		
-		long totalWaitTime = (testDuration) * 60 * 1000;//the duration is in minutes so we multiply to get the value in ms
-		long nrOfCheckInterval = totalWaitTime / CHECK_INTERVAL;//
-		long currentCheck = 0;
-		
+
 		logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		TestInfo testInfo;
-		do{
-			try {
-				Thread.currentThread().sleep(CHECK_INTERVAL);
-			} catch (InterruptedException e) {
-			}
-			
-			logger.message("Check if the test is still running. Time passed since start:"+((currentCheck*CHECK_INTERVAL)/1000/60) + " minutes.");
-			String apiVersion=bzmServiceManager.getBlazeMeterApiVersion();
+        String apiVersion=bzmServiceManager.getBlazeMeterApiVersion();
+		long testStart=0;
+        do{
+            sleep(CHECK_INTERVAL);
+            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
+            logger.message("Check if the test is initialized...");
+
+        }while (!testInfo.getStatus().equals(Constants.TestStatus.Running));
+        testStart=System.currentTimeMillis();
+        logger.message("Approximate test duration "+(testDuration!=-1?testDuration+"will be minutes":"is not defined on server"));
+
+        do{
+		    sleep(CHECK_INTERVAL);
+			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testStart) / 1000 / 60) + " minutes.");
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
-        }while (currentCheck++ < nrOfCheckInterval|!testInfo.getStatus().equals(Constants.TestStatus.NotRunning));
+        }while (!testInfo.getStatus().equals(Constants.TestStatus.NotRunning));
+
         logger.message("Test finished. Checking for test report...");
-        logger.message("Test time passed since start:" + ((currentCheck * CHECK_INTERVAL) / 1000 / 60) + " minutes.");
+        logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testStart) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-        try {
-            Thread.sleep(300000);
-        } catch (InterruptedException e) {
-            logger.warning("Interrupted during waiting for test report...");
-            logger.exception(e);
-        }
+        sleep(240000);
         TestResult testResult = bzmServiceManager.getReport(logger);
 
         if(testResult==null){
@@ -275,6 +274,15 @@ public class BlazeAgentProcessor implements BuildProcess{
             logger.warning("Tresholds validation result: success");
             return BuildFinishedStatus.FINISHED_SUCCESS;
         }*/
+    }
+
+    private void sleep(int sleepPeriod){
+        try {
+            Thread.currentThread().sleep(sleepPeriod);
+        } catch (InterruptedException e) {
+            logger.exception(e);
+            logger.warning("Test was interrupted during sleeping");
+        }
     }
 	
 	/**

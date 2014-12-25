@@ -65,9 +65,11 @@ public class Utils {
             JSONObject override = options.getJSONObject("override");
             testDuration=override.getInt("duration");
         } catch (JSONException je) {
-            logger.message("Received JSONException while saving testDuration: "+ je);
+            logger.message("Failed to get testDuration from server: "+ je);
+            logger.exception(je);
         } catch (Exception e) {
-            logger.message("Received JSONException while saving testDuration: "+ e);
+            logger.message("Failed to get testDuration from server: "+ e);
+            logger.exception(e);
         }
         return testDuration;
     }
