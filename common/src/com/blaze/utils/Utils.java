@@ -53,6 +53,25 @@ public class Utils {
         return contents.toString();
     }
 
+    public static int getTestDuration(String apiKey,BlazemeterApi api, String testId, BuildProgressLogger logger){
+        int testDuration=-1;
+        try {
+            JSONObject jo = api.getTestInfo(apiKey,testId,logger);
+            JSONObject result = jo.getJSONObject("result");
+            JSONObject configuration = result.getJSONObject("configuration");
+            JSONObject plugins = configuration.getJSONObject("plugins");
+            String type = configuration.getString("type");
+            JSONObject options = plugins.getJSONObject(type);
+            JSONObject override = options.getJSONObject("override");
+            testDuration=override.getInt("duration");
+        } catch (JSONException je) {
+            logger.message("Received JSONException while saving testDuration: "+ je);
+        } catch (Exception e) {
+            logger.message("Received JSONException while saving testDuration: "+ e);
+        }
+        return testDuration;
+    }
+
     public static void updateTest(String apiKey,BlazemeterApi api, String testId, int updDuration, BuildProgressLogger logger) {
         try {
             JSONObject jo = api.getTestInfo(apiKey,testId,logger);

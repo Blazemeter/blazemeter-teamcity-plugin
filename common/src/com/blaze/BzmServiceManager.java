@@ -335,4 +335,8 @@ public class BzmServiceManager {
     public void setLogger(BuildProgressLogger logger) {
         this.logger = logger;
     }
+
+    public BlazemeterApi getBlazemeterAPI() {
+        return blazemeterAPI;
+    }
 }

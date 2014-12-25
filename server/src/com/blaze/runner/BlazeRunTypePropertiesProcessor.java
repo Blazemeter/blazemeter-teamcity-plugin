@@ -100,9 +100,9 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 			result.add(new InvalidProperty(Constants.SETTINGS_ALL_TESTS_ID, "A test must be selected."));
 		}
 
-		if (PropertiesUtil.isEmptyOrNull(testDuration)) {
+		/*if (PropertiesUtil.isEmptyOrNull(testDuration)) {
 			result.add(new InvalidProperty(Constants.SETTINGS_TEST_DURATION, "A test duration time must be selected."));
-		}
+		}*/
 
 		if (!PropertiesUtil.isEmptyOrNull(dataFolder)) {
 			dataFolder = dataFolder.trim();

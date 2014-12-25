@@ -82,7 +82,8 @@
     </td>
   </tr>
     <tr>
-        <th><label>Test duration(min)<l:star/></label></th>
+        <%--<th><label>Test duration(min):<l:star/></label></th>--%>
+        <th><label>Test duration(min):</label></th>
         <td>
             <props:textProperty name="test_duration" />
             <span class="error" id="error_data_folder"></span>

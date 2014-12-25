@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.blaze.BzmServiceManager;
 import com.blaze.testresult.TestResult;
+import com.blaze.utils.Utils;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -68,24 +69,32 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
 		if (isNullorEmpty(testId)) {
+            logger.warning("No test was defined in the configuration page.");
 			return "No test was defined in the configuration page.";
 		} else {
 			//verify if the test still exists on BlazeMeter server
 			HashMap<String, String> tests = bzmServiceManager.getTests();
 			if (tests != null){
 				if (!tests.values().contains(testId)) {
-					return "Test removed from BlazeMeter server.";
+                    logger.warning("Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl());
+					return "Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl();
 				}
 			}
 		}
 		String testDrt = params.get(Constants.SETTINGS_TEST_DURATION);
-		if (isNullorEmpty(testDrt)) {
-			return "Test duration not set.";
+		if (PropertiesUtil.isEmptyOrNull(testDrt)) {
+            logger.message("Attempting to get test duration for testId="+testId);
+            testDuration= Utils.getTestDuration(bzmServiceManager.getUserKey(),
+                    bzmServiceManager.getBlazemeterAPI(),testId,logger);
 		} else {
 			try{
 				testDuration = Integer.valueOf(testDrt);
-			} catch (NumberFormatException nfe){
-				return "Test duration not a numbers.";
+                logger.message("Attempting to update test with id:"+testId);
+                bzmServiceManager.updateTest(testId,testDuration,logger);
+            } catch (NumberFormatException nfe){
+                logger.exception(nfe);
+                logger.warning("Test duration is not a number.");
+				return "Test duration is not a number.";
 			}
 		}
 
@@ -204,8 +213,6 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@SuppressWarnings("static-access")
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
-        logger.message("Attempting to update test with id:"+testId);
-        bzmServiceManager.updateTest(testId,testDuration,logger);
         logger.message("Attempting to start test with id:"+testId);
         String session = bzmServiceManager.startTest(testId, 5, logger);
 		BuildFinishedStatus result=null;
