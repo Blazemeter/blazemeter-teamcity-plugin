@@ -231,7 +231,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		TestInfo testInfo;
-		while (currentCheck++ < nrOfCheckInterval){
+		do{
 			try {
 				Thread.currentThread().sleep(CHECK_INTERVAL);
 			} catch (InterruptedException e) {
@@ -241,16 +241,12 @@ public class BlazeAgentProcessor implements BuildProcess{
 			String apiVersion=bzmServiceManager.getBlazeMeterApiVersion();
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
-            if (testInfo.getStatus().equals(Constants.TestStatus.NotRunning)){
-                logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-                logger.message("Test is finished earlier then estimated! Time passed since start:" + ((currentCheck * CHECK_INTERVAL) / 1000 / 60) + " minutes.");
-                break;
-            }
-		}
-		logger.message("Test finished. Checking for test report...");
+        }while (currentCheck++ < nrOfCheckInterval|!testInfo.getStatus().equals(Constants.TestStatus.NotRunning));
+        logger.message("Test finished. Checking for test report...");
+        logger.message("Test time passed since start:" + ((currentCheck * CHECK_INTERVAL) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         try {
-            Thread.sleep(240000);
+            Thread.sleep(300000);
         } catch (InterruptedException e) {
             logger.warning("Interrupted during waiting for test report...");
             logger.exception(e);
