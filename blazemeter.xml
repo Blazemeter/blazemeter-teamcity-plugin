@@ -86,7 +86,7 @@
   <!-- Project Libraries -->
   
   <path id="library.teamcity_open_api_agent.classpath">
-    <pathelement location="./lib-tc/agent-api.jar"/>
+    <pathelement location="./lib/agent-api.jar"/>
   </path>
   
   <path id="library.teamcity_open_api_common.classpath">

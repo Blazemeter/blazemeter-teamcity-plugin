@@ -1,6 +1,5 @@
 <project name="BlazeMeter-custom-build" default="dist" basedir=".">
 
-  <property file="build.properties"/>
   <property name="plugin.name" value="BlazeMeter"/>
   <property name="javac2.home" value="${basedir}/lib-compile"/>
   <property name="version" value="1.0"/>
