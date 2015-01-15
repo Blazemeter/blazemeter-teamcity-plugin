@@ -12,8 +12,6 @@
                 check.teamcitydistribution
   -->
 
-  <property name="path.variable.teamcitydistribution" value="${teamcity.distribution}"/>
-
   <property name="teamcity.internal.default.out" value="dist"/>
 
 
@@ -137,24 +135,6 @@
 
     </sequential>
   </macrodef>
-
-  <target name="check.teamcitydistribution" description="checks whether TeamCity distribution ready to be used by IDEA-generated build">
-    <check.property name="path.variable.teamcitydistribution"
-                    fail-message="Please define 'teamcity.distribution' or 'path.variable.teamcitydistribution' property (e.g. in build.properties file). The property should point to unpacked TeamCity .tar.gz or .exe distribution."
-        />
-
-    <condition property="teamcity.distribution.not.present">
-      <not>
-        <and>
-          <available file="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib"/>
-        </and>
-      </not>
-    </condition>
-    <fail if="teamcity.distribution.not.present"
-          message="Cannot find TeamCity distribution at path '${path.variable.teamcitydistribution}'. The property 'teamcity.distribution' or 'path.variable.teamcitydistribution' should point to unpacked TeamCity .tar.gz or .exe distribution."/>
-    <echo message="Using ${path.variable.teamcitydistribution} as TeamCity distribution" />
-  </target>
-
   <macrodef name="deploy.teamcity.plugin">
     <attribute name="name"/>
     <attribute name="teamcity.data.path" default="${user.home}/.BuildServer" description="path to .BuildServer"/>

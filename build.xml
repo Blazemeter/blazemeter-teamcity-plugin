@@ -49,7 +49,7 @@
 </fileset>
         </copy>
         </target>
-  <target name="dist" depends="check.teamcitydistribution,all,package,copy.property.files"/>
+  <target name="dist" depends="all,package,copy.property.files"/>
 
   <target name="clean" depends="blazemeter.clean"/>
 

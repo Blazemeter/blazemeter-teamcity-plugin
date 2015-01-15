@@ -2,7 +2,7 @@
 <project name="blazemeter" default="all">
   
   
-  <property file="blazemeter.properties"/>
+  <!--<property file="blazemeter.properties"/>-->
   <!-- Uncomment the following property if no tests compilation is needed -->
   <!-- 
   <property name="skip.tests" value="true"/>
@@ -18,11 +18,11 @@
     <pathelement location="./lib/httpcore-4.2.1.jar"/>
   	<pathelement location="./lib/jackson-core-asl-1.9.10.jar"/>
   	<pathelement location="./lib/jackson-mapper-asl-1.9.10.jar"/>
-  	<pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/server-api.jar"/>
+  	<pathelement location="./lib-tc/server-api.jar"/>
   </path>
 	
 	<path id="lib.classpath">
-	  	<pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/server-api.jar"/>
+	  	<pathelement location="./lib/webapps/ROOT/WEB-INF/lib/server-api.jar"/>
 		<pathelement location="./lib/jdom.jar"/>
 	  	<pathelement location="./lib/httpclient-4.2.1.jar"/>
 	    <pathelement location="./lib/httpcore-4.2.1.jar"/>
@@ -86,32 +86,32 @@
   <!-- Project Libraries -->
   
   <path id="library.teamcity_open_api_agent.classpath">
-    <pathelement location="${path.variable.teamcitydistribution}/devPackage/agent-api.jar"/>
+    <pathelement location="./lib-tc/agent-api.jar"/>
   </path>
   
   <path id="library.teamcity_open_api_common.classpath">
-    <pathelement location="${path.variable.teamcitydistribution}/devPackage/common-api.jar"/>
-    <pathelement location="${path.variable.teamcitydistribution}/devPackage/runtime-util.jar"/>
+    <pathelement location="./lib-tc/common-api.jar"/>
+    <pathelement location="./lib-tc/runtime-util.jar"/>
   </path>
   
   <path id="library.teamcity_open_api_server.classpath">
-    <pathelement location="${path.variable.teamcitydistribution}/devPackage/server-api.jar"/>
+    <pathelement location="./lib-tc/server-api.jar"/>
   </path>
   
   <path id="library.teamcity_third-party_common.classpath">
-    <pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/annotations.jar"/>
-    <pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/openapi.jar"/>
-    <pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/spring.jar"/>
-    <pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/util.jar"/>
+    <pathelement location="./lib-tc/annotations.jar"/>
+    <pathelement location="./lib-tc/openapi.jar"/>
+    <pathelement location="./lib-tc/spring.jar"/>
+    <pathelement location="./lib-tc/util.jar"/>
   </path>
   
   <path id="library.teamcity_third-party_server.classpath">
-    <pathelement location="${path.variable.teamcitydistribution}/webapps/ROOT/WEB-INF/lib/spring-webmvc.jar"/>
+    <pathelement location="./lib-tc/spring-webmvc.jar"/>
   </path>
   
   <path id="library.tomcat.classpath">
   	<pathelement location="./lib/jdom.jar"/>
-    <pathelement location="${path.variable.teamcitydistribution}/lib/servlet-api.jar"/>
+    <pathelement location="./lib-tc/servlet-api-2.5.jar"/>
   </path>
   
   
