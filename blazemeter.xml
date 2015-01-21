@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="blazemeter" default="all">
-  
+
+    <!--
+    TODO
+    1. Add compile-test target - IN PROGRESS
+    2. Add test target
+    3.
+    -->
   
   <!--<property file="blazemeter.properties"/>-->
   <!-- Uncomment the following property if no tests compilation is needed -->
   <!-- 
   <property name="skip.tests" value="true"/>
    -->
-  <property name="javac2.home" value="${basedir}/lib-compile"/>
+    <property name="test-dir" location="common/test" />
+    <property name="TALK" value="true" />
+    <property name="javac2.home" value="${basedir}/lib-compile"/>
   <path id="javac2.classpath">
     <pathelement location="${javac2.home}/javac2.jar"/>
     <pathelement location="${javac2.home}/jdom.jar"/>
@@ -20,7 +28,8 @@
   	<pathelement location="./lib/jackson-mapper-asl-1.9.10.jar"/>
   	<pathelement location="./lib-tc/server-api.jar"/>
   </path>
-	
+
+
 	<path id="lib.classpath">
 	  	<pathelement location="./lib/webapps/ROOT/WEB-INF/lib/server-api.jar"/>
 		<pathelement location="./lib/jdom.jar"/>
