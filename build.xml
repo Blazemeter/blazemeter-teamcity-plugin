@@ -12,19 +12,32 @@
         <pathelement location="${test-dir}"/>
         <pathelement location="lib/junit-4.12.jar"/>
     </path>
+    <path id="classpath.testclasses">
+        <pathelement location="${blazemeter-common.testoutput.dir}"/>
+    </path>
 
 
     <patternset id="property.files">
     <include name="**/*.properties"/>
     </patternset>
 
-    <target name="compile-test">
-        <javac srcdir="${test-dir}"
+    <target name="makedir">
+        <mkdir dir="${blazemeter-common.testoutput.dir}" />
+    </target>
+
+    <target name="compile-test" depends="makedir">
+        <javac destdir="${blazemeter-common.testoutput.dir}" srcdir="${test-dir}"
                verbose="${TALK}">
             <classpath refid="classpath.test"/>
         </javac>
     </target>
-
+    <target name="test" depends="compile-test">
+        <junit>
+            <classpath refid="classpath.test" />
+            <formatter type="brief" usefile="false" />
+            <test name="TestBzmServiceManager" />
+        </junit>
+    </target>
 
 
 
