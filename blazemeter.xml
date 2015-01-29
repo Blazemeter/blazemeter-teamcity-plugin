@@ -14,33 +14,55 @@
   <property name="skip.tests" value="true"/>
    -->
     <property name="test-dir" location="common/test" />
-    <property name="TALK" value="true" />
     <property name="javac2.home" value="${basedir}/lib-compile"/>
+    <property name="lib" value="${basedir}/lib"/>
+    <property name="lib-tc" value="${basedir}/lib-tc"/>
+    <property name="javac2" value="${javac2.home}/javac2.jar"/>
+    <property name="jdom" value="${lib}/jdom.jar"/>
+    <property name="httpcore-4.2.1" value="${lib}/httpcore-4.2.1.jar"/>
+    <property name="httpclient-4.2.1" value="${lib}/httpclient-4.2.1.jar"/>
+    <property name="jackson-core-asl-1.9.10" value="${lib}/jackson-core-asl-1.9.10.jar"/>
+    <property name="jackson-mapper-asl-1.9.10" value="${lib}/jackson-mapper-asl-1.9.10.jar"/>
+    <property name="hamcrest-core-1.3" value="${lib}/hamcrest-core-1.3.jar"/>
+    <property name="junit-4.12" value="${lib}/junit-4.12.jar"/>
+    <property name="server-api" value="${lib-tc}/server-api.jar"/>
+    <property name="agent-openapi" value="${lib-tc}/agent-openapi.jar"/>
+    <property name="common-api" value="${lib-tc}/common-api.jar"/>
+    <property name="runtime-util" value="${lib-tc}/runtime-util.jar"/>
+    <property name="annotations" value="${lib-tc}/annotations.jar"/>
+    <property name="openapi" value="${lib-tc}/openapi.jar"/>
+    <property name="spring" value="${lib-tc}/spring.jar"/>
+    <property name="agent-api" value="${lib}/agent-api.jar"/>
+    <property name="util" value="${lib-tc}/util.jar"/>
+    <property name="spring-webmvc" value="${lib-tc}/spring-webmvc.jar"/>
+    <property name="servlet-api-2.5" value="${lib-tc}/servlet-api-2.5.jar"/>
+    <property name="asm" value="${javac2.home}/asm.jar"/>
+    <property name="asm-commons" value="${javac2.home}/asm-commons.jar"/>
+
   <path id="javac2.classpath">
-    <pathelement location="${javac2.home}/javac2.jar"/>
-    <pathelement location="${javac2.home}/jdom.jar"/>
-    <pathelement location="${javac2.home}/asm.jar"/>
-    <pathelement location="${javac2.home}/asm-commons.jar"/>
-  	<pathelement location="./lib/jdom.jar"/>
-  	<pathelement location="./lib/httpclient-4.2.1.jar"/>
-    <pathelement location="./lib/httpcore-4.2.1.jar"/>
-  	<pathelement location="./lib/jackson-core-asl-1.9.10.jar"/>
-  	<pathelement location="./lib/jackson-mapper-asl-1.9.10.jar"/>
-  	<pathelement location="./lib-tc/server-api.jar"/>
-  	<pathelement location="./lib-tc/agent-openapi.jar"/>
-  </path>
+    <pathelement location="${javac2}"/>
+    <pathelement location="${jdom}"/>
+    <pathelement location="${asm}"/>
+    <pathelement location="${asm-commons}"/>
+    <pathelement location="${httpclient-4.2.1}"/>
+    <pathelement location="${httpcore-4.2.1}"/>
+    <pathelement location="${jackson-core-asl-1.9.10}"/>
+    <pathelement location="${jackson-mapper-asl-1.9.10}"/>
+    <pathelement location="${server-api}"/>
+    <pathelement location="${agent-openapi}"/>
+  	</path>
 
 
 	<path id="lib.classpath">
-	  	<pathelement location="./lib/webapps/ROOT/WEB-INF/lib/server-api.jar"/>
-		<pathelement location="./lib/jdom.jar"/>
-	  	<pathelement location="./lib/httpclient-4.2.1.jar"/>
-	    <pathelement location="./lib/httpcore-4.2.1.jar"/>
-	  	<pathelement location="./lib/jackson-core-asl-1.9.10.jar"/>
-	  	<pathelement location="./lib/jackson-mapper-asl-1.9.10.jar"/>
-	  	<pathelement location="./lib/junit-4.12.jar"/>
-	  	<pathelement location="./lib/hamcrest-core-1.3.jar"/>
-        <pathelement location="./lib-tc/agent-openapi.jar"/>
+        <pathelement location="${jdom}"/>
+        <pathelement location="${server-api}"/>
+        <pathelement location="${httpclient-4.2.1}"/>
+        <pathelement location="${httpcore-4.2.1}"/>
+        <pathelement location="${jackson-core-asl-1.9.10}"/>
+        <pathelement location="${jackson-mapper-asl-1.9.10}"/>
+        <pathelement location="${junit-4.12}"/>
+        <pathelement location="${hamcrest-core-1.3}"/>
+        <pathelement location="${agent-openapi}"/>
     </path>
   <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath" classpath="lib.classpath"/>
   <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions"  classpathref="javac2.classpath"/>
@@ -99,32 +121,32 @@
   <!-- Project Libraries -->
   
   <path id="library.teamcity_open_api_agent.classpath">
-    <pathelement location="./lib/agent-api.jar"/>
+    <pathelement location="${agent-api}"/>
   </path>
   
   <path id="library.teamcity_open_api_common.classpath">
-    <pathelement location="./lib-tc/common-api.jar"/>
-    <pathelement location="./lib-tc/runtime-util.jar"/>
+    <pathelement location="${common-api}"/>
+    <pathelement location="${runtime-util}"/>
   </path>
   
   <path id="library.teamcity_open_api_server.classpath">
-    <pathelement location="./lib-tc/server-api.jar"/>
+    <pathelement location="${server-api}"/>
   </path>
   
   <path id="library.teamcity_third-party_common.classpath">
-    <pathelement location="./lib-tc/annotations.jar"/>
-    <pathelement location="./lib-tc/openapi.jar"/>
-    <pathelement location="./lib-tc/spring.jar"/>
-    <pathelement location="./lib-tc/util.jar"/>
+    <pathelement location="${annotations}"/>
+    <pathelement location="${openapi}"/>
+    <pathelement location="${spring}"/>
+    <pathelement location="${util}"/>
   </path>
   
   <path id="library.teamcity_third-party_server.classpath">
-    <pathelement location="./lib-tc/spring-webmvc.jar"/>
+    <pathelement location="${spring-webmvc}"/>
   </path>
   
   <path id="library.tomcat.classpath">
-  	<pathelement location="./lib/jdom.jar"/>
-    <pathelement location="./lib-tc/servlet-api-2.5.jar"/>
+  	<pathelement location="${jdom}"/>
+  	<pathelement location="${servlet-api-2.5}"/>
   </path>
   
   

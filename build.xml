@@ -10,7 +10,7 @@
 
     <path id="classpath.test">
         <pathelement location="${test-dir}"/>
-        <pathelement location="lib/junit-4.12.jar"/>
+        <pathelement location="${junit-4.12}"/>
     </path>
     <path id="classpath.testclasses">
         <pathelement location="${blazemeter-common.testoutput.dir}"/>
@@ -27,7 +27,7 @@
 
     <target name="compile-test" depends="makedir">
         <javac destdir="${blazemeter-common.testoutput.dir}" srcdir="${test-dir}"
-               verbose="${TALK}">
+               verbose="true">
             <classpath refid="classpath.test"/>
         </javac>
     </target>
