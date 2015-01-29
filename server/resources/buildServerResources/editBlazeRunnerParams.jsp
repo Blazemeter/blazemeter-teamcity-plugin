@@ -68,7 +68,7 @@
 
 <l:settingsGroup title="BlazeMeter">
   <tr>
-    <th><label for="${bzmServiceManager.debugKey}">BlazeMeter tests: <l:star/></label></th>
+    <th><label for="${bzmServiceManager.debugKey}">BlazeMeter tests:</label></th>
     <td>
     <props:selectProperty name="all_tests">
     	<c:forEach var="test" items="${bzmServiceManager.tests}">
@@ -82,7 +82,6 @@
     </td>
   </tr>
     <tr>
-        <%--<th><label>Test duration(min):<l:star/></label></th>--%>
         <th><label>Test duration(min):</label></th>
         <td>
             <props:textProperty name="test_duration" />
@@ -90,9 +89,8 @@
             <span class="smallNote">Duration of the BlazeMeter test.</span>
         </td>
     </tr>
-  <tr style="display:none">
-    <%--<th><label>Error percentage threshold<l:star/></label></th>--%>
-    <th><label>Error percentage threshold</label></th>
+  <tr>
+    <th><label>Error percentage threshold(%):</label></th>
     <td>
       <div class="posRel" style="width:80px">Unstable: </div>
       <props:textProperty name="thr_unstable" />
@@ -103,9 +101,8 @@
       <span class="smallNote">Define the errors percentage threshold that specify the build as unstable or failed.</span>
     </td>
   </tr>
-  <tr style="display:none">
-    <%--<th><label>Response time threshold<l:star/></label></th>--%>
-    <th><label>Response time threshold</label></th>
+  <tr>
+    <th><label>Response time threshold(ms):</label></th>
     <td>
       <div class="posRel" style="width:80px">Unstable: </div>
       <props:textProperty name="resp_unstable" />
@@ -116,8 +113,8 @@
       <span class="smallNote">Define the response times that specify the build as unstable or failed.</span>
     </td>
   </tr>
-
 </l:settingsGroup>
+
 <%--
 <l:settingsGroup title="BlazeMeter Advanced">
   <tr>

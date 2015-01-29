@@ -20,6 +20,7 @@ import jetbrains.buildServer.util.PropertiesUtil;
 
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Marcel Milea
@@ -36,10 +37,10 @@ public class BlazeAgentProcessor implements BuildProcess{
 	private String validationError;
 	private String testId;
 	private int testDuration;
-	int errorUnstableThreshold;
-	int errorFailedThreshold;
-	int responseTimeUnstableThreshold;
-	int responseTimeFailedThreshold;
+	String errorUnstableThreshold;
+    String errorFailedThreshold;
+    String responseTimeUnstableThreshold;
+    String responseTimeFailedThreshold;
 	String dataFolder;
 	String mainJMX;
 	
@@ -99,16 +100,11 @@ public class BlazeAgentProcessor implements BuildProcess{
 			}
 		}
 
-	/*	String errorUnstable = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
-		String errorFail = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
-		String timeUnstable = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
-		String timeFail = params.get(Constants.SETTINGS_RESPONSE_TIME_FAIL);
+        errorUnstableThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
+        errorFailedThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
+        responseTimeUnstableThreshold = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
+        responseTimeFailedThreshold = params.get(Constants.SETTINGS_RESPONSE_TIME_FAIL);
 
-		errorFailedThreshold = Integer.valueOf(errorFail);
-		errorUnstableThreshold = Integer.valueOf(errorUnstable);
-		responseTimeFailedThreshold = Integer.valueOf(timeFail);
-		responseTimeUnstableThreshold = Integer.valueOf(timeUnstable);
-	*/
 		dataFolder = params.get(Constants.SETTINGS_DATA_FOLDER);
 		if (PropertiesUtil.isEmptyOrNull(dataFolder)){
 			dataFolder = "";
@@ -233,7 +229,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         long testInitStart=System.currentTimeMillis();
 		boolean initTimeOutPassed=false;
         do{
-            sleep(CHECK_INTERVAL);
+            Utils.sleep(CHECK_INTERVAL, logger);
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
             logger.message("Check if the test is initialized...");
         initTimeOutPassed=System.currentTimeMillis()>testInitStart+INIT_TEST_TIMEOUT;
@@ -247,7 +243,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         long testRunStart=System.currentTimeMillis();
 
         do{
-		    sleep(CHECK_INTERVAL);
+            Utils.sleep(CHECK_INTERVAL, logger);
 			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
             testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
@@ -256,7 +252,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         logger.message("Test finished. Checking for test report...");
         logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-        sleep(240000);
+        Utils.sleep(240000, logger);
         TestResult testResult = bzmServiceManager.getReport(logger);
 
         if(testResult==null){
@@ -266,18 +262,16 @@ public class BlazeAgentProcessor implements BuildProcess{
             logger.message(testResult.toString());
         }
 
-        result=bzmServiceManager.validateServerTresholds();
-        return  result;
-    }
+        BuildFinishedStatus serverTrRes = bzmServiceManager.validateServerTresholds();
+        BuildFinishedStatus localTrRes = Utils.validateLocalTresholds(testResult, errorUnstableThreshold,
+                errorFailedThreshold,
+                responseTimeUnstableThreshold,
+                responseTimeFailedThreshold, logger);
 
-    private void sleep(int sleepPeriod){
-        try {
-            Thread.currentThread().sleep(sleepPeriod);
-        } catch (InterruptedException e) {
-            logger.exception(e);
-            logger.warning("Test was interrupted during sleeping");
-        }
+        result=localTrRes==null?serverTrRes:localTrRes;
+        return result;
     }
+       
 	
 	/**
 	 * Upload main JMX file and all the files from the data folder

@@ -1,6 +1,8 @@
 package com.blaze.utils;
 
 import com.blaze.api.BlazemeterApi;
+import com.blaze.testresult.TestResult;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -101,5 +103,92 @@ public class Utils {
             props.setProperty("version", "N/A");
         }
         return props.getProperty("version");
+    }
+
+    public static void sleep(int sleepPeriod,BuildProgressLogger logger){
+        try {
+            Thread.currentThread().sleep(sleepPeriod);
+        } catch (InterruptedException e) {
+            logger.exception(e);
+            logger.warning("Test was interrupted during sleeping");
+        }
+    }
+
+    public static BuildFinishedStatus validateLocalTresholds(TestResult testResult,
+                                                String errorUnstableThreshold,
+                                                String errorFailedThreshold,
+                                                String responseTimeUnstableThreshold,
+                                                String responseTimeFailedThreshold,
+                                                BuildProgressLogger logger){
+
+        BuildFinishedStatus buildStatus = BuildFinishedStatus.FINISHED_SUCCESS;
+        try{
+
+            int responseTimeUnstable = Integer.valueOf(responseTimeUnstableThreshold.isEmpty()
+                    ?"-1":responseTimeUnstableThreshold);
+
+            int responseTimeFailed = Integer.valueOf(responseTimeFailedThreshold.isEmpty()
+                    ?"-1":responseTimeFailedThreshold);
+            int errorUnstable = Integer.valueOf(errorUnstableThreshold.isEmpty()
+                    ?"-1":errorUnstableThreshold);
+            int errorFailed = Integer.valueOf(errorFailedThreshold.isEmpty()
+                    ?"-1":errorUnstableThreshold);
+
+            if (responseTimeUnstable >= 0 & testResult.getAverage() > responseTimeUnstable &
+                    testResult.getAverage() < responseTimeFailed) {
+                logger.message("Validating reponseTimeUnstable...\n");
+                logger.message("Average response time is higher than responseTimeUnstable treshold\n");
+                logger.message("Marking build as FINISHED_WITH_PROBLEMS");
+                buildStatus=BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+            }
+
+            if (errorUnstable >= 0 & testResult.getErrorPercentage() > errorUnstable &
+                    testResult.getAverage() < errorFailed) {
+                logger.message("Validating errorPercentageUnstable...\n");
+                logger.message("Error percentage is higher than errorPercentageUnstable treshold\n");
+                logger.message("Marking build as FINISHED_WITH_PROBLEMS");
+                buildStatus=BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+            }
+
+
+            if (responseTimeFailed >= 0 & testResult.getAverage() >= responseTimeFailed) {
+                logger.message("Validating reponseTimeFailed...\n");
+                logger.message("Average response time is higher than responseTimeFailure treshold\n");
+                logger.message("Marking build as failed");
+                buildStatus=BuildFinishedStatus.FINISHED_FAILED;
+            }
+
+            if (errorFailed >= 0 & testResult.getAverage() >= errorFailed) {
+                logger.message("Validating errorPercentageUnstable...\n");
+                logger.message("Error percentage is higher than errorPercentageUnstable treshold\n");
+                logger.message("Marking build as failed");
+                buildStatus=BuildFinishedStatus.FINISHED_FAILED;
+            }
+
+            if (errorUnstable < 0) {
+                logger.message("ErrorUnstable percentage validation was skipped: value was not set in configuration");
+            }
+
+            if (errorFailed < 0) {
+                logger.message("ErrorFailed percentage validation was skipped: value was not set in configuration");
+            }
+
+            if (responseTimeUnstable < 0) {
+                logger.message("ResponseTimeUnstable validation was skipped: value was not set in configuration");
+            }
+
+            if (responseTimeFailed < 0) {
+                logger.message("ResponseTimeFailed validation was skipped: value was not set in configuration");
+            }
+
+            if(responseTimeFailed < 0&responseTimeUnstable < 0&errorFailed < 0&errorUnstable < 0){
+                buildStatus=null;
+            }
+
+        }catch (Exception e){
+            logger.message("Unexpected error occured while validating local tresholds. Check that test was finished correctly or turn to customer support");
+        }finally {
+            return buildStatus;
+        }
     }
 }

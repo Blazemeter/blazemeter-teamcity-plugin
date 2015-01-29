@@ -23,22 +23,6 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 		final String testDuration = (String) properties.get(Constants.SETTINGS_TEST_DURATION);
 		String dataFolder = (String) properties.get(Constants.SETTINGS_DATA_FOLDER);
 		final String mainJMX = (String) properties.get(Constants.SETTINGS_MAIN_JMX);
-/*
-
-		if (PropertiesUtil.isEmptyOrNull(errThUnstable)) {
-			result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE,
-					"Error threshold unstable empty."));
-		} else {
-			try {
-				Integer.parseInt(errThUnstable);
-			} catch (NumberFormatException nfe) {
-				result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE,
-						"Error threshold unstable is not a number."));
-
-			}
-		}
-
-*/
 
         if (!PropertiesUtil.isEmptyOrNull(errThUnstable)) {
             try {
@@ -50,12 +34,8 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
             }
         }
 
-
-/*
-        if (PropertiesUtil.isEmptyOrNull(errThFail)) {
-			result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_FAIL, "Error threshold failure empty."));
-		} else {
-			try {
+            if (!PropertiesUtil.isEmptyOrNull(errThFail)) {
+                try {
 				Integer.parseInt(errThFail);
 			} catch (NumberFormatException nfe) {
 				result.add(new InvalidProperty(Constants.SETTINGS_ERROR_THRESHOLD_FAIL,
@@ -63,7 +43,6 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 
 			}
 		}
-*/
 
         if (!PropertiesUtil.isEmptyOrNull(errThUnstable)) {
             try {
@@ -99,10 +78,6 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 		if (PropertiesUtil.isEmptyOrNull(test)) {
 			result.add(new InvalidProperty(Constants.SETTINGS_ALL_TESTS_ID, "A test must be selected."));
 		}
-
-		/*if (PropertiesUtil.isEmptyOrNull(testDuration)) {
-			result.add(new InvalidProperty(Constants.SETTINGS_TEST_DURATION, "A test duration time must be selected."));
-		}*/
 
 		if (!PropertiesUtil.isEmptyOrNull(dataFolder)) {
 			dataFolder = dataFolder.trim();
