@@ -13,6 +13,7 @@ import com.blaze.runner.Constants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import org.jetbrains.annotations.NotNull;
@@ -247,24 +248,19 @@ public class BzmServiceManager {
         return ti;
     }
 
-    public String validateServerTresholds() {
-        JSONObject jo = this.getAPI().getTresholds(userKey,session);
-        String tresholdsValidation=null;
+    public BuildFinishedStatus validateServerTresholds() {
+        JSONObject jo = null;
+        boolean tresholdsValid=true;
         JSONObject result=null;
         try {
+            jo=this.getAPI().getTresholds(userKey,session);
             result=jo.getJSONObject("result");
+            tresholdsValid=result.getJSONObject("data").getBoolean("success");
         } catch (JSONException je) {
-            logger.warning("Tresholds are not available for this test: " + je + "\n" + jo.toString());
+            logger.warning("Failed to get tresholds for  session=" + session);
+        }finally {
+            return tresholdsValid? BuildFinishedStatus.FINISHED_SUCCESS:BuildFinishedStatus.FINISHED_FAILED;
         }
-        try {
-            tresholdsValidation=String.valueOf(result.getJSONObject("data").getBoolean("success"));
-        } catch (JSONException je) {
-            logger.warning("Tresholds are not available for this test: " + je + "\n" + jo.toString());
-        }  catch (NullPointerException npe) {
-            logger.warning("Tresholds are not available for this test: " + npe + "\n" );
-        }
-
-        return tresholdsValidation;
     }
 
 

@@ -261,26 +261,13 @@ public class BlazeAgentProcessor implements BuildProcess{
 
         if(testResult==null){
             logger.warning("Failed to get report from server...");
-            return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
         }else{
             logger.message("Test report is received...");
             logger.message(testResult.toString());
-            return BuildFinishedStatus.FINISHED_SUCCESS;
         }
 
-        /*String treshOldsValidation=bzmServiceManager.validateServerTresholds();
-        if(treshOldsValidation==null){
-            logger.warning("Tresholds are not available for this test: check settings on server");
-            return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
-        }
-        if(treshOldsValidation.equals("false")){
-            logger.warning("Tresholds validation result: false");
-            return BuildFinishedStatus.FINISHED_FAILED;
-        }
-        if(treshOldsValidation.equals("true")){
-            logger.warning("Tresholds validation result: success");
-            return BuildFinishedStatus.FINISHED_SUCCESS;
-        }*/
+        result=bzmServiceManager.validateServerTresholds();
+        return  result;
     }
 
     private void sleep(int sleepPeriod){
