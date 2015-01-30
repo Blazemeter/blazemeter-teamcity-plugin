@@ -3,6 +3,7 @@ package com.blaze;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.blaze.api.BlazemeterApi;
@@ -105,9 +106,10 @@ public class BzmServiceManager {
     }
 
     public HashMap<String, String> getTests() {
-        HashMap<String,String>tests=new HashMap<>();
+        LinkedHashMap<String,String>tests=new LinkedHashMap<>();
+        tests.put(Constants.CREATE_FROM_JSON,Constants.NEW_TEST);
         try {
-            tests= getAPI().getTestList(userKey);
+            tests.putAll(getAPI().getTestList(userKey));
         } catch (IOException e) {
             logger.exception(e);
         } catch (JSONException e) {

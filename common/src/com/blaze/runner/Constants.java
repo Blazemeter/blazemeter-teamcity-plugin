@@ -39,4 +39,6 @@ public interface Constants {
 	public final static String DEFAULT_SETTINGS_DATA_FOLDER = "DataFolder";
 	public final static String BZM_PROPERTIES_FILE="/userKeyFile.properties";
     public final static String NOT_IMPLEMENTED="This call is not implemented.";
+    public final static String CREATE_FROM_JSON="Create from JSON";
+    public final static String NEW_TEST="New test";
 }
