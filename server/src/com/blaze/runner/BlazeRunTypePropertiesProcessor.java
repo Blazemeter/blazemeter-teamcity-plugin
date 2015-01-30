@@ -16,6 +16,7 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 		List<InvalidProperty> result = new Vector<InvalidProperty>();
 
 		final String test = (String) properties.get(Constants.SETTINGS_ALL_TESTS_ID);
+        final String jsonConfig = (String) properties.get(Constants.JSON_CONFIGURATION);
 		final String errThUnstable = (String) properties.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
 		final String errThFail = (String) properties.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
 		final String errRespTimeUnstable = (String) properties.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);

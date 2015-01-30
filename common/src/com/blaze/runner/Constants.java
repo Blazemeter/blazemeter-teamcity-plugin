@@ -33,7 +33,8 @@ public interface Constants {
 	public final static String SETTINGS_TEST_DURATION = "test_duration";
 	public final static String SETTINGS_DATA_FOLDER = "data_folder";
 	public final static String SETTINGS_MAIN_JMX = "main_jmx";
-	
+	public final static String JSON_CONFIGURATION = "json_config";
+
 	//Default properties
 	public final static String DEFAULT_SETTINGS_DATA_FOLDER = "DataFolder";
 	public final static String BZM_PROPERTIES_FILE="/userKeyFile.properties";
