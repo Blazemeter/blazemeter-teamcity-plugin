@@ -8,6 +8,7 @@ import com.blaze.BzmServiceManager;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -73,7 +74,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	private String validateParams(Map<String, String> params) {
 
 		testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
-		if (isNullorEmpty(testId)) {
+		if (StringUtil.isEmptyOrSpaces(testId)) {
             logger.warning("No test was defined in the configuration page.");
 			return "No test was defined in the configuration page.";
 		} else {
@@ -143,7 +144,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 		
 		logger.warning("File separator should be " + File.separator);
 
-		if (isNullorEmpty(mainJMX)) {
+		if (StringUtil.isEmptyOrSpaces(mainJMX)) {
 			needTestUpload = false;
 		} else {
 			String agentCheckoutDir = agentRunningBuild.getCheckoutDirectory().getAbsolutePath();
@@ -151,7 +152,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 				agentCheckoutDir += File.separator;//make sure that the path ends with '/'
 			}
 									
-	        if (!isFullPath(dataFolder)){//full path
+	        if (!FileUtil.isAbsolute(dataFolder)){//full path
 	        	dataFolder = agentCheckoutDir + dataFolder;
 	        } 
 	        
@@ -166,35 +167,6 @@ public class BlazeAgentProcessor implements BuildProcess{
 		return null;
 	}
 
-	private boolean isFullPath(String path){
-		if (path.startsWith("/")){
-			return true;
-		}
-		
-		if (path.length() < 3) {
-			return false;
-		}
-		if (path.substring(0,1).matches("[a-zA-Z]")){//like D:/
-			if (path.substring(1, 2).equals(":") && (path.substring(2, 3).equals("/") || path.substring(2, 3).equals("\\"))){
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Check if the value is null or empty
-	 * @param value
-	 * @return true if the value is null or empty, false otherwise
-	 */
-	private boolean isNullorEmpty(String value){
-		if ((value == null) || ("".equals(value))){
-			return true;
-		}
-		return false;
-	}
-	
 	@Override
 	public void interrupt() {
 		logger.message("BlazeMeter agent interrupted.");
@@ -318,7 +290,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	 */
     private void uploadDataFolderFiles() {
     	logger.activityStarted("Uploading data files", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-        if (dataFolder == null || dataFolder.isEmpty()){
+        if (StringUtil.isEmptyOrSpaces(dataFolder)){
         	logger.error("Empty data folder. Please enter the path to your data folder or '.' for main folder where the files are checked out.");
         	logger.activityFinished("Uploading data files", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
             return;

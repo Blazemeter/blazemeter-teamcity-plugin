@@ -1,15 +1,17 @@
 package com.blaze.api;
 
-import com.blaze.utils.Utils;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
+import jetbrains.buildServer.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -44,9 +46,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
     }
 
-
-
-
     /**
      * @param userKey  - user key
      * @param testId   - test id
@@ -57,31 +56,34 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                 //     * @throws org.json.JSONException
      */
     @Override
-    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName) throws JSONException{
-        if (!validate(userKey, testId)) return false;
+    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName)
+            throws JSONException, IOException{
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return false;
         boolean upLoadJMX=false;
         String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
-        String fileCon = Utils.getFileContents(pathName);
+        String fileCon = FileUtil.readText(new File(pathName));
         jmxData.put("data", fileCon);
         upLoadJMX=this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST)!=null;
         return upLoadJMX;
     }
 
     @Override
-    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) throws JSONException{
-        if (!validate(userKey, testId)) return null;
+    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName)
+            throws JSONException, IOException{
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
         String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
-        String fileCon = Utils.getFileContents(pathName);
+        String fileCon = null;
+        fileCon = FileUtil.readText(new File(pathName));
         jmxData.put("data", fileCon);
-        return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
+        return this.bzmHttpClient.getJson(url, jmxData, BzmHttpClient.Method.POST);
     }
 
     @Override
     public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException{
         TestInfo ti = new TestInfo();
-        if (!validate(userKey, testId)) {
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) {
             ti.setStatus(Constants.TestStatus.NotFound);
             return ti;
         }
@@ -107,22 +109,10 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     @Override
     public synchronized JSONObject startTest(String userKey, String testId) throws JSONException{
 
-        if (!validate(userKey, testId)) return null;
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
         return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
-    }
-
-
-    private boolean validate(String userKey, String testId) {
-        if (userKey == null || userKey.trim().isEmpty()) {
-            return false;
-        }
-
-        if (testId == null || testId.trim().isEmpty()) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -133,7 +123,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      */
     @Override
     public JSONObject stopTest(String userKey, String testId) throws JSONException{
-        if (!validate(userKey, testId)) return null;
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
         return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
@@ -147,7 +137,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      */
     @Override
     public JSONObject testReport(String userKey, String reportId) throws JSONException{
-        if (!validate(userKey, reportId)) return null;
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
         JSONObject summary = (JSONObject) this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET).getJSONObject("result")

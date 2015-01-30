@@ -186,6 +186,9 @@ public class BzmServiceManager {
             uploadJMX=getAPI().uploadJmx(userKey, testId, filename, pathname);
         } catch (JSONException e) {
             logger.exception(e);
+        } catch (IOException ioe) {
+            logger.exception(ioe);
+            logger.error("Could not upload file " + filename + " " + ioe.getMessage());
         }
         return uploadJMX;
     }
@@ -199,6 +202,9 @@ public class BzmServiceManager {
         } catch (JSONException e) {
             logger.exception(e);
             logger.error("Could not upload file " + fileName + " " + e.getMessage());
+        } catch (IOException ioe) {
+            logger.exception(ioe);
+            logger.error("Could not upload file " + fileName + " " + ioe.getMessage());
         }
     }
 

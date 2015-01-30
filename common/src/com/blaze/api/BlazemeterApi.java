@@ -13,9 +13,11 @@ import java.util.HashMap;
  */
 public interface BlazemeterApi {
 
-    public boolean uploadJmx(String userKey, String testId, String fileName, String pathName) throws JSONException;
+    public boolean uploadJmx(String userKey, String testId, String fileName, String pathName)
+            throws JSONException,IOException;
 
-    public JSONObject uploadFile(String userKey, String testId, String fileName, String pathName) throws JSONException;
+    public JSONObject uploadFile(String userKey, String testId, String fileName, String pathName)
+            throws JSONException,IOException;
 
     public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException;
 
