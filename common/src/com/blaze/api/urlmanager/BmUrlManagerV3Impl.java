@@ -137,4 +137,19 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         return getTresholds;
 
     }
+
+
+    @Override
+    public String postJsonConfig(String appKey, String userKey, String testId) {
+        String getTestInfo=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        getTestInfo=SERVER_URL+"/api/latest/tests/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return getTestInfo;
+    }
 }

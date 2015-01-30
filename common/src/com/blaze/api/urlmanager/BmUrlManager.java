@@ -29,4 +29,6 @@ public interface BmUrlManager {
 
     public String getTresholds(String appKey, String userKey, String sessionId);
 
+    public String postJsonConfig(String appKey, String userKey, String testId);
+
 }

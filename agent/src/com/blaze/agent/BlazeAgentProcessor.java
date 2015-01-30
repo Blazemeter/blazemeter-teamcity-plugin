@@ -7,6 +7,7 @@ import java.util.Map;
 import com.blaze.BzmServiceManager;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
+import com.intellij.openapi.util.io.FileUtil;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -20,6 +21,7 @@ import jetbrains.buildServer.util.PropertiesUtil;
 
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import org.json.JSONObject;
 
 /**
  * @author Marcel Milea
@@ -84,26 +86,30 @@ public class BlazeAgentProcessor implements BuildProcess{
 				}
 			}
 		}
+
         String jsonConf = params.get(Constants.JSON_CONFIGURATION);
-        File jsonF = new File(agentRunningBuild.getCheckoutDirectory() + "/" + jsonConf);
-        logger.message("Trying to find JSON configuration in build.checkout.directory=" + agentRunningBuild.getCheckoutDirectory());
-        if (jsonF.exists()) {
-            jsonConfiguration = jsonF.getAbsolutePath();
-            logger.message("File with JSON configuration was found. Actual path=" + jsonF.getAbsolutePath());
-        } else {
-            String agentWorkDir = agentRunningBuild.getSharedConfigParameters().get(TC_AGENT_WORK_DIR);
-            logger.message("Trying to find JSON configuration in teamcity.agent.work.dir=" + agentRunningBuild.getCheckoutDirectory());
-            jsonF = new File(agentWorkDir + "/" + jsonConf);
+        if(jsonConf!=null&&!jsonConf.isEmpty()){
+            File jsonF = new File(agentRunningBuild.getCheckoutDirectory() + "/" + jsonConf);
+            logger.message("Trying to find JSON configuration in build.checkout.directory=" + agentRunningBuild.getCheckoutDirectory());
             if (jsonF.exists()) {
                 jsonConfiguration = jsonF.getAbsolutePath();
                 logger.message("File with JSON configuration was found. Actual path=" + jsonF.getAbsolutePath());
             } else {
-                logger.warning("File with JSON configuration was not found.");
-                return "File with JSON configuration was not found.";
+                String agentWorkDir = agentRunningBuild.getSharedConfigParameters().get(TC_AGENT_WORK_DIR);
+                logger.message("Trying to find JSON configuration in teamcity.agent.work.dir=" + agentRunningBuild.getCheckoutDirectory());
+                jsonF = new File(agentWorkDir + "/" + jsonConf);
+                if (jsonF.exists()) {
+                    jsonConfiguration = jsonF.getAbsolutePath();
+                    logger.message("File with JSON configuration was found. Actual path=" + jsonF.getAbsolutePath());
+                } else {
+                    logger.warning("File with JSON configuration was not found.");
+                    return "File with JSON configuration was not found.";
+
+                }
 
             }
-
         }
+
 
         String testDrt = params.get(Constants.SETTINGS_TEST_DURATION);
 		if (PropertiesUtil.isEmptyOrNull(testDrt)) {
@@ -232,6 +238,18 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@SuppressWarnings("static-access")
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
+        JSONObject jsonConf=null;
+        if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
+            try{
+                File jsonF=new File(jsonConfiguration);
+                String jsonStr = new String(FileUtil.loadFileText(jsonF));
+                jsonConf=new JSONObject(jsonStr);
+                bzmServiceManager.postJsonConfig(testId,jsonConf);
+            }catch (Exception e){
+                logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
+            }
+        }
+
         logger.message("Attempting to start test with id:"+testId);
         String session = bzmServiceManager.startTest(testId, 5, logger);
 		BuildFinishedStatus result=null;

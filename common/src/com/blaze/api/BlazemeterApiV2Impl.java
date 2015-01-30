@@ -229,4 +229,9 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     public JSONObject getTresholds(String userKey, String sessionId) {
         return not_implemented;
     }
+
+    @Override
+    public JSONObject postJsonConfig(String userKey, String testId, JSONObject data) {
+        return not_implemented;
+    }
 }

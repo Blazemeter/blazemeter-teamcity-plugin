@@ -124,4 +124,8 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         return Constants.NOT_IMPLEMENTED;
     }
 
+    @Override
+    public String postJsonConfig(String appKey, String userKey, String testId) {
+        return Constants.NOT_IMPLEMENTED;
+    }
 }

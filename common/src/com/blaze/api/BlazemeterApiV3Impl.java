@@ -8,6 +8,7 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -246,6 +247,15 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
         String url = this.urlManager.getTresholds(APP_KEY, userKey, sessionId);
         JSONObject jo = this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET);
+        return jo;
+    }
+
+    @Override
+    public JSONObject postJsonConfig(String userKey,String testId, JSONObject data){
+        if(StringUtils.isEmpty(userKey)&StringUtils.isEmpty(testId)) return null;
+
+        String url = this.urlManager.postJsonConfig(APP_KEY, userKey, testId);
+        JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.POST);
         return jo;
     }
 }

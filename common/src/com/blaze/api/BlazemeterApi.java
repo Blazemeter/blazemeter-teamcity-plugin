@@ -33,5 +33,6 @@ public interface BlazemeterApi {
 
     public JSONObject getTresholds(String userKey, String sessionId);
 
+    public JSONObject postJsonConfig(String userKey,String testId, JSONObject data);
 
 }

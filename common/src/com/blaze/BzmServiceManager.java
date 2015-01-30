@@ -248,6 +248,16 @@ public class BzmServiceManager {
         return ti;
     }
 
+    public boolean postJsonConfig(String testId,JSONObject jsonConfig){
+        try {
+            getAPI().postJsonConfig(userKey, testId, jsonConfig);
+        } catch (Exception e) {
+            logger.warning("Problems with posting jsonConfiguration to server. Check URL and json configuration.");
+            return false;
+        }
+        return true;
+    }
+
     public BuildFinishedStatus validateServerTresholds() {
         JSONObject jo = null;
         boolean tresholdsValid=true;
