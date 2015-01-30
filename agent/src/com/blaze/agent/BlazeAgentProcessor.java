@@ -20,7 +20,6 @@ import jetbrains.buildServer.util.PropertiesUtil;
 
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
-import org.springframework.util.StringUtils;
 
 /**
  * @author Marcel Milea
@@ -29,6 +28,7 @@ import org.springframework.util.StringUtils;
 public class BlazeAgentProcessor implements BuildProcess{
 	private static final int CHECK_INTERVAL = 60000;
 	private static final int INIT_TEST_TIMEOUT = 900000;
+    private static final String TC_AGENT_WORK_DIR="teamcity.agent.work.dir";
 	private BzmServiceManager bzmServiceManager;
 	private AgentRunningBuild agentRunningBuild;
 	private BuildRunnerContext buildRunnerContext;
@@ -36,13 +36,14 @@ public class BlazeAgentProcessor implements BuildProcess{
 	
 	private String validationError;
 	private String testId;
+    private String jsonConfiguration;
 	private int testDuration;
-	String errorUnstableThreshold;
-    String errorFailedThreshold;
-    String responseTimeUnstableThreshold;
-    String responseTimeFailedThreshold;
-	String dataFolder;
-	String mainJMX;
+	private String errorUnstableThreshold;
+    private String errorFailedThreshold;
+    private String responseTimeUnstableThreshold;
+    private String responseTimeFailedThreshold;
+	private String dataFolder;
+	private String mainJMX;
 	
 	final BuildProgressLogger logger;
 	boolean finished;
@@ -68,7 +69,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	}
 
 	private String validateParams(Map<String, String> params) {
-		
+
 		testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
 		if (isNullorEmpty(testId)) {
             logger.warning("No test was defined in the configuration page.");
@@ -83,7 +84,28 @@ public class BlazeAgentProcessor implements BuildProcess{
 				}
 			}
 		}
-		String testDrt = params.get(Constants.SETTINGS_TEST_DURATION);
+        String jsonConf = params.get(Constants.JSON_CONFIGURATION);
+        File jsonF = new File(agentRunningBuild.getCheckoutDirectory() + "/" + jsonConf);
+        logger.message("Trying to find JSON configuration in build.checkout.directory=" + agentRunningBuild.getCheckoutDirectory());
+        if (jsonF.exists()) {
+            jsonConfiguration = jsonF.getAbsolutePath();
+            logger.message("File with JSON configuration was found. Actual path=" + jsonF.getAbsolutePath());
+        } else {
+            String agentWorkDir = agentRunningBuild.getSharedConfigParameters().get(TC_AGENT_WORK_DIR);
+            logger.message("Trying to find JSON configuration in teamcity.agent.work.dir=" + agentRunningBuild.getCheckoutDirectory());
+            jsonF = new File(agentWorkDir + "/" + jsonConf);
+            if (jsonF.exists()) {
+                jsonConfiguration = jsonF.getAbsolutePath();
+                logger.message("File with JSON configuration was found. Actual path=" + jsonF.getAbsolutePath());
+            } else {
+                logger.warning("File with JSON configuration was not found.");
+                return "File with JSON configuration was not found.";
+
+            }
+
+        }
+
+        String testDrt = params.get(Constants.SETTINGS_TEST_DURATION);
 		if (PropertiesUtil.isEmptyOrNull(testDrt)) {
             logger.message("Attempting to get test duration for testId="+testId);
             testDuration= Utils.getTestDuration(bzmServiceManager.getUserKey(),
