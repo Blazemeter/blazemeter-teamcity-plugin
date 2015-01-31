@@ -75,7 +75,7 @@
             <props:selectProperty name="all_tests">
                 <c:forEach var="test" items="${bzmServiceManager.tests}">
                     <props:option value="${test.value}" selected="false" title="${test.key}" id="${test.value}">
-                        ${test.value}-${test.key}
+                        ${test.value} -> ${test.key}
                     </props:option>
                 </c:forEach>
             </props:selectProperty>

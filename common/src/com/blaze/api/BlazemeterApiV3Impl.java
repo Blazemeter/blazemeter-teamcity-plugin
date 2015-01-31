@@ -197,6 +197,16 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         return jo;
     }
 
+
+    @Override
+    public JSONObject createTest(String apiKey,JSONObject data) {
+        if(StringUtil.isEmptyOrSpaces(apiKey)) return null;
+        String url = this.urlManager.createTest(APP_KEY, apiKey);
+        JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.POST);
+        return jo;
+    }
+
+
     public String getServerName() {
 		return serverName;
 	}
@@ -248,4 +258,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.POST);
         return jo;
     }
+
+
+
 }

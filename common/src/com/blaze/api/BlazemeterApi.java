@@ -37,4 +37,6 @@ public interface BlazemeterApi {
 
     public JSONObject postJsonConfig(String userKey,String testId, JSONObject data);
 
+    public JSONObject createTest(String userKey,JSONObject data);
+
 }

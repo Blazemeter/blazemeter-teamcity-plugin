@@ -121,7 +121,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 			try{
 				testDuration = Integer.valueOf(testDrt);
                 logger.message("Attempting to update test with id:"+testId);
-                bzmServiceManager.updateTest(testId,testDuration,logger);
+                bzmServiceManager.updateTestDuration(testId, testDuration, logger);
             } catch (NumberFormatException nfe){
                 logger.exception(nfe);
                 logger.warning("Test duration is not a number.");
@@ -210,15 +210,11 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@SuppressWarnings("static-access")
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
-        JSONObject jsonConf=null;
         if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
             try{
-                File jsonF=new File(jsonConfiguration);
-                String jsonStr = new String(FileUtil.loadFileText(jsonF));
-                jsonConf=new JSONObject(jsonStr);
-                bzmServiceManager.postJsonConfig(testId,jsonConf);
+                testId=bzmServiceManager.prepareTest(testId,jsonConfiguration);
             }catch (Exception e){
-                logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
+                logger.warning("Failed to prepare/create test with JSON Configuration from "+jsonConfiguration);
             }
         }
 

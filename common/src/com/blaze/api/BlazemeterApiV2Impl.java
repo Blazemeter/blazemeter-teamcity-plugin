@@ -227,4 +227,9 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     public JSONObject postJsonConfig(String userKey, String testId, JSONObject data) {
         return not_implemented;
     }
+
+    @Override
+    public JSONObject createTest(String apiKey, JSONObject data) {
+        return not_implemented;
+    }
 }

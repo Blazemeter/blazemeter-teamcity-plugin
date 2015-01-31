@@ -42,7 +42,7 @@ public class Utils {
         return testDuration;
     }
 
-    public static void updateTest(String apiKey,BlazemeterApi api, String testId, int updDuration, BuildProgressLogger logger) {
+    public static void updateTestDuration(String apiKey, BlazemeterApi api, String testId, int updDuration, BuildProgressLogger logger) {
         try {
             JSONObject jo = api.getTestInfo(apiKey,testId,logger);
             JSONObject result = jo.getJSONObject("result");

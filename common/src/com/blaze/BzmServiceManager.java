@@ -14,6 +14,7 @@ import com.blaze.runner.Constants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
+import com.intellij.openapi.util.io.FileUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
@@ -100,10 +101,31 @@ public class BzmServiceManager {
                     blazemeterAPI = new BlazemeterApiV2Impl(serverName, serverPortInt, username, password, this.blazeMeterUrl);
                     break;
             }
+
         }
 
         return blazemeterAPI;
     }
+
+    public String prepareTest(String testId,String jsonConfiguration){
+        JSONObject jsonConf=null;
+        if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
+            try{
+                File jsonF=new File(jsonConfiguration);
+                String jsonStr = new String(FileUtil.loadFileText(jsonF));
+                jsonConf=new JSONObject(jsonStr);
+            }catch (Exception e){
+                logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
+            }
+        }
+        if(testId.contains(Constants.NEW_TEST)){
+            testId=this.createTest(jsonConf);
+        }else{
+            this.postJsonConfig(testId, jsonConf);
+        }
+        return testId;
+    }
+
 
     public HashMap<String, String> getTests() {
         LinkedHashMap<String,String>tests=new LinkedHashMap<>();
@@ -153,8 +175,8 @@ public class BzmServiceManager {
         return session;
     }
 
-    public void updateTest(String testId, int testDuration, BuildProgressLogger logger) {
-        Utils.updateTest(userKey, getAPI(), testId, testDuration, logger);
+    public void updateTestDuration(String testId, int testDuration, BuildProgressLogger logger) {
+        Utils.updateTestDuration(userKey, getAPI(), testId, testDuration, logger);
     }
 
 
@@ -264,6 +286,23 @@ public class BzmServiceManager {
             return false;
         }
         return true;
+    }
+
+    public String createTest(JSONObject jsonConfig){
+        String testId=null;
+        try {
+            JSONObject jo=getAPI().createTest(userKey, jsonConfig);
+            if(jo.has("error")&&!jo.get("error").equals(JSONObject.NULL)){
+                logger.warning("Failed to create test: "+jo.getString("error"));
+                testId="";
+            }else{
+                testId = String.valueOf(jo.getJSONObject("result").getInt("id"));
+            }
+        } catch (Exception e) {
+            logger.warning("Problems with creating test on server. Check URL and json configuration.");
+        }finally {
+            return testId;
+        }
     }
 
     public BuildFinishedStatus validateServerTresholds() {
