@@ -42,7 +42,7 @@ public class Utils {
         return testDuration;
     }
 
-    public static void updateTestDuration(String apiKey, BlazemeterApi api, String testId, int updDuration, BuildProgressLogger logger) {
+    public static void updateTestDuration(String apiKey, BlazemeterApi api, String testId, String updDuration, BuildProgressLogger logger) {
         try {
             JSONObject jo = api.getTestInfo(apiKey,testId,logger);
             JSONObject result = jo.getJSONObject("result");
@@ -51,7 +51,7 @@ public class Utils {
             String type = configuration.getString("type");
             JSONObject options = plugins.getJSONObject(type);
             JSONObject override = options.getJSONObject("override");
-            override.put("duration", String.valueOf(updDuration));
+            override.put("duration", Integer.parseInt(updDuration));
             api.putTestInfo(apiKey,testId, result,logger);
 
         } catch (JSONException je) {

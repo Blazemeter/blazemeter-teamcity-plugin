@@ -40,7 +40,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	private String validationError;
 	private String testId;
     private String jsonConfiguration;
-	private int testDuration;
+	private String testDuration;
 	private String errorUnstableThreshold;
     private String errorFailedThreshold;
     private String responseTimeUnstableThreshold;
@@ -111,24 +111,18 @@ public class BlazeAgentProcessor implements BuildProcess{
             }
         }
 
-
-        String testDrt = params.get(Constants.SETTINGS_TEST_DURATION);
-		if (PropertiesUtil.isEmptyOrNull(testDrt)) {
-            logger.message("Attempting to get test duration for testId="+testId);
-            testDuration= Utils.getTestDuration(bzmServiceManager.getUserKey(),
-                    bzmServiceManager.getBlazemeterAPI(),testId,logger);
-		} else {
-			try{
-				testDuration = Integer.valueOf(testDrt);
+        testDuration = params.get(Constants.SETTINGS_TEST_DURATION);
+        if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
+            try{
                 logger.message("Attempting to update test with id:"+testId);
                 bzmServiceManager.updateTestDuration(testId, testDuration, logger);
             } catch (NumberFormatException nfe){
                 logger.exception(nfe);
                 logger.warning("Test duration is not a number.");
-				return "Test duration is not a number.";
-			}
-		}
+                return "Test duration is not a number.";
+            }
 
+        }
         errorUnstableThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
         errorFailedThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
         responseTimeUnstableThreshold = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
@@ -212,7 +206,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 	public BuildFinishedStatus waitFor() throws RunBuildException {
         if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
             try{
-                testId=bzmServiceManager.prepareTest(testId,jsonConfiguration);
+                testId=bzmServiceManager.prepareTest(testId,jsonConfiguration,testDuration);
             }catch (Exception e){
                 logger.warning("Failed to prepare/create test with JSON Configuration from "+jsonConfiguration);
             }
@@ -247,7 +241,6 @@ public class BlazeAgentProcessor implements BuildProcess{
             logger.warning("Build will be aborted");
             return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
         }
-        logger.message("Approximate test duration "+(testDuration!=-1?testDuration+" minutes":"is not defined on server"));
         long testRunStart=System.currentTimeMillis();
 
         do{

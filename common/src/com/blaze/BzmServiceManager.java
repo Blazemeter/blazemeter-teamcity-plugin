@@ -18,6 +18,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
+import jetbrains.buildServer.util.PropertiesUtil;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -107,7 +108,7 @@ public class BzmServiceManager {
         return blazemeterAPI;
     }
 
-    public String prepareTest(String testId,String jsonConfiguration){
+    public String prepareTest(String testId,String jsonConfiguration,String testDuration){
         JSONObject jsonConf=null;
         if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
             try{
@@ -117,14 +118,28 @@ public class BzmServiceManager {
             }catch (Exception e){
                 logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
             }
-        }
-        if(testId.contains(Constants.NEW_TEST)){
-            testId=this.createTest(jsonConf);
+            if(testId.contains(Constants.NEW_TEST)){
+                testId=this.createTest(jsonConf);
+            }else{
+                this.postJsonConfig(testId, jsonConf);
+            }
         }else{
-            this.postJsonConfig(testId, jsonConf);
+            if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
+                try{
+                    logger.message("Attempting to update test with id:"+testId);
+                    bzmServiceManager.updateTestDuration(testId, testDuration, logger);
+                } catch (NumberFormatException nfe){
+                    logger.exception(nfe);
+                    logger.warning("Test duration is not a number.");
+                    return "Test duration is not a number.";
+                }
+            }
         }
+
         return testId;
     }
+
+
 
 
     public HashMap<String, String> getTests() {
@@ -175,7 +190,7 @@ public class BzmServiceManager {
         return session;
     }
 
-    public void updateTestDuration(String testId, int testDuration, BuildProgressLogger logger) {
+    public void updateTestDuration(String testId, String testDuration, BuildProgressLogger logger) {
         Utils.updateTestDuration(userKey, getAPI(), testId, testDuration, logger);
     }
 
@@ -293,7 +308,7 @@ public class BzmServiceManager {
         try {
             JSONObject jo=getAPI().createTest(userKey, jsonConfig);
             if(jo.has("error")&&!jo.get("error").equals(JSONObject.NULL)){
-                logger.warning("Failed to create test: "+jo.getString("error"));
+                logger.warning("Failed to create test: " + jo.getString("error"));
                 testId="";
             }else{
                 testId = String.valueOf(jo.getJSONObject("result").getInt("id"));
