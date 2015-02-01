@@ -47,3 +47,11 @@ To enable the BlazeMeter statistics graph you must add the following lines to ma
 
 
 The statistics are available in the Build Configuration Statistics page.
+
+5. FEATURES
+
+- creating test using JSON configuration;
+- updating test using JSON configuration;
+- validating build against server tresholds;
+- validating build against local tresholds;
+- updating test duration on server;

@@ -112,17 +112,6 @@ public class BlazeAgentProcessor implements BuildProcess{
         }
 
         testDuration = params.get(Constants.SETTINGS_TEST_DURATION);
-        if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
-            try{
-                logger.message("Attempting to update test with id:"+testId);
-                bzmServiceManager.updateTestDuration(testId, testDuration, logger);
-            } catch (NumberFormatException nfe){
-                logger.exception(nfe);
-                logger.warning("Test duration is not a number.");
-                return "Test duration is not a number.";
-            }
-
-        }
         errorUnstableThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
         errorFailedThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
         responseTimeUnstableThreshold = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
@@ -204,13 +193,11 @@ public class BlazeAgentProcessor implements BuildProcess{
 	@SuppressWarnings("static-access")
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
-        if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
             try{
                 testId=bzmServiceManager.prepareTest(testId,jsonConfiguration,testDuration);
             }catch (Exception e){
                 logger.warning("Failed to prepare/create test with JSON Configuration from "+jsonConfiguration);
             }
-        }
 
         logger.message("Attempting to start test with id:"+testId);
         String session = bzmServiceManager.startTest(testId, 5, logger);
