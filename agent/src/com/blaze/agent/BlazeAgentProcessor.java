@@ -240,7 +240,6 @@ public class BlazeAgentProcessor implements BuildProcess{
         logger.message("Test finished. Checking for test report...");
         logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-//        Utils.sleep(240000, logger);
         TestResult testResult = bzmServiceManager.getReport(logger);
 
         if(testResult==null){

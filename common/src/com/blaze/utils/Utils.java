@@ -113,14 +113,18 @@ public class Utils {
         BuildFinishedStatus buildStatus = BuildFinishedStatus.FINISHED_SUCCESS;
         try{
 
-            int responseTimeUnstable = Integer.valueOf(responseTimeUnstableThreshold.isEmpty()
+            int responseTimeUnstable = Integer.valueOf(responseTimeUnstableThreshold==null||
+                    responseTimeUnstableThreshold.isEmpty()
                     ?"-1":responseTimeUnstableThreshold);
 
-            int responseTimeFailed = Integer.valueOf(responseTimeFailedThreshold.isEmpty()
+            int responseTimeFailed = Integer.valueOf(responseTimeFailedThreshold==null||
+                    responseTimeFailedThreshold.isEmpty()
                     ?"-1":responseTimeFailedThreshold);
-            int errorUnstable = Integer.valueOf(errorUnstableThreshold.isEmpty()
+            int errorUnstable = Integer.valueOf(errorUnstableThreshold==null||
+                    errorUnstableThreshold.isEmpty()
                     ?"-1":errorUnstableThreshold);
-            int errorFailed = Integer.valueOf(errorFailedThreshold.isEmpty()
+            int errorFailed = Integer.valueOf(errorFailedThreshold==null||
+                    errorFailedThreshold.isEmpty()
                     ?"-1":errorUnstableThreshold);
 
             if (responseTimeUnstable >= 0 & testResult.getAverage() > responseTimeUnstable &
