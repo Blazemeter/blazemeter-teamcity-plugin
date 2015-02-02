@@ -2,6 +2,9 @@ package com.blaze;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,13 +17,14 @@ import com.blaze.runner.Constants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
-import com.intellij.openapi.util.io.FileUtil;
+import com.jetbrains.launcher.util.FileUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.util.PropertiesUtil;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -114,7 +118,7 @@ public class BzmServiceManager {
         if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
             try{
                 File jsonF=new File(jsonConfiguration);
-                String jsonStr = new String(FileUtil.loadFileText(jsonF));
+                String jsonStr = new String(FileUtil.loadText(jsonF));
                 jsonConf=new JSONObject(jsonStr);
             }catch (Exception e){
                 logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
@@ -202,6 +206,35 @@ public class BzmServiceManager {
         Utils.saveReport(session, junitReport, reportFilePath,logger);
 }
 
+    public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
+        BlazemeterApi api=getAPI();
+        JSONObject jo=api.retrieveJTLZIP(userKey, session);
+        String dataUrl=null;
+        try {
+            JSONArray data=jo.getJSONObject("result").getJSONArray("data");
+            for(int i=0;i<data.length();i++){
+                String title=data.getJSONObject(i).getString("title");
+                if(title.equals("Zip")){
+                    dataUrl=data.getJSONObject(i).getString("dataUrl");
+                    break;
+                }
+            }
+            String jtlFilePath=buildRunnerContext.getWorkingDirectory()+"/"+session+".zip";
+
+            File jtlZip=new File(jtlFilePath);
+            URL url=new URL(dataUrl+"?api_key="+userKey);
+            FileUtil.copy(url,jtlZip);
+            logger.message("Downloading JTLZIP from " + url + "to " + jtlZip.getCanonicalPath());
+//            unzip(jtlZip.getAbsolutePath(), jtlZip.getParent(), jenBuildLog);
+        } catch (JSONException e) {
+            logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+        } catch (MalformedURLException e) {
+            logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+        } catch (IOException e) {
+            logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+        }
+
+    }
 
     /**
      * Get report results.

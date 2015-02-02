@@ -36,6 +36,7 @@
     <property name="util" value="${lib-tc}/util.jar"/>
     <property name="spring-webmvc" value="${lib-tc}/spring-webmvc.jar"/>
     <property name="servlet-api-2.5" value="${lib-tc}/servlet-api-2.5.jar"/>
+    <property name="app-wrapper" value="${lib}/app-wrapper.jar"/>
     <property name="asm" value="${javac2.home}/asm.jar"/>
     <property name="asm-commons" value="${javac2.home}/asm-commons.jar"/>
 
@@ -50,10 +51,12 @@
     <pathelement location="${jackson-mapper-asl-1.9.10}"/>
     <pathelement location="${server-api}"/>
     <pathelement location="${agent-openapi}"/>
+    <pathelement location="${app-wrapper}"/>
   	</path>
 
 
 	<path id="lib.classpath">
+        <pathelement location="${app-wrapper}"/>
         <pathelement location="${jdom}"/>
         <pathelement location="${server-api}"/>
         <pathelement location="${httpclient-4.2.1}"/>

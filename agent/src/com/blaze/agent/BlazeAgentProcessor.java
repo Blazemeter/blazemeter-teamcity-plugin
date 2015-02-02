@@ -249,6 +249,7 @@ public class BlazeAgentProcessor implements BuildProcess{
             logger.message(testResult.toString());
         }
         bzmServiceManager.retrieveJUNITXML(session,buildRunnerContext);
+        bzmServiceManager.retrieveJTL(session,buildRunnerContext);
         BuildFinishedStatus serverTrRes = bzmServiceManager.validateServerTresholds();
         BuildFinishedStatus localTrRes = Utils.validateLocalTresholds(testResult, errorUnstableThreshold,
                 errorFailedThreshold,

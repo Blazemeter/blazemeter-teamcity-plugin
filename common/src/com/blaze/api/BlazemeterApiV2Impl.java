@@ -237,4 +237,9 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     public String retrieveJUNITXML(String userKey,String sessionId) {
         return Constants.NOT_IMPLEMENTED;
     }
+
+    @Override
+    public JSONObject retrieveJTLZIP(String userKey,String sessionId) {
+        return not_implemented;
+    }
 }

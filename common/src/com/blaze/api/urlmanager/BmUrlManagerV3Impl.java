@@ -185,4 +185,19 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
 
+    @Override
+    public String retrieveJTLZIP(String appKey, String userKey, String sessionId) {
+        String retrieveJTLZIP=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        retrieveJTLZIP=SERVER_URL+"/api/latest/sessions/"+sessionId+
+                "/reports/logs?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return retrieveJTLZIP;
+    }
+
 }
