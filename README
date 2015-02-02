@@ -55,3 +55,4 @@ The statistics are available in the Build Configuration Statistics page.
 - validating build against server tresholds;
 - validating build against local tresholds;
 - updating test duration on server;
+- requesting JUNIT report;
