@@ -33,4 +33,6 @@ public interface BmUrlManager {
 
     public String createTest(String appKey, String userKey);
 
+    public String retrieveJUNITXML(String appKey, String userKey, String sessionId);
+
 }

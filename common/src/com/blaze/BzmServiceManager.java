@@ -18,6 +18,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
+import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.util.PropertiesUtil;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -194,6 +195,12 @@ public class BzmServiceManager {
         Utils.updateTestDuration(userKey, getAPI(), testId, testDuration, logger);
     }
 
+    public void retrieveJUNITXML(String session,BuildRunnerContext buildRunnerContext){
+       String junitReport = getAPI().retrieveJUNITXML(userKey, session);
+        logger.message("Received Junit report from server.... Saving it to the disc...");
+        String reportFilePath=buildRunnerContext.getWorkingDirectory()+"/"+session+".xml";
+        Utils.saveReport(session, junitReport, reportFilePath,logger);
+}
 
 
     /**

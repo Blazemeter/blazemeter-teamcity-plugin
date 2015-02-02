@@ -55,7 +55,7 @@ public class BzmHttpClient {
         }
     }
 
-    public HttpResponse getResponse(String url, JSONObject data,Method method) throws Exception {
+    public HttpResponse getHttpResponse(String url, JSONObject data, Method method) throws Exception {
         HttpResponse response = null;
         HttpRequestBase request = null;
 
@@ -145,21 +145,34 @@ public class BzmHttpClient {
         return response;
     }
 
-    public JSONObject getJson(String url, JSONObject data,Method method) {
+
+    public String getResponseAsString(String url, JSONObject data, Method method){
+        String  str = null;
+        try {
+            HttpResponse response = getHttpResponse(url, data, method);
+            if (response != null) {
+                str = EntityUtils.toString(response.getEntity());
+            }
+        } catch (IOException e) {
+         e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+
+    public JSONObject getResponseAsJson(String url, JSONObject data, Method method) {
         JSONObject jo = null;
         try {
-            HttpResponse response = this.getResponse(url, data, method);
+            HttpResponse response = this.getHttpResponse(url, data, method);
             if (response != null) {
                 String output = EntityUtils.toString(response.getEntity());
-//                logger.message(output);
                 jo = new JSONObject(output);
             }
         } catch (JSONException e) {
             e.printStackTrace();
-//            logger.message("error decoding Json " + e);
         } catch (Exception e) {
             e.printStackTrace();
-//            logger.message("error decoding Json " + e);
         }
         return jo;
     }
@@ -173,15 +186,12 @@ public class BzmHttpClient {
             HttpResponse response = this.getResponseForFileUpload(url, file);
             if (response != null) {
                 String output = EntityUtils.toString(response.getEntity());
-//                logger.message(output);
                 jo = new JSONObject(output);
             }
         } catch (IOException e) {
             e.printStackTrace();
-//            logger.message("error decoding Json " + e);
         } catch (JSONException e) {
             e.printStackTrace();
-//            logger.message("error decoding Json " + e);
         }
         return jo;
     }

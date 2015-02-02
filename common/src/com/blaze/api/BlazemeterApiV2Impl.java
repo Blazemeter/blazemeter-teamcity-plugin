@@ -72,7 +72,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
         jmxData.put("data", fileCon);
-        upLoadJMX=this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST)!=null;
+        upLoadJMX=this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST)!=null;
         return upLoadJMX;
     }
 
@@ -84,7 +84,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
         jmxData.put("data", fileCon);
-        return this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST);
+        return this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
             return ti;
         }
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
+            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
 
             if (jo.get("status") == "Test not found")
                 ti.setStatus(Constants.TestStatus.NotFound);
@@ -113,7 +113,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
+        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
     }
 
 
@@ -128,7 +128,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
+        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
     }
 
     /**
@@ -142,7 +142,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
+        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.POST);
+            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
                 String r = jo.get("response_code").toString();
                 if (r.equals("200")) {
                     JSONArray arr = (JSONArray) jo.get("tests");
@@ -231,5 +231,10 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     @Override
     public JSONObject createTest(String apiKey, JSONObject data) {
         return not_implemented;
+    }
+
+    @Override
+    public String retrieveJUNITXML(String userKey,String sessionId) {
+        return Constants.NOT_IMPLEMENTED;
     }
 }

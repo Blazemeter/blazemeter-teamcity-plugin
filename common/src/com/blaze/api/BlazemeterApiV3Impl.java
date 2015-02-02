@@ -64,7 +64,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
         jmxData.put("data", fileCon);
-        upLoadJMX=this.bzmHttpClient.getJson(url, jmxData,BzmHttpClient.Method.POST)!=null;
+        upLoadJMX=this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST)!=null;
         return upLoadJMX;
     }
 
@@ -77,7 +77,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         String fileCon = null;
         fileCon = FileUtil.readText(new File(pathName));
         jmxData.put("data", fileCon);
-        return this.bzmHttpClient.getJson(url, jmxData, BzmHttpClient.Method.POST);
+        return this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return ti;
         }
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
+            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
             JSONObject result = (JSONObject) jo.get("result");
             if (result.get("dataUrl") == null) {
                 ti.setStatus(Constants.TestStatus.NotFound);
@@ -112,7 +112,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
+        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
     }
 
     /**
@@ -126,7 +126,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
+        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
     }
 
     /**
@@ -140,7 +140,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        JSONObject summary = (JSONObject) this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET).getJSONObject("result")
+        JSONObject summary = (JSONObject) this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET).getJSONObject("result")
                     .getJSONArray("summary")
                     .get(0);
         return summary;
@@ -154,7 +154,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-            JSONObject jo = this.bzmHttpClient.getJson(url, null,BzmHttpClient.Method.GET);
+            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
                 JSONArray result = (JSONArray) jo.get("result");
                 if (result != null && result.length() > 0) {
                     testListOrdered = new LinkedHashMap<String, String>(result.length());
@@ -182,7 +182,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return null;
         }
         String url = this.urlManager.getTestInfo(APP_KEY, apiKey, testId);
-        JSONObject jo = this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
         return jo;
     }
 
@@ -193,7 +193,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return null;
         }
         String url = this.urlManager.getTestInfo(APP_KEY, apiKey,testId);
-        JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.PUT);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.PUT);
         return jo;
     }
 
@@ -202,7 +202,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     public JSONObject createTest(String apiKey,JSONObject data) {
         if(StringUtil.isEmptyOrSpaces(apiKey)) return null;
         String url = this.urlManager.createTest(APP_KEY, apiKey);
-        JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.POST);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.POST);
         return jo;
     }
 
@@ -246,7 +246,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return null;
         }
         String url = this.urlManager.getTresholds(APP_KEY, userKey, sessionId);
-        JSONObject jo = this.bzmHttpClient.getJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
         return jo;
     }
 
@@ -255,10 +255,15 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if(StringUtils.isEmpty(userKey)&StringUtils.isEmpty(testId)) return null;
 
         String url = this.urlManager.postJsonConfig(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpClient.getJson(url, data, BzmHttpClient.Method.POST);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.POST);
         return jo;
     }
 
-
-
+    @Override
+    public String retrieveJUNITXML(String userKey,String sessionId) {
+        if(StringUtil.isEmptyOrSpaces((userKey))&StringUtil.isEmptyOrSpaces(sessionId)) return null;
+        String url = this.urlManager.retrieveJUNITXML(APP_KEY, userKey, sessionId);
+        String xmlJunit = this.bzmHttpClient.getResponseAsString(url, null, BzmHttpClient.Method.GET);
+        return xmlJunit;
+    }
 }

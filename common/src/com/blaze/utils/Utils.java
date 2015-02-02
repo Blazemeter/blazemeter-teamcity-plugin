@@ -2,15 +2,13 @@ package com.blaze.utils;
 
 import com.blaze.api.BlazemeterApi;
 import com.blaze.testresult.TestResult;
+import com.intellij.openapi.vfs.FilePath;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -70,6 +68,31 @@ public class Utils {
         }
         return props.getProperty("version");
     }
+
+
+    public static void saveReport(String filename,
+                                  String report,
+                                  String filePath,
+                                  BuildProgressLogger logger
+    ) {
+        File reportFile = new File(filePath);
+        try {
+            if (!reportFile.exists()) {
+                reportFile.createNewFile();
+            }
+            BufferedWriter out = new BufferedWriter(new FileWriter(reportFile));
+            out.write(report);
+            out.close();
+
+        } catch (FileNotFoundException fnfe) {
+            logger.message("ERROR: Failed to save XML report to workspace " + fnfe.getMessage());
+            logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
+        } catch (IOException e) {
+            logger.message("ERROR: Failed to save XML report to workspace " + e.getMessage());
+            logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
+        }
+    }
+
 
     public static void sleep(int sleepPeriod,BuildProgressLogger logger){
         try {

@@ -39,4 +39,6 @@ public interface BlazemeterApi {
 
     public JSONObject createTest(String userKey,JSONObject data);
 
+    public String retrieveJUNITXML(String userKey,String sessionId);
+
 }
