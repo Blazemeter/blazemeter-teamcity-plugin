@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.entities.TestInfo;
+import com.blaze.runner.JsonConstants;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
@@ -71,7 +72,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put("data", fileCon);
+        jmxData.put(JsonConstants.DATA, fileCon);
         upLoadJMX=this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST)!=null;
         return upLoadJMX;
     }
@@ -83,7 +84,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put("data", fileCon);
+        jmxData.put(JsonConstants.DATA, fileCon);
         return this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST);
     }
 
@@ -97,12 +98,12 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
 
-            if (jo.get("status") == "Test not found")
+            if (jo.get(JsonConstants.STATUS) == "Test not found")
                 ti.setStatus(Constants.TestStatus.NotFound);
             else {
                 ti.setId(jo.getString("test_id"));
                 ti.setName( jo.getString("test_name"));
-                ti.setStatus(jo.getString("status"));
+                ti.setStatus(jo.getString(JsonConstants.STATUS));
             }
         return ti;
     }
@@ -152,7 +153,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
-                String r = jo.get("response_code").toString();
+                String r = jo.get(JsonConstants.RESPONSE_CODE).toString();
                 if (r.equals("200")) {
                     JSONArray arr = (JSONArray) jo.get("tests");
                     testListOrdered = new LinkedHashMap<String, String>(arr.length());

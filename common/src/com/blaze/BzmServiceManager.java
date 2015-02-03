@@ -14,6 +14,7 @@ import com.blaze.api.BlazemeterApiV2Impl;
 import com.blaze.api.BlazemeterApiV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
@@ -90,8 +91,8 @@ public class BzmServiceManager {
 
     private BlazemeterApi getAPI() {
         if (blazemeterAPI == null||
-                (this.blazeMeterApiVersion.equals("v3")&this.blazemeterAPI instanceof BlazemeterApiV2Impl)||
-                        this.blazeMeterApiVersion.equals("v2")&this.blazemeterAPI instanceof BlazemeterApiV3Impl) {
+                (this.blazeMeterApiVersion.equals(Constants.V3)&this.blazemeterAPI instanceof BlazemeterApiV2Impl)||
+                        this.blazeMeterApiVersion.equals(Constants.V2)&this.blazemeterAPI instanceof BlazemeterApiV3Impl) {
             int serverPortInt = 0;
             if (serverPort != null && !serverPort.isEmpty()) {
                 serverPortInt = Integer.parseInt(serverPort);
@@ -176,8 +177,8 @@ public class BzmServiceManager {
         } while (json == null);
 
             if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
-                if (!json.get("response_code").equals(200)) {
-                    if (json.get("response_code").equals(500) && json.get("error").toString().startsWith("Test already running")) {
+                if (!json.get(JsonConstants.RESPONSE_CODE).equals(200)) {
+                    if (json.get(JsonConstants.RESPONSE_CODE).equals(500) && json.get(JsonConstants.ERROR).toString().startsWith("Test already running")) {
                         logger.error("Test already running, please stop it first");
                         session="";
                         return session;
@@ -185,7 +186,7 @@ public class BzmServiceManager {
                 }
                 session = json.get("session_id").toString();
             }else{
-                session = json.getJSONObject("result").getJSONArray("sessionsId").getString(0);
+                session = json.getJSONObject(JsonConstants.RESULT).getJSONArray("sessionsId").getString(0);
             }
             this.session=session;
         } catch (JSONException e) {
@@ -211,11 +212,11 @@ public class BzmServiceManager {
         JSONObject jo=api.retrieveJTLZIP(userKey, session);
         String dataUrl=null;
         try {
-            JSONArray data=jo.getJSONObject("result").getJSONArray("data");
+            JSONArray data=jo.getJSONObject(JsonConstants.RESULT).getJSONArray(JsonConstants.DATA);
             for(int i=0;i<data.length();i++){
                 String title=data.getJSONObject(i).getString("title");
                 if(title.equals("Zip")){
-                    dataUrl=data.getJSONObject(i).getString("dataUrl");
+                    dataUrl=data.getJSONObject(i).getString(JsonConstants.DATA_URL);
                     break;
                 }
             }
@@ -275,8 +276,8 @@ public class BzmServiceManager {
     public void uploadFile(String testId, String dataFolder, String fileName, BuildProgressLogger logger) {
         try {
             org.json.JSONObject json = getAPI().uploadFile(userKey, testId, fileName, dataFolder + File.separator + fileName);
-            if (!json.get("response_code").equals(new Integer(200))) {
-                logger.error("Could not upload file " + fileName + " " + json.get("error").toString());
+            if (!json.get(JsonConstants.RESPONSE_CODE).equals(new Integer(200))) {
+                logger.error("Could not upload file " + fileName + " " + json.get(JsonConstants.ERROR).toString());
             }
         } catch (JSONException e) {
             logger.exception(e);
@@ -297,19 +298,19 @@ public class BzmServiceManager {
             if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
 
 
-                if (json.get("response_code").equals(200)) {
+                if (json.get(JsonConstants.RESPONSE_CODE).equals(200)) {
                     logger.message("Test stopped succesfully." + json.toString());
                 } else {
-                    String error = json.get("error").toString();
+                    String error = json.get(JsonConstants.ERROR).toString();
                     logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
                     logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
                 }
             }else{
-                if (json.getJSONArray("result").length()>0) {
+                if (json.getJSONArray(JsonConstants.RESULT).length()>0) {
                     logger.message("Test stopped succesfully." + json.toString());
                     return true;
                 } else {
-                    String error = json.get("result").toString();
+                    String error = json.get(JsonConstants.RESULT).toString();
                     logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
                     return false;
                 }
@@ -347,11 +348,11 @@ public class BzmServiceManager {
         String testId=null;
         try {
             JSONObject jo=getAPI().createTest(userKey, jsonConfig);
-            if(jo.has("error")&&!jo.get("error").equals(JSONObject.NULL)){
-                logger.warning("Failed to create test: " + jo.getString("error"));
+            if(jo.has(JsonConstants.ERROR)&&!jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)){
+                logger.warning("Failed to create test: " + jo.getString(JsonConstants.ERROR));
                 testId="";
             }else{
-                testId = String.valueOf(jo.getJSONObject("result").getInt("id"));
+                testId = String.valueOf(jo.getJSONObject(JsonConstants.RESULT).getInt("id"));
             }
         } catch (Exception e) {
             logger.warning("Problems with creating test on server. Check URL and json configuration.");
@@ -366,8 +367,8 @@ public class BzmServiceManager {
         JSONObject result=null;
         try {
             jo=this.getAPI().getTresholds(userKey,session);
-            result=jo.getJSONObject("result");
-            tresholdsValid=result.getJSONObject("data").getBoolean("success");
+            result=jo.getJSONObject(JsonConstants.RESULT);
+            tresholdsValid=result.getJSONObject(JsonConstants.DATA).getBoolean("success");
         } catch (JSONException je) {
             logger.warning("Failed to get tresholds for  session=" + session);
         }finally {

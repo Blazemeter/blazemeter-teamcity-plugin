@@ -1,6 +1,7 @@
 package com.blaze.utils;
 
 import com.blaze.api.BlazemeterApi;
+import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
 import com.intellij.openapi.vfs.FilePath;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
@@ -23,13 +24,13 @@ public class Utils {
         int testDuration=-1;
         try {
             JSONObject jo = api.getTestInfo(apiKey,testId,logger);
-            JSONObject result = jo.getJSONObject("result");
-            JSONObject configuration = result.getJSONObject("configuration");
-            JSONObject plugins = configuration.getJSONObject("plugins");
+            JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
+            JSONObject configuration = result.getJSONObject(JsonConstants.CONFIGURATION);
+            JSONObject plugins = configuration.getJSONObject(JsonConstants.PLUGINS);
             String type = configuration.getString("type");
             JSONObject options = plugins.getJSONObject(type);
-            JSONObject override = options.getJSONObject("override");
-            testDuration=override.getInt("duration");
+            JSONObject override = options.getJSONObject(JsonConstants.OVERRIDE);
+            testDuration=override.getInt(JsonConstants.DURATION);
         } catch (JSONException je) {
             logger.message("Failed to get testDuration from server: "+ je);
             logger.exception(je);
@@ -43,13 +44,13 @@ public class Utils {
     public static void updateTestDuration(String apiKey, BlazemeterApi api, String testId, String updDuration, BuildProgressLogger logger) {
         try {
             JSONObject jo = api.getTestInfo(apiKey,testId,logger);
-            JSONObject result = jo.getJSONObject("result");
-            JSONObject configuration = result.getJSONObject("configuration");
-            JSONObject plugins = configuration.getJSONObject("plugins");
+            JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
+            JSONObject configuration = result.getJSONObject(JsonConstants.CONFIGURATION);
+            JSONObject plugins = configuration.getJSONObject(JsonConstants.PLUGINS);
             String type = configuration.getString("type");
             JSONObject options = plugins.getJSONObject(type);
-            JSONObject override = options.getJSONObject("override");
-            override.put("duration", Integer.parseInt(updDuration));
+            JSONObject override = options.getJSONObject(JsonConstants.OVERRIDE);
+            override.put(JsonConstants.DURATION, Integer.parseInt(updDuration));
             api.putTestInfo(apiKey,testId, result,logger);
 
         } catch (JSONException je) {

@@ -41,4 +41,7 @@ public interface Constants {
     public final static String NOT_IMPLEMENTED="This call is not implemented.";
     public final static String CREATE_FROM_JSON="create from JSON";
     public final static String NEW_TEST="New test";
+
+    public final static String V2="v2";
+    public final static String V3="v3";
 }

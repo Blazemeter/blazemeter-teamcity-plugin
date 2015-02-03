@@ -206,7 +206,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 			return BuildFinishedStatus.FINISHED_FAILED;
 		} else {
 			logger.message("Test initialization is started... Waiting for DATA_RECEIVED status");
-			if(bzmServiceManager.getBlazeMeterApiVersion().equals("v3")){
+			if(bzmServiceManager.getBlazeMeterApiVersion().equals(Constants.V3)){
                 logger.message("Test report will be available at "+bzmServiceManager.getBlazeMeterUrl()+ "/app/#report/" + session + "/loadreport");
             }
 		}
@@ -219,7 +219,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 		boolean initTimeOutPassed=false;
         do{
             Utils.sleep(CHECK_INTERVAL, logger);
-            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
+            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals(Constants.V2)?testId:bzmServiceManager.getSession());
             logger.message("Check if the test is initialized...");
         initTimeOutPassed=System.currentTimeMillis()>testInitStart+INIT_TEST_TIMEOUT;
         }while (!(testInfo.getStatus().equals(Constants.TestStatus.Running)|initTimeOutPassed));
@@ -233,7 +233,7 @@ public class BlazeAgentProcessor implements BuildProcess{
         do{
             Utils.sleep(CHECK_INTERVAL, logger);
 			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
-            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals("v2")?testId:bzmServiceManager.getSession());
+            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals(Constants.V2)?testId:bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
         }while (!testInfo.getStatus().equals(Constants.TestStatus.NotRunning));
 

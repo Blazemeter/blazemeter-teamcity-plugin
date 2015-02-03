@@ -3,6 +3,7 @@ package com.blaze.api;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
+import com.blaze.runner.JsonConstants;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
@@ -63,7 +64,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put("data", fileCon);
+        jmxData.put(JsonConstants.DATA, fileCon);
         upLoadJMX=this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST)!=null;
         return upLoadJMX;
     }
@@ -76,7 +77,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         JSONObject jmxData = new JSONObject();
         String fileCon = null;
         fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put("data", fileCon);
+        jmxData.put(JsonConstants.DATA, fileCon);
         return this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST);
     }
 
@@ -89,15 +90,15 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
             String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
-            JSONObject result = (JSONObject) jo.get("result");
-            if (result.get("dataUrl") == null) {
+            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
+            if (result.get(JsonConstants.DATA_URL) == null) {
                 ti.setStatus(Constants.TestStatus.NotFound);
             } else {
                 ti.setId(String.valueOf(result.getInt("testId")));
-                ti.setName(result.getString("name"));
-                if (result.getString("status").equals("DATA_RECIEVED")) {
+                ti.setName(result.getString(JsonConstants.NAME));
+                if (result.getString(JsonConstants.STATUS).equals("DATA_RECIEVED")) {
                     ti.setStatus(Constants.TestStatus.Running);
-                } else if (result.getString("status").equals("ENDED")) {
+                } else if (result.getString(JsonConstants.STATUS).equals("ENDED")) {
                     ti.setStatus(Constants.TestStatus.NotRunning);
                 } else {
                     ti.setStatus(Constants.TestStatus.NotRunning);
@@ -140,7 +141,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        JSONObject summary = (JSONObject) this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET).getJSONObject("result")
+        JSONObject summary = (JSONObject) this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET).getJSONObject(JsonConstants.RESULT)
                     .getJSONArray("summary")
                     .get(0);
         return summary;
@@ -155,7 +156,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
-                JSONArray result = (JSONArray) jo.get("result");
+                JSONArray result = (JSONArray) jo.get(JsonConstants.RESULT);
                 if (result != null && result.length() > 0) {
                     testListOrdered = new LinkedHashMap<String, String>(result.length());
                     for (int i = 0; i < result.length(); i++) {
@@ -165,7 +166,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                         String name;
                             if (en != null) {
                                 id = String.valueOf(en.getInt("id"));
-                                name = en.getString("name").replaceAll("&", "&amp;");
+                                name = en.getString(JsonConstants.NAME).replaceAll("&", "&amp;");
                                 testListOrdered.put(name, id);
                             }
                     }
