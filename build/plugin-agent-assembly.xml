@@ -15,9 +15,8 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>com.blazemeter.teamcity:agent</include>
-                <include>com.blazemeter.teamcity:common</include>
-                <include>com.blazemeter.teamcity:server</include>
+                <include>com.blazemeter.teamcity:BlazeMeter-agent</include>
+                <include>com.blazemeter.teamcity:BlazeMeter-common</include>
             </includes>
             <binaries>
                 <outputDirectory>BlazeMeter/lib</outputDirectory>

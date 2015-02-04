@@ -6,7 +6,7 @@
         <groupId>com.blazemeter.teamcity</groupId>
         <version>1.0</version>
     </parent>
-    <artifactId>common</artifactId>
+    <artifactId>BlazeMeter-common</artifactId>
     <packaging>jar</packaging>
     <build>
         <sourceDirectory>src</sourceDirectory>
