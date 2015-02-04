@@ -73,5 +73,6 @@
         <module>server</module>
         <module>agent</module>
         <module>common</module>
+        <module>build</module>
     </modules>
 </project>

@@ -3,9 +3,8 @@ package com.blaze.utils;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
-import com.intellij.openapi.vfs.FilePath;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
