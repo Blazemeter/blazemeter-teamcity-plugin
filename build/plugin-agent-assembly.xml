@@ -20,7 +20,7 @@
                 <include>com.blazemeter.teamcity:server</include>
             </includes>
             <binaries>
-                <outputDirectory>lib</outputDirectory>
+                <outputDirectory>BlazeMeter/lib</outputDirectory>
                 <unpack>false</unpack>
                 <dependencySets>
                     <dependencySet>

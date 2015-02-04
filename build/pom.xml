@@ -78,7 +78,7 @@
                   <goal>single</goal>
                 </goals>
                 <configuration>
-                  <finalName>BlazeMeterPlugin</finalName>
+                  <finalName>BlazeMeter</finalName>
                   <outputDirectory>${project.parent.build.directory}</outputDirectory>
                   <appendAssemblyId>false</appendAssemblyId>
                   <descriptors>
