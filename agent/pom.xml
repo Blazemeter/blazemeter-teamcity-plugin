@@ -21,6 +21,14 @@
     </plugin>
 
 </plugins>
+        <resources>
+            <resource>
+                <directory>src</directory>
+                <includes>
+                    <include>META-INF/</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
     <dependencies>
 
