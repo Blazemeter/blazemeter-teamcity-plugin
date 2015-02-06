@@ -18,12 +18,12 @@ import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
-import com.jetbrains.launcher.util.FileUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.util.PropertiesUtil;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -119,7 +119,7 @@ public class BzmServiceManager {
         if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
             try{
                 File jsonF=new File(jsonConfiguration);
-                String jsonStr = new String(FileUtil.loadText(jsonF));
+                String jsonStr = new String(FileUtils.readFileToString((jsonF)));
                 jsonConf=new JSONObject(jsonStr);
             }catch (Exception e){
                 logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
@@ -224,7 +224,7 @@ public class BzmServiceManager {
 
             File jtlZip=new File(jtlFilePath);
             URL url=new URL(dataUrl+"?api_key="+userKey);
-            FileUtil.copy(url,jtlZip);
+            FileUtils.copyURLToFile(url,jtlZip);
             logger.message("Downloading JTLZIP from " + url + "to " + jtlZip.getCanonicalPath());
 //            unzip(jtlZip.getAbsolutePath(), jtlZip.getParent(), jenBuildLog);
         } catch (JSONException e) {

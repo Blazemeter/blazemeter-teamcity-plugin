@@ -25,6 +25,7 @@
     <property name="jackson-mapper-asl-1.9.10" value="${lib}/jackson-mapper-asl-1.9.10.jar"/>
     <property name="hamcrest-core-1.3" value="${lib}/hamcrest-core-1.3.jar"/>
     <property name="junit-4.12" value="${lib}/junit-4.12.jar"/>
+    <property name="commons-io-2.4" value="${lib}/commons-io-2.4.jar"/>
     <property name="server-api" value="${lib-tc}/server-api.jar"/>
     <property name="agent-openapi" value="${lib-tc}/agent-openapi.jar"/>
     <property name="common-api" value="${lib-tc}/common-api.jar"/>
@@ -52,6 +53,7 @@
     <pathelement location="${server-api}"/>
     <pathelement location="${agent-openapi}"/>
     <pathelement location="${app-wrapper}"/>
+    <pathelement location="${commons-io-2.4}"/>
   	</path>
 
 
@@ -66,6 +68,7 @@
         <pathelement location="${junit-4.12}"/>
         <pathelement location="${hamcrest-core-1.3}"/>
         <pathelement location="${agent-openapi}"/>
+        <pathelement location="${commons-io-2.4}"/>
     </path>
   <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath" classpath="lib.classpath"/>
   <taskdef name="instrumentIdeaExtensions" classname="com.intellij.ant.InstrumentIdeaExtensions"  classpathref="javac2.classpath"/>
