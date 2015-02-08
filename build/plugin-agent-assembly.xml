@@ -5,12 +5,6 @@
     <formats>
         <format>zip</format>
     </formats>
-    <files>
-        <file>
-            <source>../teamcity-plugin.xml</source>
-            <outputDirectory>/</outputDirectory>
-        </file>
-    </files>
     <moduleSets>
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
