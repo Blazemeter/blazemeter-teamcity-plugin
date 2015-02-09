@@ -39,7 +39,7 @@
 
     <dependency>
       <groupId>com.blazemeter.teamcity</groupId>
-      <artifactId>common</artifactId>
+      <artifactId>BlazeMeter-common</artifactId>
       <version>1.0</version>
       <scope>compile</scope>
     </dependency>

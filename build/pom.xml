@@ -14,17 +14,17 @@
   <dependencies>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
-           <artifactId>agent</artifactId>
+           <artifactId>BlazeMeter-agent</artifactId>
            <version>1.0</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
-           <artifactId>common</artifactId>
+           <artifactId>BlazeMeter-common</artifactId>
            <version>1.0</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
-           <artifactId>server</artifactId>
+           <artifactId>BlazeMeter</artifactId>
            <version>1.0</version>
       </dependency>
   </dependencies>
