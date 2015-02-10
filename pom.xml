@@ -24,10 +24,6 @@
         <url>git@github.com/Blazemeter/blazemeter-teamcity-plugin.git</url>
     </scm>
     <distributionManagement>
-        <!--<repository>
-            <id>cloudbees-private-release-repository</id>
-            <url>dav:https://repository-saucelabs.forge.cloudbees.com/release</url>
-        </repository>-->
     </distributionManagement>
     <build>
         <plugins>
