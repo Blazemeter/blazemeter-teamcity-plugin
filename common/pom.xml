@@ -70,11 +70,18 @@
             <groupId>org.jetbrains.teamcity</groupId>
             <artifactId>agent-api</artifactId>
             <version>9.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.teamcity</groupId>
             <artifactId>common-api</artifactId>
             <version>9.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
