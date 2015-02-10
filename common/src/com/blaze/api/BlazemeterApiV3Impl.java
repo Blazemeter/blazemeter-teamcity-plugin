@@ -24,7 +24,8 @@ import java.util.LinkedHashMap;
  */
 public class BlazemeterApiV3Impl implements BlazemeterApi {
 
-	private String serverName;
+    private String userKey;
+    private String serverName;
 	private int serverPort;
 	private String username;
 	private String password;
@@ -33,8 +34,9 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     BzmHttpClient bzmHttpClient;
     BmUrlManagerV3Impl urlManager;
 
-    public BlazemeterApiV3Impl(String serverName, int serverPort, String username, String password, String bzmUrl) {
-    	this.serverName = serverName;
+    public BlazemeterApiV3Impl(String userKey, String serverName, int serverPort, String username, String password, String bzmUrl) {
+        this.userKey = userKey;
+        this.serverName = serverName;
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
@@ -48,7 +50,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     /**
-     * @param userKey  - user key
      * @param testId   - test id
      * @param fileName - test name
      * @param pathName - jmx file path
@@ -57,7 +58,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                 //     * @throws org.json.JSONException
      */
     @Override
-    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName)
+    public synchronized boolean uploadJmx(String testId, String fileName, String pathName)
             throws JSONException, IOException{
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return false;
         boolean upLoadJMX=false;
@@ -70,7 +71,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName)
+    public synchronized JSONObject uploadFile(String testId, String fileName, String pathName)
             throws JSONException, IOException{
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
         String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
@@ -82,7 +83,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException{
+    public TestInfo getTestRunStatus(String testId) throws JSONException{
         TestInfo ti = new TestInfo();
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) {
             ti.setStatus(Constants.TestStatus.NotFound);
@@ -108,7 +109,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized JSONObject startTest(String userKey, String testId) throws JSONException{
+    public synchronized JSONObject startTest(String testId) throws JSONException{
 
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
@@ -117,13 +118,12 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     /**
-     * @param userKey - user key
      * @param testId  - test id
      *                //     * @throws IOException
      *                //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject stopTest(String userKey, String testId) throws JSONException{
+    public JSONObject stopTest(String testId) throws JSONException{
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
@@ -131,13 +131,12 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     /**
-     * @param userKey  - user key
      * @param reportId - report Id same as Session Id, can be obtained from start stop status.
      *                 //     * @throws IOException
      *                 //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject testReport(String userKey, String reportId) throws JSONException{
+    public JSONObject testReport(String reportId) throws JSONException{
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
@@ -148,7 +147,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public HashMap<String, String> getTestList(String userKey) throws IOException, JSONException{
+    public HashMap<String, String> getTestList() throws IOException, JSONException{
 
         LinkedHashMap testListOrdered = null;
 
@@ -177,32 +176,32 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject getTestInfo(String apiKey,String testId,BuildProgressLogger logger){
-        if (apiKey == null || apiKey.trim().isEmpty()) {
+    public JSONObject getTestInfo(String testId,BuildProgressLogger logger){
+        if (userKey == null || userKey.trim().isEmpty()) {
             logger.message("ERROR: User apiKey is empty");
             return null;
         }
-        String url = this.urlManager.getTestInfo(APP_KEY, apiKey, testId);
+        String url = this.urlManager.getTestInfo(APP_KEY, userKey, testId);
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
         return jo;
     }
 
     @Override
-    public JSONObject putTestInfo(String apiKey,String testId, JSONObject data,BuildProgressLogger logger){
-        if (apiKey == null || apiKey.trim().isEmpty()) {
+    public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger){
+        if (userKey == null || userKey.trim().isEmpty()) {
             logger.message("ERROR: User apiKey is empty");
             return null;
         }
-        String url = this.urlManager.getTestInfo(APP_KEY, apiKey,testId);
+        String url = this.urlManager.getTestInfo(APP_KEY, userKey,testId);
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.PUT);
         return jo;
     }
 
 
     @Override
-    public JSONObject createTest(String apiKey,JSONObject data) {
-        if(StringUtil.isEmptyOrSpaces(apiKey)) return null;
-        String url = this.urlManager.createTest(APP_KEY, apiKey);
+    public JSONObject createTest(JSONObject data) {
+        if(StringUtil.isEmptyOrSpaces(userKey)) return null;
+        String url = this.urlManager.createTest(APP_KEY, userKey);
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.POST);
         return jo;
     }
@@ -242,7 +241,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
 
     @Override
-    public JSONObject getTresholds(String userKey, String sessionId){
+    public JSONObject getTresholds(String sessionId){
         if (userKey == null || userKey.trim().isEmpty()) {
             return null;
         }
@@ -252,7 +251,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject postJsonConfig(String userKey,String testId, JSONObject data){
+    public JSONObject postJsonConfig(String testId, JSONObject data){
         if(StringUtils.isEmpty(userKey)&StringUtils.isEmpty(testId)) return null;
 
         String url = this.urlManager.postJsonConfig(APP_KEY, userKey, testId);
@@ -261,7 +260,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public String retrieveJUNITXML(String userKey,String sessionId) {
+    public String retrieveJUNITXML(String sessionId) {
         if(StringUtil.isEmptyOrSpaces((userKey))&StringUtil.isEmptyOrSpaces(sessionId)) return null;
         String url = this.urlManager.retrieveJUNITXML(APP_KEY, userKey, sessionId);
         String xmlJunit = this.bzmHttpClient.getResponseAsString(url, null, BzmHttpClient.Method.GET);
@@ -269,7 +268,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject retrieveJTLZIP(String userKey,String sessionId) {
+    public JSONObject retrieveJTLZIP(String sessionId) {
         if(StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces((sessionId))) return null;
         String url = this.urlManager.retrieveJTLZIP(APP_KEY, userKey, sessionId);
         JSONObject jtlzip = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);

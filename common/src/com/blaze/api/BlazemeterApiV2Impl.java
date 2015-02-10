@@ -24,6 +24,7 @@ import com.blaze.runner.Constants;
  */
 public class BlazemeterApiV2Impl implements BlazemeterApi {
 
+    private String userKey;
 	private String serverName;
 	private int serverPort;
 	private String username;
@@ -34,8 +35,9 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     BzmHttpClient bzmHttpClient;
     BmUrlManagerV2Impl urlManager;
 
-    public BlazemeterApiV2Impl(String serverName, int serverPort, String username, String password, String bzmUrl) {
-    	this.serverName = serverName;
+    public BlazemeterApiV2Impl(String userKey,String serverName, int serverPort, String username, String password, String bzmUrl) {
+    	this.userKey = userKey;
+        this.serverName = serverName;
     	this.serverPort = serverPort;
     	this.username = username;
     	this.password = password;
@@ -56,7 +58,6 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
 
     /**
-     * @param userKey  - user key
      * @param testId   - test id
      * @param fileName - test name
      * @param pathName - jmx file path
@@ -65,7 +66,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
      *                 //     * @throws org.json.JSONException
      */
     @Override
-    public synchronized boolean uploadJmx(String userKey, String testId, String fileName, String pathName)
+    public synchronized boolean uploadJmx(String testId, String fileName, String pathName)
             throws JSONException, IOException {
         boolean upLoadJMX=false;
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return false;
@@ -78,7 +79,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized JSONObject uploadFile(String userKey, String testId, String fileName, String pathName)
+    public synchronized JSONObject uploadFile(String testId, String fileName, String pathName)
             throws JSONException, IOException {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
         String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
@@ -89,7 +90,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException {
+    public TestInfo getTestRunStatus(String testId) throws JSONException {
         TestInfo ti = new TestInfo();
         if ((StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId))) {
             ti.setStatus(Constants.TestStatus.NotFound);
@@ -109,7 +110,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized JSONObject startTest(String userKey, String testId) {
+    public synchronized JSONObject startTest(String testId) {
 
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
@@ -119,13 +120,12 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
 
     /**
-     * @param userKey - user key
      * @param testId  - test id
      *                //     * @throws IOException
      *                //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject stopTest(String userKey, String testId) {
+    public JSONObject stopTest(String testId) {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
@@ -133,13 +133,12 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     /**
-     * @param userKey  - user key
      * @param reportId - report Id same as Session Id, can be obtained from start stop status.
      *                 //     * @throws IOException
      *                 //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject testReport(String userKey, String reportId) {
+    public JSONObject testReport(String reportId) {
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
@@ -147,7 +146,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public HashMap<String, String> getTestList(String userKey) throws IOException, JSONException {
+    public HashMap<String, String> getTestList() throws IOException, JSONException {
         LinkedHashMap<String, String> testListOrdered = null;
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
@@ -210,37 +209,37 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 	}
 
     @Override
-    public JSONObject putTestInfo(String apiKey,String testId, JSONObject data,BuildProgressLogger logger) {
+    public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger) {
         return null;
     }
 
     @Override
-    public JSONObject getTestInfo(String apiKey,String testId, BuildProgressLogger logger) {
+    public JSONObject getTestInfo(String testId, BuildProgressLogger logger) {
         return not_implemented;
     }
 
     @Override
-    public JSONObject getTresholds(String userKey, String sessionId) {
+    public JSONObject getTresholds(String sessionId) {
         return not_implemented;
     }
 
     @Override
-    public JSONObject postJsonConfig(String userKey, String testId, JSONObject data) {
+    public JSONObject postJsonConfig(String testId, JSONObject data) {
         return not_implemented;
     }
 
     @Override
-    public JSONObject createTest(String apiKey, JSONObject data) {
+    public JSONObject createTest(JSONObject data) {
         return not_implemented;
     }
 
     @Override
-    public String retrieveJUNITXML(String userKey,String sessionId) {
+    public String retrieveJUNITXML(String sessionId) {
         return Constants.NOT_IMPLEMENTED;
     }
 
     @Override
-    public JSONObject retrieveJTLZIP(String userKey,String sessionId) {
+    public JSONObject retrieveJTLZIP(String sessionId) {
         return not_implemented;
     }
 }

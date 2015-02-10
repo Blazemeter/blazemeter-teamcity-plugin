@@ -13,33 +13,33 @@ import java.util.HashMap;
  */
 public interface BlazemeterApi {
 
-    public boolean uploadJmx(String userKey, String testId, String fileName, String pathName)
+    public boolean uploadJmx(String testId, String fileName, String pathName)
             throws JSONException,IOException;
 
-    public JSONObject uploadFile(String userKey, String testId, String fileName, String pathName)
+    public JSONObject uploadFile(String testId, String fileName, String pathName)
             throws JSONException,IOException;
 
-    public TestInfo getTestRunStatus(String userKey, String testId) throws JSONException;
+    public TestInfo getTestRunStatus(String testId) throws JSONException;
 
-    public JSONObject startTest(String userKey, String testId) throws JSONException;
+    public JSONObject startTest(String testId) throws JSONException;
 
-    public JSONObject stopTest(String userKey, String testId) throws JSONException;
+    public JSONObject stopTest(String testId) throws JSONException;
 
-    public JSONObject testReport(String userKey, String reportId) throws JSONException;
+    public JSONObject testReport(String reportId) throws JSONException;
 
-    public HashMap<String, String> getTestList(String userKey) throws IOException, JSONException;
+    public HashMap<String, String> getTestList() throws IOException, JSONException;
 
-    public JSONObject putTestInfo(String apiKey,String testId, JSONObject data,BuildProgressLogger logger);
+    public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
 
-    public JSONObject getTestInfo(String apiKey,String testId, BuildProgressLogger logger);
+    public JSONObject getTestInfo(String testId, BuildProgressLogger logger);
 
-    public JSONObject getTresholds(String userKey, String sessionId);
+    public JSONObject getTresholds(String sessionId);
 
-    public JSONObject postJsonConfig(String userKey,String testId, JSONObject data);
+    public JSONObject postJsonConfig(String testId, JSONObject data);
 
-    public JSONObject createTest(String userKey,JSONObject data);
+    public JSONObject createTest(JSONObject data);
 
-    public String retrieveJUNITXML(String userKey,String sessionId);
+    public String retrieveJUNITXML(String sessionId);
 
-    public JSONObject retrieveJTLZIP(String userKey,String sessionId);
+    public JSONObject retrieveJTLZIP(String sessionId);
 }
