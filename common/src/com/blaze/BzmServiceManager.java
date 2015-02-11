@@ -64,7 +64,7 @@ public class BzmServiceManager {
         this.username =buildSharedMap.get(Constants.PROXY_USERNAME);
         this.password = buildSharedMap.get(Constants.PROXY_PASSWORD);
         this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.blazemeterAPI = getAPI();
+        this.blazemeterAPI = APIFactory.getAPI(userKey,serverName,serverPort,username,password,blazeMeterUrl,blazeMeterApiVersion);
         this.logger = logger;
     }
 
@@ -80,6 +80,14 @@ public class BzmServiceManager {
             bzmServiceManager.setPassword(buildSharedMap.get(Constants.PROXY_PASSWORD));
             bzmServiceManager.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
             bzmServiceManager.setLogger(logger);
+            BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
+                    buildSharedMap.get(Constants.PROXY_SERVER_NAME),
+                    buildSharedMap.get(Constants.PROXY_SERVER_PORT),
+                    buildSharedMap.get(Constants.PROXY_USERNAME),
+                    buildSharedMap.get(Constants.PROXY_PASSWORD),
+                    buildSharedMap.get(Constants.BLAZEMETER_URL),
+                    buildSharedMap.get(Constants.BLAZEMETER_API_VERSION));
+            bzmServiceManager.setBlazemeterAPI(blazemeterAPI);
         }
         return bzmServiceManager;
     }
@@ -87,31 +95,6 @@ public class BzmServiceManager {
     @NotNull
     public String getDebugKey() {
         return "Debug Key";
-    }
-
-    private BlazemeterApi getAPI() {
-        if (blazemeterAPI == null||
-                (this.blazeMeterApiVersion.equals(Constants.V3)&this.blazemeterAPI instanceof BlazemeterApiV2Impl)||
-                        this.blazeMeterApiVersion.equals(Constants.V2)&this.blazemeterAPI instanceof BlazemeterApiV3Impl) {
-            int serverPortInt = 0;
-            if (serverPort != null && !serverPort.isEmpty()) {
-                serverPortInt = Integer.parseInt(serverPort);
-            }
-            switch (ApiVersion.valueOf(this.blazeMeterApiVersion)) {
-                case autoDetect:
-                    blazemeterAPI = new BlazemeterApiV3Impl(userKey,serverName, serverPortInt, username, password, this.blazeMeterUrl);
-                    break;
-                case v3:
-                    blazemeterAPI = new BlazemeterApiV3Impl(userKey,serverName, serverPortInt, username, password, this.blazeMeterUrl);
-                    break;
-                case v2:
-                    blazemeterAPI = new BlazemeterApiV2Impl(userKey,serverName, serverPortInt, username, password, this.blazeMeterUrl);
-                    break;
-            }
-
-        }
-
-        return blazemeterAPI;
     }
 
     public String prepareTest(String testId,String jsonConfiguration,String testDuration){
@@ -149,13 +132,20 @@ public class BzmServiceManager {
 
 
     public HashMap<String, String> getTests() {
+        if(this.blazemeterAPI==null){
+            blazemeterAPI=APIFactory.getAPI(this.userKey,this.serverName,this.serverPort,
+                                            this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion);
+        }
+
         LinkedHashMap<String,String>tests=new LinkedHashMap<>();
         tests.put(Constants.CREATE_FROM_JSON,Constants.NEW_TEST);
         try {
-            tests.putAll(getAPI().getTestList());
+            tests.putAll(this.blazemeterAPI.getTestList());
         } catch (IOException e) {
             logger.exception(e);
         } catch (JSONException e) {
+            logger.exception(e);
+        } catch (NullPointerException e){
             logger.exception(e);
         }
         return tests;
@@ -167,7 +157,7 @@ public class BzmServiceManager {
         String session=null;
         try {
         do {
-            json = getAPI().startTest(testId);
+            json = this.blazemeterAPI.startTest(testId);
             countStartRequests++;
             if (countStartRequests > attempts) {
                 logger.error("Could not start BlazeMeter Test with "+attempts+" attempts");
@@ -192,23 +182,25 @@ public class BzmServiceManager {
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
             logger.exception(e);
+        } catch (NullPointerException e){
+            logger.exception(e);
         }
         return session;
     }
 
     public void updateTestDuration(String testId, String testDuration, BuildProgressLogger logger) {
-        Utils.updateTestDuration(userKey, getAPI(), testId, testDuration, logger);
+        Utils.updateTestDuration(userKey, this.blazemeterAPI, testId, testDuration, logger);
     }
 
     public void retrieveJUNITXML(String session,BuildRunnerContext buildRunnerContext){
-       String junitReport = getAPI().retrieveJUNITXML(session);
+       String junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
         logger.message("Received Junit report from server.... Saving it to the disc...");
         String reportFilePath=buildRunnerContext.getWorkingDirectory()+"/"+session+".xml";
         Utils.saveReport(session, junitReport, reportFilePath,logger);
 }
 
     public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
-        BlazemeterApi api=getAPI();
+        BlazemeterApi api=this.blazemeterAPI;
         JSONObject jo=api.retrieveJTLZIP(session);
         String dataUrl=null;
         try {
@@ -233,6 +225,8 @@ public class BzmServiceManager {
             logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
         } catch (IOException e) {
             logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+        } catch (NullPointerException e){
+            logger.exception(e);
         }
 
     }
@@ -248,14 +242,17 @@ public class BzmServiceManager {
         testResultFactory.setVersion(ApiVersion.valueOf(blazeMeterApiVersion));
         TestResult testResult = null;
         try {
-            this.aggregate=getAPI().testReport(this.session);
+            this.aggregate=this.blazemeterAPI.testReport(this.session);
             testResult = testResultFactory.getTestResult(this.aggregate);
 
         } catch (JSONException e) {
             logger.exception(e);
         } catch (IOException e) {
             logger.exception(e);
-        }finally {
+        } catch (NullPointerException e){
+            logger.exception(e);
+        }
+        finally {
             return testResult;
         }
     }
@@ -263,19 +260,21 @@ public class BzmServiceManager {
     public boolean uploadJMX(String testId, String filename, String pathname) {
         boolean uploadJMX=false;
         try {
-            uploadJMX=getAPI().uploadJmx(testId, filename, pathname);
+            uploadJMX=this.blazemeterAPI.uploadJmx(testId, filename, pathname);
         } catch (JSONException e) {
             logger.exception(e);
         } catch (IOException ioe) {
             logger.exception(ioe);
             logger.error("Could not upload file " + filename + " " + ioe.getMessage());
+        } catch (NullPointerException e){
+            logger.exception(e);
         }
         return uploadJMX;
     }
 
     public void uploadFile(String testId, String dataFolder, String fileName, BuildProgressLogger logger) {
         try {
-            org.json.JSONObject json = getAPI().uploadFile(testId, fileName, dataFolder + File.separator + fileName);
+            org.json.JSONObject json = this.blazemeterAPI.uploadFile(testId, fileName, dataFolder + File.separator + fileName);
             if (!json.get(JsonConstants.RESPONSE_CODE).equals(new Integer(200))) {
                 logger.error("Could not upload file " + fileName + " " + json.get(JsonConstants.ERROR).toString());
             }
@@ -285,6 +284,8 @@ public class BzmServiceManager {
         } catch (IOException ioe) {
             logger.exception(ioe);
             logger.error("Could not upload file " + fileName + " " + ioe.getMessage());
+        } catch (NullPointerException e){
+            logger.exception(e);
         }
     }
 
@@ -293,7 +294,7 @@ public class BzmServiceManager {
         int countStartRequests = 0;
 
         try {
-            json = getAPI().stopTest(testId);
+            json = this.blazemeterAPI.stopTest(testId);
             logger.message("Attempt to stop test with result: " + json.toString());
             if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
 
@@ -320,15 +321,19 @@ public class BzmServiceManager {
             logger.error("Error: Exception while stopping BlazeMeter Test [" + e.getMessage() + "]");
             logger.exception(e);
             return false;
-         }
+         } catch (NullPointerException e){
+            logger.exception(e);
+        }
         return true;
     }
 
     public TestInfo getTestStatus(String testId) {
         TestInfo ti=null;
         try {
-            ti=getAPI().getTestRunStatus(testId);
+            ti=this.blazemeterAPI.getTestRunStatus(testId);
         } catch (JSONException e) {
+            logger.exception(e);
+        } catch (NullPointerException e){
             logger.exception(e);
         }
         return ti;
@@ -336,7 +341,9 @@ public class BzmServiceManager {
 
     public boolean postJsonConfig(String testId,JSONObject jsonConfig){
         try {
-            getAPI().postJsonConfig(testId, jsonConfig);
+            this.blazemeterAPI.postJsonConfig(testId, jsonConfig);
+        } catch (NullPointerException e){
+            logger.exception(e);
         } catch (Exception e) {
             logger.warning("Problems with posting jsonConfiguration to server. Check URL and json configuration.");
             return false;
@@ -347,14 +354,16 @@ public class BzmServiceManager {
     public String createTest(JSONObject jsonConfig){
         String testId=null;
         try {
-            JSONObject jo=getAPI().createTest(jsonConfig);
+            JSONObject jo=this.blazemeterAPI.createTest(jsonConfig);
             if(jo.has(JsonConstants.ERROR)&&!jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)){
                 logger.warning("Failed to create test: " + jo.getString(JsonConstants.ERROR));
                 testId="";
             }else{
                 testId = String.valueOf(jo.getJSONObject(JsonConstants.RESULT).getInt("id"));
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e){
+            logger.exception(e);
+        }catch (Exception e) {
             logger.warning("Problems with creating test on server. Check URL and json configuration.");
         }finally {
             return testId;
@@ -366,10 +375,12 @@ public class BzmServiceManager {
         boolean tresholdsValid=true;
         JSONObject result=null;
         try {
-            jo=this.getAPI().getTresholds(session);
+            jo=this.blazemeterAPI.getTresholds(session);
             result=jo.getJSONObject(JsonConstants.RESULT);
             tresholdsValid=result.getJSONObject(JsonConstants.DATA).getBoolean("success");
-        } catch (JSONException je) {
+        } catch (NullPointerException e){
+            logger.exception(e);
+        }catch (JSONException je) {
             logger.warning("Failed to get tresholds for  session=" + session);
         }finally {
             return tresholdsValid? BuildFinishedStatus.FINISHED_SUCCESS:BuildFinishedStatus.FINISHED_FAILED;
@@ -447,5 +458,9 @@ public class BzmServiceManager {
 
     public BlazemeterApi getBlazemeterAPI() {
         return blazemeterAPI;
+    }
+
+    public void setBlazemeterAPI(BlazemeterApi blazemeterAPI) {
+        this.blazemeterAPI = blazemeterAPI;
     }
 }
