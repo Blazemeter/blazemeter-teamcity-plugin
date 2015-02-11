@@ -1,5 +1,7 @@
 package com.blaze.utils;
 
+import com.blaze.APIFactory;
+import com.blaze.BzmServiceManager;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
@@ -102,6 +104,34 @@ public class Utils {
             logger.warning("Test was interrupted during sleeping");
         }
     }
+
+    public static BzmServiceManager.ApiVersion autoDetectApiVersion(String userKey,String serverName,
+                                              String serverPort,String username,
+                                              String password,String blazeMeterUrl,
+                                              BuildProgressLogger logger) {
+        BlazemeterApi api = null;
+        BzmServiceManager.ApiVersion detectedApiVersion = null;
+        api = APIFactory.getAPI(userKey,serverName,
+                                serverPort,username,
+                                password,blazeMeterUrl,
+                               "v3",logger);
+        boolean isV3 = false;
+        try {
+            isV3 = api.getUser().getJSONObject("features").getBoolean("v3");
+            if (isV3) {
+                detectedApiVersion=BzmServiceManager.ApiVersion.v3;
+            } else {
+                detectedApiVersion=BzmServiceManager.ApiVersion.v2;
+            }
+        } catch (JSONException je) {
+            logger.exception(je);
+        } catch (NullPointerException npe) {
+            logger.exception(npe);
+            return BzmServiceManager.ApiVersion.v3;
+        }
+        return detectedApiVersion;
+    }
+
 
     public static BuildFinishedStatus validateLocalTresholds(TestResult testResult,
                                                 String errorUnstableThreshold,

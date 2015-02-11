@@ -37,4 +37,6 @@ public interface BmUrlManager {
 
     public String retrieveJTLZIP(String appKey, String userKey, String sessionId);
 
+    public String getUser(String appKey, String userKey);
+
 }

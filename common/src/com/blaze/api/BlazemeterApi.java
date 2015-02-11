@@ -33,6 +33,8 @@ public interface BlazemeterApi {
 
     public JSONObject getTestInfo(String testId, BuildProgressLogger logger);
 
+    public JSONObject getUser();
+
     public JSONObject getTresholds(String sessionId);
 
     public JSONObject postJsonConfig(String testId, JSONObject data);

@@ -10,8 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.blaze.api.BlazemeterApi;
-import com.blaze.api.BlazemeterApiV2Impl;
-import com.blaze.api.BlazemeterApiV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
@@ -64,7 +62,7 @@ public class BzmServiceManager {
         this.username =buildSharedMap.get(Constants.PROXY_USERNAME);
         this.password = buildSharedMap.get(Constants.PROXY_PASSWORD);
         this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.blazemeterAPI = APIFactory.getAPI(userKey,serverName,serverPort,username,password,blazeMeterUrl,blazeMeterApiVersion);
+        this.blazemeterAPI = APIFactory.getAPI(userKey,serverName,serverPort,username,password,blazeMeterUrl,blazeMeterApiVersion,logger);
         this.logger = logger;
     }
 
@@ -86,7 +84,8 @@ public class BzmServiceManager {
                     buildSharedMap.get(Constants.PROXY_USERNAME),
                     buildSharedMap.get(Constants.PROXY_PASSWORD),
                     buildSharedMap.get(Constants.BLAZEMETER_URL),
-                    buildSharedMap.get(Constants.BLAZEMETER_API_VERSION));
+                    buildSharedMap.get(Constants.BLAZEMETER_API_VERSION),
+                    logger);
             bzmServiceManager.setBlazemeterAPI(blazemeterAPI);
         }
         return bzmServiceManager;
@@ -134,7 +133,7 @@ public class BzmServiceManager {
     public HashMap<String, String> getTests() {
         if(this.blazemeterAPI==null){
             blazemeterAPI=APIFactory.getAPI(this.userKey,this.serverName,this.serverPort,
-                                            this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion);
+                                            this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
         }
 
         LinkedHashMap<String,String>tests=new LinkedHashMap<>();
@@ -147,8 +146,9 @@ public class BzmServiceManager {
             logger.exception(e);
         } catch (NullPointerException e){
             logger.exception(e);
+        }finally {
+            return tests;
         }
-        return tests;
     }
 
     public String startTest(String testId, int attempts, BuildProgressLogger logger) {
