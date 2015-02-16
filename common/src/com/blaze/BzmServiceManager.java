@@ -2,7 +2,6 @@ package com.blaze;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.blaze.api.BlazemeterApi;
+import com.blaze.api.BlazemeterApiV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
@@ -62,7 +62,8 @@ public class BzmServiceManager {
         this.username =buildSharedMap.get(Constants.PROXY_USERNAME);
         this.password = buildSharedMap.get(Constants.PROXY_PASSWORD);
         this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.blazemeterAPI = APIFactory.getAPI(userKey,serverName,serverPort,username,password,blazeMeterUrl,blazeMeterApiVersion,logger);
+        this.blazemeterAPI = APIFactory.getAPI(userKey, serverName, serverPort, username, password, blazeMeterUrl, blazeMeterApiVersion, logger);
+        this.blazeMeterApiVersion=(this.blazemeterAPI instanceof BlazemeterApiV3Impl)?"v3":"v2";
         this.logger = logger;
     }
 
