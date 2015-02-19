@@ -207,7 +207,7 @@ public class BlazeAgentProcessor implements BuildProcess{
 		} else {
 			logger.message("Test initialization is started... Waiting for DATA_RECEIVED status");
 			if(bzmServiceManager.getBlazeMeterApiVersion().equals(Constants.V3)){
-                logger.message("Test report will be available at "+bzmServiceManager.getBlazeMeterUrl()+ "/app/#report/" + session + "/loadreport");
+                logger.message("Test report will be available at "+bzmServiceManager.getBlazeMeterUrl()+ "app/#reports/" + session + "/loadreport");
             }
 		}
 		
