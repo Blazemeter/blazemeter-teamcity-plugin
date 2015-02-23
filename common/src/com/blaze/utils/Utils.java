@@ -155,7 +155,7 @@ public class Utils {
                     ?"-1":errorUnstableThreshold);
             int errorFailed = Integer.valueOf(errorFailedThreshold==null||
                     errorFailedThreshold.isEmpty()
-                    ?"-1":errorUnstableThreshold);
+                    ?"-1":errorFailedThreshold);
 
             if (responseTimeUnstable >= 0 & testResult.getAverage() > responseTimeUnstable &
                     testResult.getAverage() < responseTimeFailed) {
@@ -181,7 +181,7 @@ public class Utils {
                 buildStatus=BuildFinishedStatus.FINISHED_FAILED;
             }
 
-            if (errorFailed >= 0 & testResult.getAverage() >= errorFailed) {
+            if (errorFailed >= 0 & testResult.getErrorPercentage() >= errorFailed) {
                 logger.message("Validating errorPercentageUnstable...\n");
                 logger.message("Error percentage is higher than errorPercentageUnstable treshold\n");
                 logger.message("Marking build as failed");
