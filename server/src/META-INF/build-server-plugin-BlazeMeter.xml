@@ -40,6 +40,6 @@
 		init-method="register">
 		<property name="placeId" value="BUILD_RESULTS_TAB" />
 		<property name="pluginName" value="BlazeMeter" />
-		<property name="includeUrl" value="reportPage.jsp" />
+		<property name="includeUrl" value="blazeMeterReportTab.jsp" />
 	</bean>
 </beans>
