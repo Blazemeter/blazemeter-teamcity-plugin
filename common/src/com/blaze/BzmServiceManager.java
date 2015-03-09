@@ -388,6 +388,27 @@ public class BzmServiceManager {
         }
     }
 
+    public String getReportUrl(String sessionId) {
+        JSONObject jo=null;
+        String publicToken="";
+        String reportUrl=null;
+        try {
+            jo = this.blazemeterAPI.generatePublicToken(sessionId);
+            if(jo.get("error").equals(JSONObject.NULL)){
+                JSONObject result=jo.getJSONObject("result");
+                publicToken=result.getString("publicToken");
+                reportUrl=this.blazeMeterUrl+"app/?public-token="+publicToken+"#reports/"+sessionId+"/summary";
+            }else{
+                logger.error("Problems with generating public-token for report URL: " + jo.get("error").toString());
+                reportUrl=this.blazeMeterUrl+"app/#reports/"+sessionId+"/summary";
+            }
+        } catch (Exception e){
+            logger.error("Problems with generating public-token for report URL: "+e);
+        }finally {
+            return reportUrl;
+        }
+    }
+
 
     public String getUserKey() {
         return userKey;

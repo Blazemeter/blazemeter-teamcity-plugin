@@ -247,4 +247,9 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     public JSONObject getUser() {
         return not_implemented;
     }
+
+    @Override
+    public JSONObject generatePublicToken(String sessionId) {
+        return not_implemented;
+    }
 }

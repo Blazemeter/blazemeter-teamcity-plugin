@@ -3,7 +3,6 @@ package com.blaze.api.urlmanager;
 import com.blaze.runner.Constants;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /**
@@ -146,6 +145,11 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
 
     @Override
     public String getUser(String appKey, String userKey) {
+        return Constants.NOT_IMPLEMENTED;
+    }
+
+    @Override
+    public String generatePublicToken(String appKey, String userKey, String sessionId) {
         return Constants.NOT_IMPLEMENTED;
     }
 }

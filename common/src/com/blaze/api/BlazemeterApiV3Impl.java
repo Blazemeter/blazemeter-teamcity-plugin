@@ -282,4 +282,14 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
         return jo;
     }
+
+
+    @Override
+    public JSONObject generatePublicToken(String sessionId) {
+        if(StringUtils.isEmpty(userKey)&StringUtils.isEmpty(sessionId)) return null;
+
+        String url = this.urlManager.generatePublicToken(APP_KEY, userKey, sessionId);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        return jo;
+    }
 }

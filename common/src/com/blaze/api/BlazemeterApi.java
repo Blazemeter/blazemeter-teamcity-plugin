@@ -44,4 +44,7 @@ public interface BlazemeterApi {
     public String retrieveJUNITXML(String sessionId);
 
     public JSONObject retrieveJTLZIP(String sessionId);
+
+    public JSONObject generatePublicToken(String sessionId);
+
 }

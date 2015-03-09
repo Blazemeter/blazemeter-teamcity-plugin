@@ -39,4 +39,5 @@ public interface BmUrlManager {
 
     public String getUser(String appKey, String userKey);
 
+    public String generatePublicToken(String appKey, String userKey, String sessionId);
 }
