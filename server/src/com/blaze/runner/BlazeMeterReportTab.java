@@ -61,7 +61,12 @@ public class BlazeMeterReportTab extends ViewLogTab {
 		}
 		
 		model.put("session_id", session_id);
+/*TODO
+<script language='javascript' type='text/javascript'>
+                          window.location.replace("http://qa.a.blazemeter.com/app/?public-token=AjPdJfQj6gHaClxxiKiJVZyXgaYO9wcwN54yb5wgM3wdIruvwV#reports/r-op-beta54fd88945f673/summary");
+How to pass reportUrl to reportTab?
 
+ */
 	}
 
 	@Override
