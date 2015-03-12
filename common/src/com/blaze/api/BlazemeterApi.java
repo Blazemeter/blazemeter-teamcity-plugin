@@ -1,12 +1,12 @@
 package com.blaze.api;
 
 import com.blaze.entities.TestInfo;
+import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * Created by dzmitrykashlach on 9/12/14.
@@ -27,7 +27,7 @@ public interface BlazemeterApi {
 
     public JSONObject testReport(String reportId) throws JSONException;
 
-    public HashMap<String, String> getTestList() throws IOException, JSONException;
+    public LinkedHashMultimap<String, String> getTestList() throws IOException, JSONException;
 
     public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
 

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
 import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
+import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
@@ -131,13 +133,13 @@ public class BzmServiceManager {
 
 
 
-    public HashMap<String, String> getTests() {
+    public LinkedHashMultimap<String, String> getTests() {
         if(this.blazemeterAPI==null){
             blazemeterAPI=APIFactory.getAPI(this.userKey,this.serverName,this.serverPort,
                                             this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
         }
 
-        LinkedHashMap<String,String>tests=new LinkedHashMap<>();
+        LinkedHashMultimap tests=LinkedHashMultimap.create();
         tests.put(Constants.CREATE_FROM_JSON,Constants.NEW_TEST);
         try {
             tests.putAll(this.blazemeterAPI.getTestList());
@@ -150,6 +152,10 @@ public class BzmServiceManager {
         }finally {
             return tests;
         }
+    }
+
+    public Map<String, Collection<String>> getTestsAsMap(){
+        return getTests().asMap();
     }
 
     public String startTest(String testId, int attempts, BuildProgressLogger logger) {

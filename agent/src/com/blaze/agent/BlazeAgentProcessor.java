@@ -7,6 +7,7 @@ import java.util.Map;
 import com.blaze.BzmServiceManager;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
+import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.RunBuildException;
@@ -78,9 +79,9 @@ public class BlazeAgentProcessor implements BuildProcess{
 			return "No test was defined in the configuration page.";
 		} else {
 			//verify if the test still exists on BlazeMeter server
-			HashMap<String, String> tests = bzmServiceManager.getTests();
+            LinkedHashMultimap<String, String> tests = bzmServiceManager.getTests();
 			if (tests != null){
-				if (!tests.values().contains(testId)) {
+				if (!testId.equals(Constants.NEW_TEST)&&!tests.values().contains(testId)) {
                     logger.warning("Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl());
 					return "Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl();
 				}

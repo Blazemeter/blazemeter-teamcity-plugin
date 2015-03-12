@@ -73,10 +73,12 @@
         <th><label for="${bzmServiceManager.debugKey}">BlazeMeter tests:</label></th>
         <td>
             <props:selectProperty name="all_tests">
-                <c:forEach var="test" items="${bzmServiceManager.tests}">
-                    <props:option value="${test.value}" selected="false" title="${test.key}" id="${test.value}">
-                        ${test.value} -> ${test.key}
+                <c:forEach var="test" items="${bzmServiceManager.testsAsMap}">
+                    <c:forEach var="value" items="${test.value}">
+                    <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
+                        ${value} -> ${test.key}
                     </props:option>
+                    </c:forEach>
                 </c:forEach>
             </props:selectProperty>
             <span class="error" id="error_all_tests"></span>

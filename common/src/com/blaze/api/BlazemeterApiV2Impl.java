@@ -2,12 +2,11 @@ package com.blaze.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.JsonConstants;
+import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
@@ -146,8 +145,8 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public HashMap<String, String> getTestList() throws IOException, JSONException {
-        LinkedHashMap<String, String> testListOrdered = null;
+    public LinkedHashMultimap<String, String> getTestList() throws IOException, JSONException {
+        LinkedHashMultimap<String, String> testListOrdered = null;
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
@@ -155,7 +154,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
                 String r = jo.get(JsonConstants.RESPONSE_CODE).toString();
                 if (r.equals("200")) {
                     JSONArray arr = (JSONArray) jo.get("tests");
-                    testListOrdered = new LinkedHashMap<String, String>(arr.length());
+                    testListOrdered = LinkedHashMultimap.create(arr.length(),arr.length());
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject en = null;
                             en = arr.getJSONObject(i);
