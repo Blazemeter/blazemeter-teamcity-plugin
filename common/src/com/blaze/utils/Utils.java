@@ -42,7 +42,7 @@ public class Utils {
         return testDuration;
     }
 
-    public static void updateTestDuration(String apiKey, BlazemeterApi api, String testId, String updDuration, BuildProgressLogger logger) {
+    public static void updateTestDuration(BlazemeterApi api, String testId, String updDuration, BuildProgressLogger logger) {
         try {
             JSONObject jo = api.getTestInfo(testId,logger);
             JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
@@ -72,8 +72,7 @@ public class Utils {
     }
 
 
-    public static void saveReport(String filename,
-                                  String report,
+    public static void saveReport(String report,
                                   String filePath,
                                   BuildProgressLogger logger
     ) {
@@ -85,13 +84,15 @@ public class Utils {
             BufferedWriter out = new BufferedWriter(new FileWriter(reportFile));
             out.write(report);
             out.close();
-
+        logger.message("Report was saved to "+reportFile.getAbsolutePath());
         } catch (FileNotFoundException fnfe) {
             logger.message("ERROR: Failed to save XML report to workspace " + fnfe.getMessage());
             logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
+            logger.exception(fnfe);
         } catch (IOException e) {
             logger.message("ERROR: Failed to save XML report to workspace " + e.getMessage());
             logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
+            logger.exception(e);
         }
     }
 
@@ -140,13 +141,13 @@ public class Utils {
                                                 String responseTimeFailedThreshold,
                                                 BuildProgressLogger logger){
 
-        BuildFinishedStatus buildStatus = BuildFinishedStatus.FINISHED_SUCCESS;
+        BuildFinishedStatus buildStatus=null;
+        logger.message("Going to validate local tresholds...");
         try{
 
             int responseTimeUnstable = Integer.valueOf(responseTimeUnstableThreshold==null||
                     responseTimeUnstableThreshold.isEmpty()
                     ?"-1":responseTimeUnstableThreshold);
-
             int responseTimeFailed = Integer.valueOf(responseTimeFailedThreshold==null||
                     responseTimeFailedThreshold.isEmpty()
                     ?"-1":responseTimeFailedThreshold);
@@ -157,18 +158,40 @@ public class Utils {
                     errorFailedThreshold.isEmpty()
                     ?"-1":errorFailedThreshold);
 
-            if (responseTimeUnstable >= 0 & testResult.getAverage() > responseTimeUnstable &
-                    testResult.getAverage() < responseTimeFailed) {
+
+            if (errorUnstable < 0) {
+                logger.message("ErrorUnstable percentage validation will be skipped: value was not set in configuration");
+            }
+
+            if (errorFailed < 0) {
+                logger.message("ErrorFailed percentage validation will be skipped: value was not set in configuration");
+            }
+
+            if (responseTimeUnstable < 0) {
+                logger.message("ResponseTimeUnstable validation will be skipped: value was not set in configuration");
+            }
+
+            if (responseTimeFailed < 0) {
+                logger.message("ResponseTimeFailed validation will be skipped: value was not set in configuration");
+            }
+
+            if(responseTimeFailed < 0&responseTimeUnstable < 0&errorFailed < 0&errorUnstable < 0){
+                buildStatus=null;
+                return buildStatus;
+            }
+
+            if (responseTimeUnstable >= 0 & testResult.getErrorPercentage() > responseTimeUnstable) {
                 logger.message("Validating reponseTimeUnstable...\n");
-                logger.message("Average response time is higher than responseTimeUnstable treshold\n");
+                logger.message("Average response time="+testResult.getAverage()+" is higher than responseTimeUnstable treshold="
+                        +responseTimeUnstable+"\n");
                 logger.message("Marking build as FINISHED_WITH_PROBLEMS");
                 buildStatus=BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
             }
 
-            if (errorUnstable >= 0 & testResult.getErrorPercentage() > errorUnstable &
-                    testResult.getAverage() < errorFailed) {
+            if (errorUnstable >= 0 & testResult.getErrorPercentage() > errorUnstable) {
                 logger.message("Validating errorPercentageUnstable...\n");
-                logger.message("Error percentage is higher than errorPercentageUnstable treshold\n");
+                logger.message("Error percentage="+testResult.getErrorPercentage()+" is higher than errorPercentageUnstable treshold="+
+                        errorUnstable+"\n");
                 logger.message("Marking build as FINISHED_WITH_PROBLEMS");
                 buildStatus=BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
             }
@@ -176,40 +199,24 @@ public class Utils {
 
             if (responseTimeFailed >= 0 & testResult.getAverage() >= responseTimeFailed) {
                 logger.message("Validating reponseTimeFailed...\n");
-                logger.message("Average response time is higher than responseTimeFailure treshold\n");
-                logger.message("Marking build as failed");
+                logger.message("Average response time"+testResult.getAverage()+" is higher than responseTimeFailure treshold"+responseTimeFailed+"\n");
+                logger.message("Marking build as FINISHED_FAILED");
                 buildStatus=BuildFinishedStatus.FINISHED_FAILED;
+                return buildStatus;
             }
 
             if (errorFailed >= 0 & testResult.getErrorPercentage() >= errorFailed) {
-                logger.message("Validating errorPercentageUnstable...\n");
-                logger.message("Error percentage is higher than errorPercentageUnstable treshold\n");
-                logger.message("Marking build as failed");
+                logger.message("Validating errorPercentageFailed...\n");
+                logger.message("Error percentage"+testResult.getErrorPercentage()+" is higher than errorPercentageFailed treshold"+errorFailed+"\n");
+                logger.message("Marking build as FINISHED_FAILED");
                 buildStatus=BuildFinishedStatus.FINISHED_FAILED;
+                return buildStatus;
             }
 
-            if (errorUnstable < 0) {
-                logger.message("ErrorUnstable percentage validation was skipped: value was not set in configuration");
-            }
-
-            if (errorFailed < 0) {
-                logger.message("ErrorFailed percentage validation was skipped: value was not set in configuration");
-            }
-
-            if (responseTimeUnstable < 0) {
-                logger.message("ResponseTimeUnstable validation was skipped: value was not set in configuration");
-            }
-
-            if (responseTimeFailed < 0) {
-                logger.message("ResponseTimeFailed validation was skipped: value was not set in configuration");
-            }
-
-            if(responseTimeFailed < 0&responseTimeUnstable < 0&errorFailed < 0&errorUnstable < 0){
-                buildStatus=null;
-            }
 
         }catch (Exception e){
-            logger.message("Unexpected error occured while validating local tresholds. Check that test was finished correctly or turn to customer support");
+            logger.message("Unexpected error occured while validating local tresholds");
+            logger.exception(e);
         }finally {
             return buildStatus;
         }

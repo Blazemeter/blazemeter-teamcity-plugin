@@ -196,14 +196,14 @@ public class BzmServiceManager {
     }
 
     public void updateTestDuration(String testId, String testDuration, BuildProgressLogger logger) {
-        Utils.updateTestDuration(userKey, this.blazemeterAPI, testId, testDuration, logger);
+        Utils.updateTestDuration(this.blazemeterAPI, testId, testDuration, logger);
     }
 
     public void retrieveJUNITXML(String session,BuildRunnerContext buildRunnerContext){
        String junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
         logger.message("Received Junit report from server.... Saving it to the disc...");
         String reportFilePath=buildRunnerContext.getWorkingDirectory()+"/"+session+".xml";
-        Utils.saveReport(session, junitReport, reportFilePath,logger);
+        Utils.saveReport(junitReport, reportFilePath,logger);
 }
 
     public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
@@ -381,15 +381,20 @@ public class BzmServiceManager {
         JSONObject jo = null;
         boolean tresholdsValid=true;
         JSONObject result=null;
+        logger.message("Going to validate server tresholds...");
         try {
             jo=this.blazemeterAPI.getTresholds(session);
             result=jo.getJSONObject(JsonConstants.RESULT);
             tresholdsValid=result.getJSONObject(JsonConstants.DATA).getBoolean("success");
         } catch (NullPointerException e){
+            logger.message("Server tresholds validation was not executed");
             logger.exception(e);
         }catch (JSONException je) {
+            logger.message("Server tresholds validation was not executed");
             logger.warning("Failed to get tresholds for  session=" + session);
         }finally {
+            logger.message("Server tresholds validation "+
+                    (tresholdsValid?"passed. Marking build as PASSED":"failed. Marking build as FAILED"));
             return tresholdsValid? BuildFinishedStatus.FINISHED_SUCCESS:BuildFinishedStatus.FINISHED_FAILED;
         }
     }
