@@ -41,7 +41,7 @@ public class BlazeMeterReportTab extends ViewLogTab {
 		session_id = "";
 		
 		BuildArtifacts arts = sbuild.getArtifacts(BuildArtifactsViewMode.VIEW_ALL);
-		BuildArtifact ba = arts.getArtifact("blaze_session.id");
+		BuildArtifact ba = arts.getArtifact("blaze_session.id")	;
 		if (ba!=null) {
 			//Founded artifact BlazeMeter session.
 			try {
@@ -74,7 +74,8 @@ How to pass reportUrl to reportTab?
 			@NotNull SBuild build) {
 		SBuild sbuild = this.getBuild(request);
         boolean hasBZMstep=hasBZMstep(sbuild);
-		return super.isAvailable(request, build) && sbuild.isFinished()&&hasBZMstep;
+		return false;
+//		return super.isAvailable(request, build) && hasBZMstep;
 	}
 
     private boolean hasBZMstep(@NotNull SBuild sbuild){

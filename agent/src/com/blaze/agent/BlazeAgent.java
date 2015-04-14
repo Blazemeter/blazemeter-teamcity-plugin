@@ -14,7 +14,7 @@ import com.blaze.runner.Constants;
 
 public class BlazeAgent implements AgentBuildRunner {
 	private AgentBuildRunnerInfo runnerInfo;
-	private BlazeAgentProcessor buildProcess;
+	private BzmBuildProcess buildProcess;
 	private BuildAgent buildAgent;
 	private ArtifactsWatcher artifactsWatcher;
 	
@@ -27,7 +27,7 @@ public class BlazeAgent implements AgentBuildRunner {
 	public BuildProcess createBuildProcess(AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext)
 			throws RunBuildException {
 
-		buildProcess = new BlazeAgentProcessor(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher);
+		buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher);
 
 		return buildProcess;
 	}

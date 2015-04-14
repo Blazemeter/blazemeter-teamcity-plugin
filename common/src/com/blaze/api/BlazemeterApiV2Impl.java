@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.blaze.runner.Constants;
+import org.springframework.util.StringUtils;
 
 /**
  * 
@@ -137,11 +138,14 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
      *                 //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject testReport(String reportId) {
+    public JSONObject testReport(String reportId) throws JSONException{
         if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        JSONObject summary = (JSONObject) this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET).getJSONObject(JsonConstants.RESULT)
+                .getJSONArray("summary")
+                .get(0);
+        return summary;
     }
 
     @Override
@@ -249,6 +253,10 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
     @Override
     public JSONObject generatePublicToken(String sessionId) {
-        return not_implemented;
+        if(StringUtils.isEmpty(userKey)&StringUtils.isEmpty(sessionId)) return null;
+
+        String url = this.urlManager.generatePublicToken(APP_KEY, userKey, sessionId);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        return jo;
     }
 }

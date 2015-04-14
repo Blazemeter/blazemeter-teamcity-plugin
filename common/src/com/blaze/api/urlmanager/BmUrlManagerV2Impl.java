@@ -102,6 +102,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
 
     @Override
     public String testReport(String appKey, String userKey, String reportId) {
+        String testAggregateReport=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
@@ -109,8 +110,10 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/testGetReport.json/?app_key=%s&user_key=%s&report_id=%s&get_aggregate=true&",
-                appKey, userKey, reportId)+CLIENT_IDENTIFICATION;
+        testAggregateReport=SERVER_URL+"/api/latest/sessions/"
+                +reportId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return testAggregateReport;
     }
 
     @Override
@@ -150,6 +153,16 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
 
     @Override
     public String generatePublicToken(String appKey, String userKey, String sessionId) {
-        return Constants.NOT_IMPLEMENTED;
+        String generatePublicToken=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        generatePublicToken=SERVER_URL+"/api/latest/sessions/"+sessionId+
+                "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return generatePublicToken;
     }
 }

@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.blaze.api.BlazemeterApi;
@@ -15,7 +13,6 @@ import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.testresult.TestResult;
-import com.blaze.testresult.TestResultFactory;
 import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
@@ -117,7 +114,7 @@ public class BzmServiceManager {
         }else{
             if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
                 try{
-                    logger.message("Attempting to update test with id:"+testId);
+                    logger.message("Attempting to update testDuration for test with id:"+testId);
                     bzmServiceManager.updateTestDuration(testId, testDuration, logger);
                 } catch (NumberFormatException nfe){
                     logger.exception(nfe);
@@ -196,7 +193,11 @@ public class BzmServiceManager {
     }
 
     public void updateTestDuration(String testId, String testDuration, BuildProgressLogger logger) {
-        Utils.updateTestDuration(this.blazemeterAPI, testId, testDuration, logger);
+        if(this.blazemeterAPI instanceof BlazemeterApiV3Impl){
+            Utils.updateTestDuration(this.blazemeterAPI, testId, testDuration, logger);
+        }else{
+            logger.message("Updating test duration is not implemented for D6");
+        }
     }
 
     public void retrieveJUNITXML(String session,BuildRunnerContext buildRunnerContext){
@@ -245,12 +246,10 @@ public class BzmServiceManager {
      * @return -1 fail, 0 success, 1 unstable
      */
     public TestResult getReport(BuildProgressLogger logger) {
-        TestResultFactory testResultFactory = TestResultFactory.getTestResultFactory();
-        testResultFactory.setVersion(ApiVersion.valueOf(blazeMeterApiVersion));
         TestResult testResult = null;
         try {
             this.aggregate=this.blazemeterAPI.testReport(this.session);
-            testResult = testResultFactory.getTestResult(this.aggregate);
+            testResult = new TestResult(this.aggregate);
 
         } catch (JSONException e) {
             logger.exception(e);
@@ -408,10 +407,10 @@ public class BzmServiceManager {
             if(jo.get("error").equals(JSONObject.NULL)){
                 JSONObject result=jo.getJSONObject("result");
                 publicToken=result.getString("publicToken");
-                reportUrl=this.blazeMeterUrl+"app/?public-token="+publicToken+"#reports/"+sessionId+"/summary";
+                reportUrl=this.blazeMeterUrl+"/app/?public-token="+publicToken+"#reports/"+sessionId+"/summary";
             }else{
                 logger.error("Problems with generating public-token for report URL: " + jo.get("error").toString());
-                reportUrl=this.blazeMeterUrl+"app/#reports/"+sessionId+"/summary";
+                reportUrl=this.blazeMeterUrl+"/app/#reports/"+sessionId+"/summary";
             }
         } catch (Exception e){
             logger.error("Problems with generating public-token for report URL: "+e);
