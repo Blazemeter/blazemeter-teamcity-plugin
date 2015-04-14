@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import com.blaze.BzmServiceManager;
+import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
@@ -206,7 +207,7 @@ public class BzmBuildProcess implements BuildProcess{
 		} else {
 			logger.message("Test initialization is started... Waiting for DATA_RECEIVED status");
 			String reportUrl=bzmServiceManager.getReportUrl(session);
-            logger.message("Test report will be available at "+reportUrl);
+            logger.message("Test report will be available at " + reportUrl);
 		}
 		
 
@@ -217,11 +218,11 @@ public class BzmBuildProcess implements BuildProcess{
 		boolean initTimeOutPassed=false;
         do{
             Utils.sleep(CHECK_INTERVAL, logger);
-            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals(Constants.V2)?testId:bzmServiceManager.getSession());
+            testInfo = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.getSession());
             logger.message("Check if the test is initialized...");
         initTimeOutPassed=System.currentTimeMillis()>testInitStart+INIT_TEST_TIMEOUT;
-        }while (!(testInfo.getStatus().equals(Constants.TestStatus.Running)|initTimeOutPassed));
-        if(initTimeOutPassed&!testInfo.getStatus().equals(Constants.TestStatus.Running)){
+        }while (!(testInfo.getStatus().equals(TestStatus.Running)|initTimeOutPassed));
+        if(initTimeOutPassed&!testInfo.getStatus().equals(TestStatus.Running)){
             logger.warning("Failed to initialize test "+testId);
             logger.warning("Build will be aborted");
             return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
@@ -231,9 +232,9 @@ public class BzmBuildProcess implements BuildProcess{
         do{
             Utils.sleep(CHECK_INTERVAL, logger);
 			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
-            testInfo = bzmServiceManager.getTestStatus(apiVersion.equals(Constants.V2)?testId:bzmServiceManager.getSession());
+            testInfo = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
-        }while (!testInfo.getStatus().equals(Constants.TestStatus.NotRunning));
+        }while (!testInfo.getStatus().equals(TestStatus.NotRunning));
 
         logger.message("Test finished. Checking for test report...");
         logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");

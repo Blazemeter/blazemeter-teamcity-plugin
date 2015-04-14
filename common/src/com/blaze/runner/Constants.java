@@ -2,13 +2,7 @@ package com.blaze.runner;
 
 public interface Constants {
 	
-    public class TestStatus {
-        public static final String Running = "Running";
-        public static final String NotRunning = "Not Running";
-        public static final String NotFound = "NotFound";
-        public static final String Error = "error";
-    }
-	
+
     //runner properties
 	public final static String RUNNER_DESCRIPTION = "BlazeMeter";
 	public final static String RUNNER_DISPLAY_NAME = "BlazeMeter";

@@ -19,7 +19,7 @@ public interface BlazemeterApi {
     public JSONObject uploadFile(String testId, String fileName, String pathName)
             throws JSONException,IOException;
 
-    public TestInfo getTestRunStatus(String testId) throws JSONException;
+    public TestInfo getTestInfo(String testId) throws JSONException;
 
     public JSONObject startTest(String testId) throws JSONException;
 

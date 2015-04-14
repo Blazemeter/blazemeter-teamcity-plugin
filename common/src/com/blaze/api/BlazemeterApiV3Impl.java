@@ -4,6 +4,7 @@ import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
+import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
@@ -82,28 +83,37 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public TestInfo getTestRunStatus(String testId) throws JSONException{
+    public TestInfo getTestInfo(String testId) throws JSONException{
         TestInfo ti = new TestInfo();
-        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) {
-            ti.setStatus(Constants.TestStatus.NotFound);
+
+        if(StringUtils.isEmpty(this.userKey)&StringUtils.isEmpty(testId))
+        {
+            ti.setStatus(TestStatus.NotFound);
             return ti;
         }
-            String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
+
+        try {
+            String url = this.urlManager.testStatus(APP_KEY, this.userKey, testId);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             if (result.get(JsonConstants.DATA_URL) == null) {
-                ti.setStatus(Constants.TestStatus.NotFound);
+                ti.setStatus(TestStatus.NotFound);
             } else {
                 ti.setId(String.valueOf(result.getInt("testId")));
                 ti.setName(result.getString(JsonConstants.NAME));
-                if (result.getString(JsonConstants.STATUS).equals("DATA_RECIEVED")) {
-                    ti.setStatus(Constants.TestStatus.Running);
-                } else if (result.getString(JsonConstants.STATUS).equals("ENDED")) {
-                    ti.setStatus(Constants.TestStatus.NotRunning);
+                if (!result.has("ended")||String.valueOf(result.getInt("ended")).equals(JSONObject.NULL)||String.valueOf(result.getInt("ended")).isEmpty()) {
+                    ti.setStatus(TestStatus.Running);
                 } else {
-                    ti.setStatus(Constants.TestStatus.NotRunning);
+                    if(result.has("errors")&&!result.get("errors").equals(JSONObject.NULL)){
+                        ti.setStatus(TestStatus.Error);
+                    }else {
+                        ti.setStatus(TestStatus.NotRunning);
+                    }
                 }
             }
+        } catch (Exception e) {
+            ti.setStatus(TestStatus.Error);
+        }
         return ti;
     }
 

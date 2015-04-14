@@ -333,10 +333,10 @@ public class BzmServiceManager {
         return true;
     }
 
-    public TestInfo getTestStatus(String testId) {
+    public TestInfo getTestSessionStatus(String testId) {
         TestInfo ti=null;
         try {
-            ti=this.blazemeterAPI.getTestRunStatus(testId);
+            ti=this.blazemeterAPI.getTestInfo(testId);
         } catch (JSONException e) {
             logger.exception(e);
         } catch (NullPointerException e){

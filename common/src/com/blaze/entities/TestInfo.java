@@ -1,5 +1,7 @@
 package com.blaze.entities;
 
+import com.blaze.runner.TestStatus;
+
 /**
  * User: Vitali
  * Date: 4/2/12
@@ -13,12 +15,12 @@ package com.blaze.entities;
 public class TestInfo {
     String id;
     String name;
-    String status;
+    TestStatus status;
 
     public TestInfo() {
     }
 
-    public TestInfo(String id, String name, String status) {
+    public TestInfo(String id, String name, TestStatus status) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -40,11 +42,11 @@ public class TestInfo {
         this.name = name;
     }
 
-    public String getStatus() {
+    public TestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TestStatus status) {
         this.status = status;
     }
 

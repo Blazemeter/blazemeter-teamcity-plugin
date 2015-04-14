@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.JsonConstants;
+import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
@@ -90,22 +91,28 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public TestInfo getTestRunStatus(String testId) throws JSONException {
+    public TestInfo getTestInfo(String testId) throws JSONException {
         TestInfo ti = new TestInfo();
-        if ((StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId))) {
-            ti.setStatus(Constants.TestStatus.NotFound);
+
+        if (StringUtils.isEmpty(this.userKey)&StringUtils.isEmpty(testId)) {
+            ti.setStatus(TestStatus.NotFound);
             return ti;
         }
-            String url = this.urlManager.testStatus(APP_KEY, userKey, testId);
-            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
 
-            if (jo.get(JsonConstants.STATUS) == "Test not found")
-                ti.setStatus(Constants.TestStatus.NotFound);
-            else {
-                ti.setId(jo.getString("test_id"));
-                ti.setName( jo.getString("test_name"));
-                ti.setStatus(jo.getString(JsonConstants.STATUS));
+        try {
+            String url = this.urlManager.testStatus(APP_KEY, this.userKey, testId);
+            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+
+            if ("Test not found".equals(jo.get(JsonConstants.ERROR))) {
+                ti.setStatus(TestStatus.NotFound);
+            } else {
+                ti.setId(jo.getString(JsonConstants.TEST_ID));
+                ti.setName(jo.getString("test_name"));
+                ti.setStatus(TestStatus.valueOf(jo.getString(JsonConstants.STATUS).equals("Not Running") ? "NotRunning" : jo.getString(JsonConstants.STATUS)));
             }
+        } catch (Exception e) {
+            ti.setStatus(TestStatus.Error);
+        }
         return ti;
     }
 
