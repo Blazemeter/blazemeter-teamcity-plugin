@@ -52,13 +52,11 @@ public class TestResult {
 
     @Override
     public String toString() {
-        return "######### Aggregate Test Result ####################" +
-               "\nSamples=" + hits +
-               "\nErrors percentage=" + String.format("%.5g%n", errorPercentage)+
-               "\nAverage=" + average +
-               "\nMin=" + min +
-               "\nMax=" + max+"\n"+
-               "#################################################";
+        return "Aggregate Test Result -> Samples=" + hits +
+               " Errors percentage=" + String.format("%.5g%n", errorPercentage)+
+               " Average=" + average +
+               " Min=" + min +
+               " Max=" + max;
     }
 
     public double getStd() {

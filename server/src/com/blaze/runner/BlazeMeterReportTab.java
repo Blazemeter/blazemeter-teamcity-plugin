@@ -59,14 +59,10 @@ public class BlazeMeterReportTab extends ViewLogTab {
 		} else {
 			System.out.println("Artifact BlazeMeter session not Founded!");
 		}
-		
-		model.put("session_id", session_id);
-/*TODO
-<script language='javascript' type='text/javascript'>
-                          window.location.replace("http://qa.a.blazemeter.com/app/?public-token=AjPdJfQj6gHaClxxiKiJVZyXgaYO9wcwN54yb5wgM3wdIruvwV#reports/r-op-beta54fd88945f673/summary");
-How to pass reportUrl to reportTab?
+		String reportUrl=sbuild.getAgent().getAvailableParameters().get("env."+Constants.REPORT_URL+sbuild.getBuildNumber());
 
- */
+		model.put("session_id", session_id);
+		request.setAttribute("reportUrl", reportUrl);
 	}
 
 	@Override
@@ -74,8 +70,7 @@ How to pass reportUrl to reportTab?
 			@NotNull SBuild build) {
 		SBuild sbuild = this.getBuild(request);
         boolean hasBZMstep=hasBZMstep(sbuild);
-		return false;
-//		return super.isAvailable(request, build) && hasBZMstep;
+		return super.isAvailable(request, build) && hasBZMstep;
 	}
 
     private boolean hasBZMstep(@NotNull SBuild sbuild){

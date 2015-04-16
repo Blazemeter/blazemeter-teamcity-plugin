@@ -47,6 +47,7 @@ public class BzmBuildProcess implements BuildProcess{
     private String responseTimeFailedThreshold;
 	private String dataFolder;
 	private String mainJMX;
+	private BuildAgent agent;
 	
 	final BuildProgressLogger logger;
 	boolean finished;
@@ -58,7 +59,7 @@ public class BzmBuildProcess implements BuildProcess{
 		this.agentRunningBuild = agentRunningBuild;
 		this.buildRunnerContext = buildRunnerContext;
 		this.artifactsWatcher = artifactsWatcher;
-
+        this.agent=buildAgent;
 		this.finished = false;
 		
 		logger = agentRunningBuild.getBuildLogger();
@@ -208,6 +209,7 @@ public class BzmBuildProcess implements BuildProcess{
 			logger.message("Test initialization is started... Waiting for DATA_RECEIVED status");
 			String reportUrl=bzmServiceManager.getReportUrl(session);
             logger.message("Test report will be available at " + reportUrl);
+		    this.agent.getConfiguration().addEnvironmentVariable(Constants.REPORT_URL+this.agentRunningBuild.getBuildNumber(),reportUrl);
 		}
 		
 
