@@ -4,10 +4,8 @@ public interface Constants {
 	
 
     //runner properties
-	String RUNNER_DESCRIPTION = "BlazeMeter";
 	String RUNNER_DISPLAY_NAME = "BlazeMeter";
 	String RUNNER_TYPE = "BlazeMeter";
-	String BLAZE_METER_STATISTICS_NAME = "BlazeMeterStatistics";
 	String USER_KEY = "USER_KEY";
 	String BLAZEMETER_URL = "BLAZEMETER_URL";
 	String BLAZEMETER_API_VERSION = "BLAZEMETER_API_VERSION";
