@@ -100,7 +100,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         }
 
         try {
-            String url = this.urlManager.testStatus(APP_KEY, this.userKey, testId);
+            String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, testId);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
 
             if ("Test not found".equals(jo.get(JsonConstants.ERROR))) {
@@ -265,5 +265,15 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         String url = this.urlManager.generatePublicToken(APP_KEY, userKey, sessionId);
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
         return jo;
+    }
+
+    @Override
+    public int getTestSessionStatusCode(String id) throws Exception {
+        return -1;
+    }
+
+    @Override
+    public JSONObject terminateTest(String testId) {
+        return not_implemented;
     }
 }

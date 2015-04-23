@@ -11,12 +11,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.AgentRunningBuild;
-import jetbrains.buildServer.agent.BuildAgent;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
-import jetbrains.buildServer.agent.BuildProcess;
-import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import jetbrains.buildServer.util.PropertiesUtil;
@@ -36,7 +31,7 @@ public class BzmBuildProcess implements BuildProcess{
 	private AgentRunningBuild agentRunningBuild;
 	private BuildRunnerContext buildRunnerContext;
 	private ArtifactsWatcher artifactsWatcher;
-	
+
 	private String validationError;
 	private String testId;
     private String jsonConfiguration;
@@ -154,7 +149,7 @@ public class BzmBuildProcess implements BuildProcess{
 	@Override
 	public void interrupt() {
 		logger.message("BlazeMeter agent interrupted.");
-        bzmServiceManager.stopTest(testId, logger);
+        bzmServiceManager.stopTestSession(testId, bzmServiceManager.getSession(), logger);
 		interrupted = true;
 	}
 
@@ -220,13 +215,20 @@ public class BzmBuildProcess implements BuildProcess{
         String apiVersion=bzmServiceManager.getBlazeMeterApiVersion();
         long testInitStart=System.currentTimeMillis();
 		boolean initTimeOutPassed=false;
+		BuildInterruptReason buildInterruptReason;
         do{
             Utils.sleep(CHECK_INTERVAL, logger);
             testInfo = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.getSession());
             logger.message("Check if the test is initialized...");
-        initTimeOutPassed=System.currentTimeMillis()>testInitStart+INIT_TEST_TIMEOUT;
-        }while (!(testInfo.getStatus().equals(TestStatus.Running)|initTimeOutPassed));
-        if(initTimeOutPassed&!testInfo.getStatus().equals(TestStatus.Running)){
+			initTimeOutPassed = System.currentTimeMillis() > testInitStart + INIT_TEST_TIMEOUT;
+			buildInterruptReason = agentRunningBuild.getInterruptReason();
+		}
+		while (buildInterruptReason == null && (!(testInfo.getStatus().equals(TestStatus.Running) | initTimeOutPassed)));
+		if (buildInterruptReason != null){
+			logger.warning("Build was be aborted by user");
+			return BuildFinishedStatus.INTERRUPTED;
+		}
+		if(initTimeOutPassed&!testInfo.getStatus().equals(TestStatus.Running)){
             logger.warning("Failed to initialize test "+testId);
             logger.warning("Build will be aborted");
             return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;

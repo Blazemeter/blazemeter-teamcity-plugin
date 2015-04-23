@@ -2,7 +2,6 @@ package com.blaze.api;
 
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
-import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
@@ -93,7 +92,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
 
         try {
-            String url = this.urlManager.testStatus(APP_KEY, this.userKey, testId);
+            String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, testId);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             if (result.get(JsonConstants.DATA_URL) == null) {
@@ -300,5 +299,35 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         String url = this.urlManager.generatePublicToken(APP_KEY, userKey, sessionId);
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
         return jo;
+    }
+
+    @Override
+    public int getTestSessionStatusCode(String id) throws Exception{
+        int statusCode=0;
+        if(StringUtils.isEmpty(this.userKey)&StringUtils.isEmpty(id))
+        {
+            return statusCode;
+        }
+        try {
+            String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, id);
+            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
+            statusCode=result.getInt("statusCode");
+        } catch (Exception e) {
+            throw e;
+        }finally {
+            {
+                return statusCode;
+            }
+        }
+    }
+
+    @Override
+    public JSONObject terminateTest(String testId) {
+        if(StringUtils.isEmpty(this.userKey)&StringUtils.isEmpty(testId)) return null;
+
+        String url = this.urlManager.testTerminate(APP_KEY, this.userKey, testId);
+        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+
     }
 }

@@ -34,7 +34,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
     }
 
     @Override
-    public String testStatus(String appKey, String userKey, String testId) {
+    public String testSessionStatus(String appKey, String userKey, String testId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
@@ -164,5 +164,10 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
                 "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return generatePublicToken;
+    }
+
+    @Override
+    public String testTerminate(String appKey, String userKey, String testId) {
+        return Constants.NOT_IMPLEMENTED;
     }
 }

@@ -9,35 +9,38 @@ public interface BmUrlManager {
     String CLIENT_IDENTIFICATION = "_clientId=CI_TEAMCITY&_clientVersion="
             + Utils.getVersion()+"&​";
 
-    public String getServerUrl();
+    String getServerUrl();
 
-    public String getTests(String appKey, String userKey);
+    String getTests(String appKey, String userKey);
 
-    public String testStatus(String appKey, String userKey, String testId);
+    String testSessionStatus(String appKey, String userKey, String testId);
 
-    public String scriptUpload(String appKey, String userKey, String testId, String fileName);
+    String scriptUpload(String appKey, String userKey, String testId, String fileName);
 
-    public String fileUpload(String appKey, String userKey, String testId, String fileName);
+    String fileUpload(String appKey, String userKey, String testId, String fileName);
 
-    public String testStart(String appKey, String userKey, String testId);
+    String testStart(String appKey, String userKey, String testId);
 
-    public String testStop(String appKey, String userKey, String testId);
+    String testStop(String appKey, String userKey, String testId);
 
-    public String testReport(String appKey, String userKey, String reportId);
+    String testReport(String appKey, String userKey, String reportId);
 
-    public String getTestInfo(String appKey, String userKey, String testId);
+    String getTestInfo(String appKey, String userKey, String testId);
 
-    public String getTresholds(String appKey, String userKey, String sessionId);
+    String getTresholds(String appKey, String userKey, String sessionId);
 
-    public String postJsonConfig(String appKey, String userKey, String testId);
+    String postJsonConfig(String appKey, String userKey, String testId);
 
-    public String createTest(String appKey, String userKey);
+    String createTest(String appKey, String userKey);
 
-    public String retrieveJUNITXML(String appKey, String userKey, String sessionId);
+    String retrieveJUNITXML(String appKey, String userKey, String sessionId);
 
-    public String retrieveJTLZIP(String appKey, String userKey, String sessionId);
+    String retrieveJTLZIP(String appKey, String userKey, String sessionId);
 
-    public String getUser(String appKey, String userKey);
+    String getUser(String appKey, String userKey);
 
-    public String generatePublicToken(String appKey, String userKey, String sessionId);
+    String generatePublicToken(String appKey, String userKey, String sessionId);
+
+    String testTerminate(String appKey, String userKey, String testId);
+
 }

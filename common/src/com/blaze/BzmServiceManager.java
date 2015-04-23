@@ -207,6 +207,28 @@ public class BzmServiceManager {
         Utils.saveReport(junitReport, reportFilePath,logger);
 }
 
+
+
+    public boolean stopTestSession(String testId, String sessionId, BuildProgressLogger logger) {
+        boolean terminate=false;
+        try {
+
+            int statusCode = this.blazemeterAPI.getTestSessionStatusCode(sessionId);
+            if (statusCode < 100) {
+                this.blazemeterAPI.terminateTest(testId);
+                terminate=true;
+            }
+            if (statusCode >= 100|statusCode ==-1) {
+                this.blazemeterAPI.stopTest(testId);
+                terminate=false;
+            }
+        } catch (Exception e) {
+            logger.warning("Error while trying to stop test with testId=" + testId + ", " + e.getMessage());
+        }finally {
+            return terminate;
+        }
+    }
+
     public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
         BlazemeterApi api=this.blazemeterAPI;
         JSONObject jo=api.retrieveJTLZIP(session);
@@ -250,13 +272,12 @@ public class BzmServiceManager {
         try {
             this.aggregate=this.blazemeterAPI.testReport(this.session);
             testResult = new TestResult(this.aggregate);
-
         } catch (JSONException e) {
-            logger.exception(e);
+            logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
         } catch (IOException e) {
-            logger.exception(e);
+            logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
         } catch (NullPointerException e){
-            logger.exception(e);
+            logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
         }
         finally {
             return testResult;

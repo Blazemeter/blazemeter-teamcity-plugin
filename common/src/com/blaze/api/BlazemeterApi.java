@@ -13,38 +13,42 @@ import java.io.IOException;
  */
 public interface BlazemeterApi {
 
-    public boolean uploadJmx(String testId, String fileName, String pathName)
+    boolean uploadJmx(String testId, String fileName, String pathName)
             throws JSONException,IOException;
 
-    public JSONObject uploadFile(String testId, String fileName, String pathName)
+    JSONObject uploadFile(String testId, String fileName, String pathName)
             throws JSONException,IOException;
 
-    public TestInfo getTestInfo(String testId) throws JSONException;
+    TestInfo getTestInfo(String testId) throws JSONException;
 
-    public JSONObject startTest(String testId) throws JSONException;
+    JSONObject startTest(String testId) throws JSONException;
 
-    public JSONObject stopTest(String testId) throws JSONException;
+    JSONObject stopTest(String testId) throws JSONException;
 
-    public JSONObject testReport(String reportId) throws JSONException;
+    JSONObject testReport(String reportId) throws JSONException;
 
-    public LinkedHashMultimap<String, String> getTestList() throws IOException, JSONException;
+    LinkedHashMultimap<String, String> getTestList() throws IOException, JSONException;
 
-    public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
+    JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
 
-    public JSONObject getTestInfo(String testId, BuildProgressLogger logger);
+    JSONObject getTestInfo(String testId, BuildProgressLogger logger);
 
-    public JSONObject getUser();
+    JSONObject getUser();
 
-    public JSONObject getTresholds(String sessionId);
+    JSONObject getTresholds(String sessionId);
 
-    public JSONObject postJsonConfig(String testId, JSONObject data);
+    JSONObject postJsonConfig(String testId, JSONObject data);
 
-    public JSONObject createTest(JSONObject data);
+    JSONObject createTest(JSONObject data);
 
-    public String retrieveJUNITXML(String sessionId);
+    String retrieveJUNITXML(String sessionId);
 
-    public JSONObject retrieveJTLZIP(String sessionId);
+    JSONObject retrieveJTLZIP(String sessionId);
 
-    public JSONObject generatePublicToken(String sessionId);
+    JSONObject generatePublicToken(String sessionId);
+
+    int getTestSessionStatusCode(String id) throws Exception;
+
+    JSONObject terminateTest(String testId);
 
 }
