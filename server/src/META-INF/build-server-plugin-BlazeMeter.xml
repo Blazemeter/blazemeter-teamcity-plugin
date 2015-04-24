@@ -24,13 +24,13 @@
 	<!-- Administration controllers -->
 	<bean id="userKeyControler" class="com.blaze.runner.BlazeRunTypeController" init-method="register">
 		<constructor-arg index="0" value="/saveuserkey.html" />
-		<constructor-arg index="1" value="userkey.jsp" />
+		<constructor-arg index="1" value="adminPage.jsp" />
 		<property name="mainSettings" ref="blazeServerSettings"/>
 	</bean>
 
 	<bean id="BlazeMeterAdminPage" class="com.blaze.runner.BlazeMeterAdminPage" init-method="register">
 		<constructor-arg index="1" value="blazeMeterTab" />
-		<constructor-arg index="2" value="userkey.jsp" />
+		<constructor-arg index="2" value="adminPage.jsp" />
 		<constructor-arg index="3" value="BlazeMeter" />
 		<property name="mainSettings" ref="blazeServerSettings"/>
 	</bean>
