@@ -44,7 +44,7 @@ public class BlazeMeterSettingsController extends BaseController {
         request.getSession().setAttribute("username", mySettings.getUsername());
         request.getSession().setAttribute("password", mySettings.getPassword());
         Map<String,Object> params = new HashMap<String,Object>();
-        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("editSettings.jsp"), params);
+        return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("viewBlazeRunnerParams.jsp"), params);
 	}
 
 	/**
