@@ -111,15 +111,4 @@
             </div>
         </div>
     </form>
-                        <script type="text/javascript">
-var apiVersionSelect=document.getElementById("blazeMeterApiVersion")
-var apiVersionValue=apiVersionSelect.getAttribute("value")
-var selectedLength = apiVersionSelect.options.length;
-for(var i=0;i<selectedLength;i++){
-   if(apiVersionSelect.options[i].value==apiVersionValue){
-      apiVersionSelect.selectedIndex=i;
-   }
-}
-</script>
-
 </bs:refreshable>
