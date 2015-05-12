@@ -156,10 +156,10 @@ public class BzmServiceManager {
         return getTests().asMap();
     }
 
-    public String startTest(String testId, int attempts, BuildProgressLogger logger) {
-        org.json.JSONObject json;
-        int countStartRequests = 0;
+    public String startTest(String testId, BuildProgressLogger logger) {
         String session=null;
+        TestType testType=this.getTestType(this.blazemeterAPI,testId);
+        this.blazemeterAPI.getUrlManager().setTestType(testType);
 
         try {
             session = this.blazemeterAPI.startTest(testId);
@@ -405,11 +405,13 @@ public class BzmServiceManager {
         String publicToken="";
         String reportUrl=null;
         try {
+            TestType testType=this.blazemeterAPI.getUrlManager().getTestType();
+            String reportType=(testType!=null&&testType.equals(TestType.multi))?"masters":"reports";
             jo = this.blazemeterAPI.generatePublicToken(sessionId);
             if(jo.get("error").equals(JSONObject.NULL)){
                 JSONObject result=jo.getJSONObject("result");
                 publicToken=result.getString("publicToken");
-                reportUrl=this.blazeMeterUrl+"/app/?public-token="+publicToken+"#reports/"+sessionId+"/summary";
+                reportUrl=this.blazeMeterUrl+"/app/?public-token="+publicToken+"#"+reportType+"/"+sessionId+"/summary";
             }else{
                 logger.error("Problems with generating public-token for report URL: " + jo.get("error").toString());
                 reportUrl=this.blazeMeterUrl+"/app/#reports/"+sessionId+"/summary";
@@ -429,7 +431,7 @@ public class BzmServiceManager {
             int resultLength=result.length();
             for (int i=0;i<resultLength;i++){
                 JSONObject jo=result.getJSONObject(i);
-                if(jo.getString(JsonConstants.ID).equals(testId)){
+                if(String.valueOf(jo.getInt(JsonConstants.ID)).equals(testId)){
                     testType= TestType.valueOf(jo.getString(JsonConstants.TYPE));
                     logger.message("Received testType=" + testType.toString() + " for testId=" + testId);
                 }

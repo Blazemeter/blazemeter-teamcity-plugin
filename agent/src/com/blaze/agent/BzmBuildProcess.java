@@ -196,7 +196,7 @@ public class BzmBuildProcess implements BuildProcess{
             }
 
         logger.message("Attempting to start test with id:"+testId);
-        String session = bzmServiceManager.startTest(testId, 5, logger);
+        String session = bzmServiceManager.startTest(testId, logger);
 		BuildFinishedStatus result=null;
 		if (session.isEmpty()){
 			return BuildFinishedStatus.FINISHED_FAILED;

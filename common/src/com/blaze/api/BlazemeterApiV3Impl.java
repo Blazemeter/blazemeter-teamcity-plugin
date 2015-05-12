@@ -1,5 +1,6 @@
 package com.blaze.api;
 
+import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.JsonConstants;
@@ -125,7 +126,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if(!this.urlManager.getTestType().equals(TestType.multi)){
             return  ((JSONArray) result.get("sessionsId")).get(0).toString();
         }else{
-            return  result.getString("id");
+            return  String.valueOf(result.getInt(JsonConstants.ID));
         }
     }
 
@@ -342,5 +343,10 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         String url = this.urlManager.testTerminate(APP_KEY, this.userKey, testId);
         return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
 
+    }
+
+    @Override
+    public BmUrlManager getUrlManager() {
+        return this.urlManager;
     }
 }

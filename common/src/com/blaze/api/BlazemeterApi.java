@@ -1,5 +1,6 @@
 package com.blaze.api;
 
+import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.entities.TestInfo;
 import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildProgressLogger;
@@ -52,5 +53,7 @@ public interface BlazemeterApi {
     JSONObject terminateTest(String testId);
 
     JSONObject getTestsJSON();
+
+    BmUrlManager getUrlManager();
 
 }

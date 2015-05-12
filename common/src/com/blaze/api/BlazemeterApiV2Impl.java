@@ -3,6 +3,7 @@ package com.blaze.api;
 import java.io.File;
 import java.io.IOException;
 
+import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.JsonConstants;
@@ -289,5 +290,11 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     @Override
     public JSONObject terminateTest(String testId) {
         return not_implemented;
+    }
+
+
+    @Override
+    public BmUrlManager getUrlManager() {
+        return this.urlManager;
     }
 }
