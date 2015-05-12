@@ -4,6 +4,8 @@ package com.blaze.runner;
  * Created by dzmitrykashlach on 3/02/15.
  */
 public interface JsonConstants {
+    String TYPE="type";
+    String ID="id";
     String TEST_ID="test_id";
     String RESPONSE_CODE="response_code";
     String ERROR="error";

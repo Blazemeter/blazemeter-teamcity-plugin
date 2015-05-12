@@ -1,5 +1,6 @@
 package com.blaze.api.urlmanager;
 
+import com.blaze.api.TestType;
 import com.blaze.utils.Utils;
 
 /**
@@ -42,5 +43,7 @@ public interface BmUrlManager {
     String generatePublicToken(String appKey, String userKey, String sessionId);
 
     String testTerminate(String appKey, String userKey, String testId);
+    TestType getTestType();
+    void setTestType(TestType testType);
 
 }

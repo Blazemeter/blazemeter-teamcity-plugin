@@ -117,12 +117,19 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized JSONObject startTest(String testId) {
-
-        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
-
+    public synchronized String startTest(String testId) throws JSONException{
+        if (StringUtils.isEmpty(userKey)&StringUtils.isEmpty(testId)) {
+            return null;
+        }
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        JSONObject jo=this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        if (jo.get(JsonConstants.RESPONSE_CODE).equals(500) && jo.get(JsonConstants.ERROR).toString()
+                .startsWith("Test already running")) {
+            return "";
+        }
+
+        String session = jo.get("session_id").toString();
+        return session;
     }
 
 
@@ -264,6 +271,13 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
         String url = this.urlManager.generatePublicToken(APP_KEY, userKey, sessionId);
         JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        return jo;
+    }
+
+    @Override
+    public JSONObject getTestsJSON() {
+        String url = this.urlManager.getTests(APP_KEY, userKey);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
         return jo;
     }
 

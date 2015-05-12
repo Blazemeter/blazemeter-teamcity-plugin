@@ -117,12 +117,16 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized JSONObject startTest(String testId) throws JSONException{
-
-        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
-
+    public synchronized String startTest(String testId) throws JSONException{
+        if(StringUtils.isEmpty(userKey)&StringUtils.isEmpty(testId)) return null;
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo=this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
+        if(!this.urlManager.getTestType().equals(TestType.multi)){
+            return  ((JSONArray) result.get("sessionsId")).get(0).toString();
+        }else{
+            return  result.getString("id");
+        }
     }
 
     /**
@@ -174,7 +178,10 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                             if (en != null) {
                                 id = String.valueOf(en.getInt("id"));
                                 name = en.getString(JsonConstants.NAME).replaceAll("&", "&amp;");
-                                testListOrdered.put(name, id);
+//                                testListOrdered.put(name, id);
+                                String testType=en.has(JsonConstants.TYPE)?en.getString(JsonConstants.TYPE):TestType.http.name();
+                                testListOrdered.put(name+"("+testType+")", id);
+
                             }
                     }
                     return testListOrdered;
@@ -320,6 +327,12 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
                 return statusCode;
             }
         }
+    }
+    @Override
+    public JSONObject getTestsJSON() {
+        String url = this.urlManager.getTests(APP_KEY, userKey);
+        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        return jo;
     }
 
     @Override

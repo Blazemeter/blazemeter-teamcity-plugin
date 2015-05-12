@@ -1,9 +1,9 @@
 package com.blaze.api.urlmanager;
 
+import com.blaze.api.TestType;
 import com.blaze.runner.Constants;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /**
@@ -11,19 +11,20 @@ import java.net.URLEncoder;
  */
 public class BmUrlManagerV3Impl implements BmUrlManager{
 
-    private String SERVER_URL = Constants.DEFAULT_BZM_SERVER;
+    private String serverUrl = Constants.DEFAULT_BZM_SERVER;
+    private TestType testType=TestType.http;
 
     public BmUrlManagerV3Impl(String blazeMeterUrl) {
-        SERVER_URL = blazeMeterUrl;
+        serverUrl = blazeMeterUrl;
     }
 
     @Override
     public String getServerUrl() {
-        return SERVER_URL;
+        return serverUrl;
     }
 
     @Override
-    public String getTests(String appKey, String userKey){
+    public String getTests(String appKey, String userKey) {
         String getTests=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -31,7 +32,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTests=SERVER_URL+"/api/latest/tests?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getTests= serverUrl +"/api/web/tests?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTests;
     }
@@ -46,7 +47,8 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStatus=SERVER_URL+"/api/latest/sessions/"+sessionId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"masters":"sessions";
+        testStatus= serverUrl +"/api/latest/"+type+"/"+sessionId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
         return testStatus;
     }
 
@@ -71,8 +73,10 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStart=SERVER_URL+"/api/latest/tests/"
+        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"collections":"tests";
+        testStart= serverUrl +"/api/latest/"+type+"/"
                 +testId+"/start?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
         return testStart;
     }
 
@@ -86,23 +90,26 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStop=SERVER_URL+"/api/latest/tests/"
+        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"collections":"tests";
+        testStop= serverUrl +"/api/latest/"+type+"/"
                 +testId+"/stop?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
         return testStop;
     }
 
     @Override
-    public String testReport(String appKey, String userKey, String reportId) {
+    public String testReport(String appKey, String userKey, String sessionId) {
         String testAggregateReport=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
-            reportId = URLEncoder.encode(reportId, "UTF-8");
+            sessionId = URLEncoder.encode(sessionId, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testAggregateReport=SERVER_URL+"/api/latest/sessions/"
-                +reportId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"masters":"sessions";
+        testAggregateReport= serverUrl +"/api/latest/"+type+"/"
+                +sessionId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testAggregateReport;
     }
@@ -117,7 +124,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTestInfo=SERVER_URL+"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTestInfo;
     }
@@ -131,7 +138,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTresholds=SERVER_URL+"/api/latest/sessions/"+sessionId+"/reports/thresholds?api_key="
+        getTresholds= serverUrl +"/api/latest/sessions/"+sessionId+"/reports/thresholds?api_key="
                 +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTresholds;
@@ -148,7 +155,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTestInfo=SERVER_URL+"/api/latest/tests/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTestInfo;
     }
@@ -162,7 +169,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        createTest=SERVER_URL+"/api/latest/tests/custom?custom_test_type=yahoo&api_key="
+        createTest= serverUrl +"/api/latest/tests/custom?custom_test_type=yahoo&api_key="
                 +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
         return createTest;
     }
@@ -177,7 +184,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
             e.printStackTrace();
         }
 
-        retrieveJUNITXML=SERVER_URL+"/api/latest/sessions/"+sessionId+
+        retrieveJUNITXML= serverUrl +"/api/latest/sessions/"+sessionId+
                 "/reports/thresholds/data?format=junit&api_key="
                 +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
@@ -194,7 +201,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        retrieveJTLZIP=SERVER_URL+"/api/latest/sessions/"+sessionId+
+        retrieveJTLZIP= serverUrl +"/api/latest/sessions/"+sessionId+
                 "/reports/logs?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return retrieveJTLZIP;
@@ -209,7 +216,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getUser=SERVER_URL+"/api/latest/user?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getUser= serverUrl +"/api/latest/user?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getUser;
 
@@ -224,7 +231,8 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        generatePublicToken=SERVER_URL+"/api/latest/sessions/"+sessionId+
+        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"masters":"sessions";
+        generatePublicToken= serverUrl +"/api/latest/"+type+"/"+sessionId+
                 "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return generatePublicToken;
@@ -240,9 +248,21 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testTerminate=SERVER_URL+"/api/latest/tests/"
+        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"collections":"tests";
+        testTerminate= serverUrl +"/api/latest/"+type+"/"
                 +testId+"/terminate?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testTerminate;
     }
+
+    @Override
+    public TestType getTestType() {
+        return this.testType;
+    }
+
+    @Override
+    public void setTestType(TestType testType) {
+        this.testType=testType;
+    }
+
 }

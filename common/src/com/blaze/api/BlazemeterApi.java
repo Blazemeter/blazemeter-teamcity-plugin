@@ -21,7 +21,7 @@ public interface BlazemeterApi {
 
     TestInfo getTestInfo(String testId) throws JSONException;
 
-    JSONObject startTest(String testId) throws JSONException;
+    String startTest(String testId) throws JSONException;
 
     JSONObject stopTest(String testId) throws JSONException;
 
@@ -50,5 +50,7 @@ public interface BlazemeterApi {
     int getTestSessionStatusCode(String id) throws Exception;
 
     JSONObject terminateTest(String testId);
+
+    JSONObject getTestsJSON();
 
 }

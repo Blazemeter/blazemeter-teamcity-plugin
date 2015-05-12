@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.blaze.api.BlazemeterApi;
 import com.blaze.api.BlazemeterApiV3Impl;
+import com.blaze.api.TestType;
 import com.blaze.entities.TestInfo;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
@@ -159,29 +160,9 @@ public class BzmServiceManager {
         org.json.JSONObject json;
         int countStartRequests = 0;
         String session=null;
-        try {
-        do {
-            json = this.blazemeterAPI.startTest(testId);
-            countStartRequests++;
-            if (countStartRequests > attempts) {
-                logger.error("Could not start BlazeMeter Test with "+attempts+" attempts");
-                session="";
-                return session;
-            }
-        } while (json == null);
 
-            if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
-                if (!json.get(JsonConstants.RESPONSE_CODE).equals(200)) {
-                    if (json.get(JsonConstants.RESPONSE_CODE).equals(500) && json.get(JsonConstants.ERROR).toString().startsWith("Test already running")) {
-                        logger.error("Test already running, please stop it first");
-                        session="";
-                        return session;
-                    }
-                }
-                session = json.get("session_id").toString();
-            }else{
-                session = json.getJSONObject(JsonConstants.RESULT).getJSONArray("sessionsId").getString(0);
-            }
+        try {
+            session = this.blazemeterAPI.startTest(testId);
             this.session=session;
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
@@ -434,9 +415,29 @@ public class BzmServiceManager {
                 reportUrl=this.blazeMeterUrl+"/app/#reports/"+sessionId+"/summary";
             }
         } catch (Exception e){
-            logger.error("Problems with generating public-token for report URL: "+e);
+            logger.error("Problems with generating public-token for report URL: " + e);
         }finally {
             return reportUrl;
+        }
+    }
+
+    public TestType getTestType(BlazemeterApi api, String testId){
+        TestType testType=TestType.http;
+        logger.message("Detecting testType....");
+        try{
+            JSONArray result=api.getTestsJSON().getJSONArray(JsonConstants.RESULT);
+            int resultLength=result.length();
+            for (int i=0;i<resultLength;i++){
+                JSONObject jo=result.getJSONObject(i);
+                if(jo.getString(JsonConstants.ID).equals(testId)){
+                    testType= TestType.valueOf(jo.getString(JsonConstants.TYPE));
+                    logger.message("Received testType=" + testType.toString() + " for testId=" + testId);
+                }
+            }
+        } catch (Exception e) {
+            logger.message("Error while detecting type of test:" + e);
+        }finally {
+            return testType;
         }
     }
 
