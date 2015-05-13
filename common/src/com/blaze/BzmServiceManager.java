@@ -181,12 +181,18 @@ public class BzmServiceManager {
         }
     }
 
-    public void retrieveJUNITXML(String session,BuildRunnerContext buildRunnerContext){
-       String junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
-        logger.message("Received Junit report from server.... Saving it to the disc...");
-        String reportFilePath=buildRunnerContext.getWorkingDirectory()+"/"+session+".xml";
-        Utils.saveReport(junitReport, reportFilePath,logger);
-}
+    public void retrieveJUNITXML(String session, BuildRunnerContext buildRunnerContext) {
+        TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+        if (!testType.equals(TestType.multi)) {
+            String junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
+            logger.message("Received Junit report from server.... Saving it to the disc...");
+            String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + session + ".xml";
+            Utils.saveReport(junitReport, reportFilePath, logger);
+
+        } else {
+            logger.warning("JUNIT report will not be downloaded: test-type is 'multi' ");
+        }
+    }
 
 
 
@@ -211,35 +217,38 @@ public class BzmServiceManager {
     }
 
     public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
-        BlazemeterApi api=this.blazemeterAPI;
-        JSONObject jo=api.retrieveJTLZIP(session);
-        String dataUrl=null;
-        try {
-            JSONArray data=jo.getJSONObject(JsonConstants.RESULT).getJSONArray(JsonConstants.DATA);
-            for(int i=0;i<data.length();i++){
-                String title=data.getJSONObject(i).getString("title");
-                if(title.equals("Zip")){
-                    dataUrl=data.getJSONObject(i).getString(JsonConstants.DATA_URL);
-                    break;
+        TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+        if (!testType.equals(TestType.multi)) {
+
+            JSONObject jo = this.blazemeterAPI.retrieveJTLZIP(session);
+            String dataUrl = null;
+            try {
+                JSONArray data = jo.getJSONObject(JsonConstants.RESULT).getJSONArray(JsonConstants.DATA);
+                for (int i = 0; i < data.length(); i++) {
+                    String title = data.getJSONObject(i).getString("title");
+                    if (title.equals("Zip")) {
+                        dataUrl = data.getJSONObject(i).getString(JsonConstants.DATA_URL);
+                        break;
+                    }
                 }
+                String jtlFilePath = buildRunnerContext.getWorkingDirectory() + "/" + session + ".zip";
+
+                File jtlZip = new File(jtlFilePath);
+                URL url = new URL(dataUrl + "?api_key=" + userKey);
+                FileUtils.copyURLToFile(url, jtlZip);
+                logger.message("Downloading JTLZIP from " + url + "to " + jtlZip.getCanonicalPath());
+            } catch (JSONException e) {
+                logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+            } catch (MalformedURLException e) {
+                logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+            } catch (IOException e) {
+                logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+            } catch (NullPointerException e) {
+                logger.exception(e);
             }
-            String jtlFilePath=buildRunnerContext.getWorkingDirectory()+"/"+session+".zip";
-
-            File jtlZip=new File(jtlFilePath);
-            URL url=new URL(dataUrl+"?api_key="+userKey);
-            FileUtils.copyURLToFile(url,jtlZip);
-            logger.message("Downloading JTLZIP from " + url + "to " + jtlZip.getCanonicalPath());
-//            unzip(jtlZip.getAbsolutePath(), jtlZip.getParent(), jenBuildLog);
-        } catch (JSONException e) {
-            logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
-        } catch (MalformedURLException e) {
-            logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
-        } catch (IOException e) {
-            logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
-        } catch (NullPointerException e){
-            logger.exception(e);
+        }else {
+            logger.warning("JTLZIP will not be downloaded: test-type is 'multi' ");
         }
-
     }
 
     /**
@@ -379,24 +388,30 @@ public class BzmServiceManager {
     }
 
     public BuildFinishedStatus validateServerTresholds() {
-        JSONObject jo = null;
-        boolean tresholdsValid=true;
-        JSONObject result=null;
-        logger.message("Going to validate server tresholds...");
-        try {
-            jo=this.blazemeterAPI.getTresholds(session);
-            result=jo.getJSONObject(JsonConstants.RESULT);
-            tresholdsValid=result.getJSONObject(JsonConstants.DATA).getBoolean("success");
-        } catch (NullPointerException e){
-            logger.message("Server tresholds validation was not executed");
-            logger.exception(e);
-        }catch (JSONException je) {
-            logger.message("Server tresholds validation was not executed");
-            logger.warning("Failed to get tresholds for  session=" + session);
-        }finally {
-            logger.message("Server tresholds validation "+
-                    (tresholdsValid?"passed. Marking build as PASSED":"failed. Marking build as FAILED"));
-            return tresholdsValid? BuildFinishedStatus.FINISHED_SUCCESS:BuildFinishedStatus.FINISHED_FAILED;
+        TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+        if (!testType.equals(TestType.multi)) {
+            JSONObject jo = null;
+            boolean tresholdsValid = true;
+            JSONObject result = null;
+            logger.message("Going to validate server tresholds...");
+            try {
+                jo = this.blazemeterAPI.getTresholds(session);
+                result = jo.getJSONObject(JsonConstants.RESULT);
+                tresholdsValid = result.getJSONObject(JsonConstants.DATA).getBoolean("success");
+            } catch (NullPointerException e) {
+                logger.message("Server tresholds validation was not executed");
+                logger.exception(e);
+            } catch (JSONException je) {
+                logger.message("Server tresholds validation was not executed");
+                logger.warning("Failed to get tresholds for  session=" + session);
+            } finally {
+                logger.message("Server tresholds validation " +
+                        (tresholdsValid ? "passed. Marking build as PASSED" : "failed. Marking build as FAILED"));
+                return tresholdsValid ? BuildFinishedStatus.FINISHED_SUCCESS : BuildFinishedStatus.FINISHED_FAILED;
+            }
+        }else{
+            logger.warning("Server tresholds won't be validated: test-type is 'multi' ");
+            return  BuildFinishedStatus.FINISHED_SUCCESS;
         }
     }
 
@@ -442,6 +457,7 @@ public class BzmServiceManager {
             return testType;
         }
     }
+
 
 
     public String getUserKey() {

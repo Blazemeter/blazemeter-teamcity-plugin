@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import com.blaze.BzmServiceManager;
+import com.blaze.api.TestType;
 import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
@@ -189,7 +190,7 @@ public class BzmBuildProcess implements BuildProcess{
 	@SuppressWarnings("static-access")
 	@Override
 	public BuildFinishedStatus waitFor() throws RunBuildException {
-            try{
+		try{
                 testId=bzmServiceManager.prepareTest(testId,jsonConfiguration,testDuration);
             }catch (Exception e){
                 logger.warning("Failed to prepare/create test with JSON Configuration from "+jsonConfiguration);
