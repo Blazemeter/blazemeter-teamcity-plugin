@@ -24,7 +24,7 @@ public interface BlazemeterApi {
 
     String startTest(String testId) throws JSONException;
 
-    JSONObject stopTest(String testId) throws JSONException;
+    boolean stopTest(String testId) throws Exception;
 
     JSONObject testReport(String reportId) throws JSONException;
 

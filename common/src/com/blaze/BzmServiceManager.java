@@ -99,32 +99,37 @@ public class BzmServiceManager {
 
     public String prepareTest(String testId,String jsonConfiguration,String testDuration){
         JSONObject jsonConf=null;
-        if(jsonConfiguration!=null&&!jsonConfiguration.isEmpty()){
-            try{
-                File jsonF=new File(jsonConfiguration);
-                String jsonStr = new String(FileUtils.readFileToString((jsonF)));
-                jsonConf=new JSONObject(jsonStr);
-            }catch (Exception e){
-                logger.warning("Failed to read JSON Configuration from "+jsonConfiguration);
-            }
-            if(testId.contains(Constants.NEW_TEST)){
-                testId=this.createTest(jsonConf);
-            }else{
-                this.postJsonConfig(testId, jsonConf);
-            }
-        }else{
-            if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
-                try{
-                    logger.message("Attempting to update testDuration for test with id:"+testId);
-                    bzmServiceManager.updateTestDuration(testId, testDuration, logger);
-                } catch (NumberFormatException nfe){
-                    logger.exception(nfe);
-                    logger.warning("Test duration is not a number.");
-                    return "Test duration is not a number.";
+        TestType testType=this.getTestType(testId);
+        this.blazemeterAPI.getUrlManager().setTestType(testType);
+        if (!testType.equals(TestType.multi)) {
+            if (jsonConfiguration != null && !jsonConfiguration.isEmpty()) {
+                try {
+                    File jsonF = new File(jsonConfiguration);
+                    String jsonStr = new String(FileUtils.readFileToString((jsonF)));
+                    jsonConf = new JSONObject(jsonStr);
+                } catch (Exception e) {
+                    logger.warning("Failed to read JSON Configuration from " + jsonConfiguration);
+                }
+                if (testId.contains(Constants.NEW_TEST)) {
+                    testId = this.createTest(jsonConf);
+                } else {
+                    this.postJsonConfig(testId, jsonConf);
+                }
+            } else {
+                if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
+                    try {
+                        logger.message("Attempting to update testDuration for test with id:" + testId);
+                        bzmServiceManager.updateTestDuration(testId, testDuration, logger);
+                    } catch (NumberFormatException nfe) {
+                        logger.exception(nfe);
+                        logger.warning("Test duration is not a number.");
+                        return "Test duration is not a number.";
+                    }
                 }
             }
+        }else{
+            logger.warning("Updating test-configuration will be skipped: test-type is 'multi'");
         }
-
         return testId;
     }
 
@@ -158,9 +163,6 @@ public class BzmServiceManager {
 
     public String startTest(String testId, BuildProgressLogger logger) {
         String session=null;
-        TestType testType=this.getTestType(this.blazemeterAPI,testId);
-        this.blazemeterAPI.getUrlManager().setTestType(testType);
-
         try {
             session = this.blazemeterAPI.startTest(testId);
             this.session=session;
@@ -197,21 +199,27 @@ public class BzmServiceManager {
 
 
     public boolean stopTestSession(String testId, String sessionId, BuildProgressLogger logger) {
-        boolean terminate=false;
+        boolean terminate = false;
         try {
-
-            int statusCode = this.blazemeterAPI.getTestSessionStatusCode(sessionId);
-            if (statusCode < 100) {
-                this.blazemeterAPI.terminateTest(testId);
-                terminate=true;
-            }
-            if (statusCode >= 100|statusCode ==-1) {
+            TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+            if (testType != TestType.multi) {
+                int statusCode = this.blazemeterAPI.getTestSessionStatusCode(sessionId);
+                if (statusCode < 100 & statusCode != 0) {
+                    this.blazemeterAPI.terminateTest(testId);
+                    terminate = true;
+                }
+                if (statusCode >= 100 | statusCode == -1 | statusCode == 0) {
+                    this.blazemeterAPI.stopTest(testId);
+                    terminate = false;
+                }
+            } else {
                 this.blazemeterAPI.stopTest(testId);
-                terminate=false;
+                terminate = false;
             }
+
         } catch (Exception e) {
             logger.warning("Error while trying to stop test with testId=" + testId + ", " + e.getMessage());
-        }finally {
+        } finally {
             return terminate;
         }
     }
@@ -307,40 +315,20 @@ public class BzmServiceManager {
     }
 
     public boolean stopTest(String testId, BuildProgressLogger logger) {
-        org.json.JSONObject json;
-        int countStartRequests = 0;
-
+        boolean stopResult=false;
         try {
-            json = this.blazemeterAPI.stopTest(testId);
-            logger.message("Attempt to stop test with result: " + json.toString());
-            if (this.blazeMeterApiVersion.equals(ApiVersion.v2.name())) {
-
-
-                if (json.get(JsonConstants.RESPONSE_CODE).equals(200)) {
-                    logger.message("Test stopped succesfully." + json.toString());
-                } else {
-                    String error = json.get(JsonConstants.ERROR).toString();
-                    logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
-                    logger.error("Please use BlazeMeter website to manually stop the test with ID: " + testId);
-                }
+            logger.message("Attempt to stop test with ID="+testId);
+            stopResult = this.blazemeterAPI.stopTest(testId);
+            if(stopResult){
+                logger.message("Test with ID="+testId+" stopped succesfully.");
             }else{
-                if (json.getJSONArray(JsonConstants.RESULT).length()>0) {
-                    logger.message("Test stopped succesfully." + json.toString());
-                    return true;
-                } else {
-                    String error = json.get(JsonConstants.RESULT).toString();
-                    logger.error("Error stopping test. Reported error is: " + error + " " + json.toString());
-                    return false;
-                }
-
+                logger.error("Error stopping test with ID="+testId);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             logger.error("Error: Exception while stopping BlazeMeter Test [" + e.getMessage() + "]");
             logger.exception(e);
             return false;
-         } catch (NullPointerException e){
-            logger.exception(e);
-        }
+         }
         return true;
     }
 
@@ -438,11 +426,11 @@ public class BzmServiceManager {
         }
     }
 
-    public TestType getTestType(BlazemeterApi api, String testId){
+    private TestType getTestType(String testId){
         TestType testType=TestType.http;
         logger.message("Detecting testType....");
         try{
-            JSONArray result=api.getTestsJSON().getJSONArray(JsonConstants.RESULT);
+            JSONArray result=this.blazemeterAPI.getTestsJSON().getJSONArray(JsonConstants.RESULT);
             int resultLength=result.length();
             for (int i=0;i<resultLength;i++){
                 JSONObject jo=result.getJSONObject(i);

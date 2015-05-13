@@ -139,11 +139,19 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
      *                //     * @throws ClientProtocolException
      */
     @Override
-    public JSONObject stopTest(String testId) throws JSONException{
-        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
+    public boolean stopTest(String testId) throws Exception{
+        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return false;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo=this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+
+        if (jo.getJSONArray(JsonConstants.RESULT).length()>0) {
+            return true;
+        } else {
+            String error = jo.get(JsonConstants.RESULT).toString();
+            throw new Exception("Error stopping test with ID="+testId+". Reported error is: " + error.toString());
+        }
+
     }
 
     /**
