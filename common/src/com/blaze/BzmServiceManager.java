@@ -79,7 +79,8 @@ public class BzmServiceManager {
             bzmServiceManager.setPassword(buildSharedMap.get(Constants.PROXY_PASSWORD));
             bzmServiceManager.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
             bzmServiceManager.setLogger(logger);
-            BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
+            if(bzmServiceManager.blazemeterAPI==null){
+                BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
                     buildSharedMap.get(Constants.PROXY_SERVER_NAME),
                     buildSharedMap.get(Constants.PROXY_SERVER_PORT),
                     buildSharedMap.get(Constants.PROXY_USERNAME),
@@ -88,6 +89,7 @@ public class BzmServiceManager {
                     buildSharedMap.get(Constants.BLAZEMETER_API_VERSION),
                     logger);
             bzmServiceManager.setBlazemeterAPI(blazemeterAPI);
+            }
         }
         return bzmServiceManager;
     }
@@ -98,7 +100,7 @@ public class BzmServiceManager {
     }
 
     public String prepareTest(String testId,String jsonConfiguration,String testDuration){
-        JSONObject jsonConf=null;
+        JSONObject jsonConf = null;
         TestType testType=this.getTestType(testId);
         this.blazemeterAPI.getUrlManager().setTestType(testType);
         if (!testType.equals(TestType.multi)) {
@@ -176,9 +178,9 @@ public class BzmServiceManager {
     }
 
     public void updateTestDuration(String testId, String testDuration, BuildProgressLogger logger) {
-        if(this.blazemeterAPI instanceof BlazemeterApiV3Impl){
+        if(this.blazemeterAPI instanceof BlazemeterApiV3Impl) {
             Utils.updateTestDuration(this.blazemeterAPI, testId, testDuration, logger);
-        }else{
+        } else {
             logger.message("Updating test duration is not implemented for D6");
         }
     }
@@ -274,7 +276,7 @@ public class BzmServiceManager {
             logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
         } catch (IOException e) {
             logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
         }
         finally {
@@ -313,24 +315,6 @@ public class BzmServiceManager {
             logger.exception(e);
         }
     }
-/*
-    public boolean stopTest(String testId, BuildProgressLogger logger) {
-        boolean stopResult=false;
-        try {
-            logger.message("Attempt to stop test with ID="+testId);
-            stopResult = this.blazemeterAPI.stopTest(testId);
-            if(stopResult){
-                logger.message("Test with ID="+testId+" stopped succesfully.");
-            }else{
-                logger.error("Error stopping test with ID="+testId);
-            }
-        } catch (Exception e) {
-            logger.error("Error: Exception while stopping BlazeMeter Test [" + e.getMessage() + "]");
-            logger.exception(e);
-            return false;
-         }
-        return true;
-    }*/
 
     public TestInfo getTestSessionStatus(String testId) {
         TestInfo ti=null;
