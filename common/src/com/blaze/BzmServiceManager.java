@@ -198,12 +198,12 @@ public class BzmServiceManager {
 
 
 
-    public boolean stopTestSession(String testId, String sessionId, BuildProgressLogger logger) {
+    public boolean stopTestSession(String testId, BuildProgressLogger logger) {
         boolean terminate = false;
         try {
             TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
             if (testType != TestType.multi) {
-                int statusCode = this.blazemeterAPI.getTestSessionStatusCode(sessionId);
+                int statusCode = this.blazemeterAPI.getTestSessionStatusCode(session);
                 if (statusCode < 100 & statusCode != 0) {
                     this.blazemeterAPI.terminateTest(testId);
                     terminate = true;
@@ -213,7 +213,7 @@ public class BzmServiceManager {
                     terminate = false;
                 }
             } else {
-                this.blazemeterAPI.stopTest(testId);
+                this.blazemeterAPI.stopTest(session);
                 terminate = false;
             }
 
@@ -313,7 +313,7 @@ public class BzmServiceManager {
             logger.exception(e);
         }
     }
-
+/*
     public boolean stopTest(String testId, BuildProgressLogger logger) {
         boolean stopResult=false;
         try {
@@ -330,7 +330,7 @@ public class BzmServiceManager {
             return false;
          }
         return true;
-    }
+    }*/
 
     public TestInfo getTestSessionStatus(String testId) {
         TestInfo ti=null;

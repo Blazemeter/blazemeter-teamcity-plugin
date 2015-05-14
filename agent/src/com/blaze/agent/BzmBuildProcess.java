@@ -150,7 +150,7 @@ public class BzmBuildProcess implements BuildProcess{
 	@Override
 	public void interrupt() {
 		logger.message("BlazeMeter agent interrupted.");
-        bzmServiceManager.stopTestSession(testId, bzmServiceManager.getSession(), logger);
+        bzmServiceManager.stopTestSession(testId, logger);
 		interrupted = true;
 	}
 
@@ -238,11 +238,15 @@ public class BzmBuildProcess implements BuildProcess{
 
         do{
             Utils.sleep(CHECK_INTERVAL, logger);
-			logger.message("Check if the test is still running. Time passed since start: "+((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
+			logger.message("Check if the test is still running. Time passed since start: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
             testInfo = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.getSession());
 			logger.message("TestInfo="+testInfo.toString());
-        }while (!testInfo.getStatus().equals(TestStatus.NotRunning));
-
+			buildInterruptReason = agentRunningBuild.getInterruptReason();
+		}while (buildInterruptReason == null &&!testInfo.getStatus().equals(TestStatus.NotRunning));
+		if (buildInterruptReason != null){
+			logger.warning("Build was be aborted by user");
+			return BuildFinishedStatus.INTERRUPTED;
+		}
         logger.message("Test finished. Checking for test report...");
         logger.message("Actual test duration was: " + ((System.currentTimeMillis()-testRunStart) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
