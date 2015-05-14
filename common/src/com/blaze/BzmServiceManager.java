@@ -215,7 +215,7 @@ public class BzmServiceManager {
                     terminate = false;
                 }
             } else {
-                this.blazemeterAPI.stopTest(session);
+                this.blazemeterAPI.stopTest(testId);
                 terminate = false;
             }
 
