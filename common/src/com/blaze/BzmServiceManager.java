@@ -101,7 +101,10 @@ public class BzmServiceManager {
 
     public String prepareTest(String testId,String jsonConfiguration,String testDuration){
         JSONObject jsonConf = null;
-        TestType testType=this.getTestType(testId);
+        TestType testType=TestType.http;
+        if(!this.blazeMeterApiVersion.equals("v2")){
+            testType=this.getTestType(testId);
+        }
         this.blazemeterAPI.getUrlManager().setTestType(testType);
         if (!testType.equals(TestType.multi)) {
             if (jsonConfiguration != null && !jsonConfiguration.isEmpty()) {

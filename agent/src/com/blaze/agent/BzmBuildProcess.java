@@ -252,20 +252,20 @@ public class BzmBuildProcess implements BuildProcess{
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         Utils.sleep(180000,logger);
         TestResult testResult = bzmServiceManager.getReport(logger);
-
+		BuildFinishedStatus localTrRes=null;
         if(testResult==null){
             logger.warning("Failed to get report from server...");
         }else{
             logger.message("Test report is received...");
             logger.message(testResult.toString());
-        }
+			localTrRes = Utils.validateLocalTresholds(testResult, errorUnstableThreshold,
+					errorFailedThreshold,
+					responseTimeUnstableThreshold,
+					responseTimeFailedThreshold, logger);
+		}
         bzmServiceManager.retrieveJUNITXML(session,buildRunnerContext);
         bzmServiceManager.retrieveJTL(session,buildRunnerContext);
         BuildFinishedStatus serverTrRes = bzmServiceManager.validateServerTresholds();
-        BuildFinishedStatus localTrRes = Utils.validateLocalTresholds(testResult, errorUnstableThreshold,
-                errorFailedThreshold,
-                responseTimeUnstableThreshold,
-                responseTimeFailedThreshold, logger);
 
         result=localTrRes==null?serverTrRes:localTrRes;
         return result;
