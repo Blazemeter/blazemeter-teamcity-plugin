@@ -178,23 +178,25 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
+            System.out.println("BlazemeterApiV3Impl: UserKey" + this.userKey);
+            System.out.println("BlazemeterApiV3Impl: Url" + url);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
-                JSONArray result = (JSONArray) jo.get(JsonConstants.RESULT);
-                if (result != null && result.length() > 0) {
-                    testListOrdered = LinkedHashMultimap.create(result.length(),result.length());
-                    for (int i = 0; i < result.length(); i++) {
-                        JSONObject en = null;
-                            en = result.getJSONObject(i);
-                        String id;
-                        String name;
-                            if (en != null) {
-                                id = String.valueOf(en.getInt("id"));
-                                name = en.getString(JsonConstants.NAME).replaceAll("&", "&amp;");
-//                                testListOrdered.put(name, id);
-                                String testType=en.has(JsonConstants.TYPE)?en.getString(JsonConstants.TYPE):TestType.http.name();
-                                testListOrdered.put(name+"("+testType+")", id);
+            JSONArray result = (JSONArray) jo.get(JsonConstants.RESULT);
+            System.out.println("BlazemeterApiV3Impl: JSONResult" + result.toString());
+            if (result != null && result.length() > 0) {
+                testListOrdered = LinkedHashMultimap.create(result.length(), result.length());
+                for (int i = 0; i < result.length(); i++) {
+                    JSONObject en = null;
+                    en = result.getJSONObject(i);
+                    String id;
+                    String name;
+                    if (en != null) {
+                        id = String.valueOf(en.getInt("id"));
+                        name = en.getString(JsonConstants.NAME).replaceAll("&", "&amp;");
+                        String testType = en.has(JsonConstants.TYPE) ? en.getString(JsonConstants.TYPE) : TestType.http.name();
+                        testListOrdered.put(name + "(" + testType + ")", id);
 
-                            }
+                    }
                     }
                     return testListOrdered;
                 }

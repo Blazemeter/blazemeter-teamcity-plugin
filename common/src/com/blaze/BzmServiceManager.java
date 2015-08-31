@@ -146,17 +146,32 @@ public class BzmServiceManager {
             blazemeterAPI=APIFactory.getAPI(this.userKey,this.serverName,this.serverPort,
                                             this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
         }
+        // added on Jacob's request for issue investigation
+        System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey + " and server=" + this.blazeMeterUrl);
 
         LinkedHashMultimap tests=LinkedHashMultimap.create();
-        tests.put(Constants.CREATE_FROM_JSON,Constants.NEW_TEST);
+        tests.put(Constants.CREATE_FROM_JSON, Constants.NEW_TEST);
         try {
+            // added on Jacob's request for issue investigation
+            System.out.println("TeamCity plugin: Requesting tests from server " + this.blazeMeterUrl);
             tests.putAll(this.blazemeterAPI.getTestList());
+            // added on Jacob's request for issue investigation
+            System.out.println("TeamCity plugin: Received " + tests.entries().size() + " tests");
+            for(Object key : tests.keySet()){
+                System.out.println("TeamCity plugin: Key "+key + ", value"+tests.get(key));
+            }
         } catch (IOException e) {
             logger.exception(e);
+            // added on Jacob's request for issue investigation
+            System.out.println("TeamCity plugin:IOException: Failed to get tests from server=" + this.blazeMeterUrl + " and userKey=" + this.userKey);
         } catch (JSONException e) {
             logger.exception(e);
+            // added on Jacob's request for issue investigation
+            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server=" + this.blazeMeterUrl + " and userKey=" + this.userKey);
         } catch (NullPointerException e){
             logger.exception(e);
+            // added on Jacob's request for issue investigation
+            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server=" + this.blazeMeterUrl + " and userKey=" + this.userKey);
         }finally {
             return tests;
         }
