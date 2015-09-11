@@ -12,12 +12,12 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.blaze.runner.Constants;
-import org.springframework.util.StringUtils;
 
 /**
  * 
