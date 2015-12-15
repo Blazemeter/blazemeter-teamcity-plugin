@@ -178,9 +178,10 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
             String url = this.urlManager.getTests(APP_KEY, userKey);
-            System.out.println("BlazemeterApiV3Impl: UserKey" + this.userKey);
+            System.out.println("BlazemeterApiV3Impl: UserKey" + this.userKey.substring(0,5));
             System.out.println("BlazemeterApiV3Impl: Url" + url);
             JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+            System.out.println("BlazemeterApiV3Impl: JSONObject" + jo.toString());
             JSONArray result = (JSONArray) jo.get(JsonConstants.RESULT);
             System.out.println("BlazemeterApiV3Impl: JSONResult" + result.toString());
             if (result != null && result.length() > 0) {
