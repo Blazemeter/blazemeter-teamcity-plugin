@@ -4,9 +4,13 @@
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
     <version>1.0</version>
+    <!--<version>${tc-plugin-version}</version>-->
     <packaging>pom</packaging>
     <properties>
         <teamcity-version>9.0</teamcity-version>
+        <!--<jenkins.build.number>local</jenkins.build.number>-->
+        <!--<tc-plugin-version>1.1.${jenkins.build.number}</tc-plugin-version>-->
+        <!--<tc-plugin-version>1.1</tc-plugin-version>-->
     </properties>
     <repositories>
         <repository>

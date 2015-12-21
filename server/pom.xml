@@ -4,7 +4,9 @@
   <parent>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
-    <version>1.0</version>
+      <version>LATEST</version>
+      <!--<version>1.0</version>-->
+      <!--<version>${tc-plugin-version}</version>-->
   </parent>
     <artifactId>BlazeMeter</artifactId>
     <packaging>jar</packaging>

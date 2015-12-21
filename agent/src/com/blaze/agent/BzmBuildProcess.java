@@ -166,7 +166,7 @@ public class BzmBuildProcess implements BuildProcess{
 
 	@Override
 	public void start() throws RunBuildException {
-		logger.message("BlazeMeter agent started.");
+		logger.message("BlazeMeter agent started: version="+Utils.getVersion());
 
 		logger.activityStarted("Parameter validation", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
 		Map<String, String> runnerParams = buildRunnerContext.getRunnerParameters();
