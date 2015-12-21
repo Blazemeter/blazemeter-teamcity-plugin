@@ -4,8 +4,7 @@
   <parent>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
-    <version>LATEST</version>
-    <!--<version>${tc-plugin-version}</version>-->
+    <version>1.1</version>
   </parent>
   <artifactId>build</artifactId>
   <packaging>pom</packaging>
@@ -16,23 +15,17 @@
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter-agent</artifactId>
-          <version>LATEST</version>
-           <!--<version>1.0</version>-->
-          <!--<version>${tc-plugin-version}</version>-->
+          <version>1.1</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter-common</artifactId>
-          <version>LATEST</version>
-           <!--<version>1.0</version>-->
-          <!--<version>${tc-plugin-version}</version>-->
+          <version>1.1</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter</artifactId>
-          <version>LATEST</version>
-           <!--<version>1.0</version>-->
-           <!--<version>${tc-plugin-version}</version>-->
+          <version>1.1</version>
       </dependency>
   </dependencies>
   <build>

@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.blazemeter.teamcity</groupId>
-    <artifactId>blazemeterplugin</artifactId>
-    <version>1.0</version>
-    <!--<version>${tc-plugin-version}</version>-->
-    <packaging>pom</packaging>
     <properties>
         <teamcity-version>9.0</teamcity-version>
-        <!--<jenkins.build.number>local</jenkins.build.number>-->
-        <!--<tc-plugin-version>1.1.${jenkins.build.number}</tc-plugin-version>-->
-        <!--<tc-plugin-version>1.1</tc-plugin-version>-->
+        <jenkins.build.number>local</jenkins.build.number>
     </properties>
+    <groupId>com.blazemeter.teamcity</groupId>
+    <artifactId>blazemeterplugin</artifactId>
+    <version>1.1</version>
+    <packaging>pom</packaging>
     <repositories>
         <repository>
             <id>JetBrains</id>

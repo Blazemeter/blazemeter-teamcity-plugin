@@ -4,9 +4,7 @@
   <parent>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
-      <version>LATEST</version>
-      <!--<version>1.0</version>-->
-      <!--<version>${tc-plugin-version}</version>-->
+      <version>1.1</version>
   </parent>
     <artifactId>BlazeMeter</artifactId>
     <packaging>jar</packaging>
@@ -42,7 +40,7 @@
     <dependency>
       <groupId>com.blazemeter.teamcity</groupId>
       <artifactId>BlazeMeter-common</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
       <scope>compile</scope>
     </dependency>
 
