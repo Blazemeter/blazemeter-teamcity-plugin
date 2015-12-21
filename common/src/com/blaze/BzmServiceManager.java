@@ -291,11 +291,11 @@ public class BzmServiceManager {
             this.aggregate=this.blazemeterAPI.testReport(this.session);
             testResult = new TestResult(this.aggregate);
         } catch (JSONException e) {
-            logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
+            logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
         } catch (IOException e) {
-            logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
+            logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
         } catch (NullPointerException e) {
-            logger.warning("Failed to get aggregate report from server, local tresholds won't be validated");
+            logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
         }
         finally {
             return testResult;
@@ -381,26 +381,26 @@ public class BzmServiceManager {
         TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
         if (!testType.equals(TestType.multi)) {
             JSONObject jo = null;
-            boolean tresholdsValid = true;
+            boolean thresholdsValid = true;
             JSONObject result = null;
-            logger.message("Going to validate server tresholds...");
+            logger.message("Going to validate server thresholds...");
             try {
                 jo = this.blazemeterAPI.getTresholds(session);
                 result = jo.getJSONObject(JsonConstants.RESULT);
-                tresholdsValid = result.getJSONObject(JsonConstants.DATA).getBoolean("success");
+                thresholdsValid = result.getJSONObject(JsonConstants.DATA).getBoolean("success");
             } catch (NullPointerException e) {
-                logger.message("Server tresholds validation was not executed");
+                logger.message("Server thresholds validation was not executed");
                 logger.exception(e);
             } catch (JSONException je) {
-                logger.message("Server tresholds validation was not executed");
-                logger.warning("Failed to get tresholds for  session=" + session);
+                logger.message("Server thresholds validation was not executed");
+                logger.warning("Failed to get thresholds for  session=" + session);
             } finally {
-                logger.message("Server tresholds validation " +
-                        (tresholdsValid ? "passed. Marking build as PASSED" : "failed. Marking build as FAILED"));
-                return tresholdsValid ? BuildFinishedStatus.FINISHED_SUCCESS : BuildFinishedStatus.FINISHED_FAILED;
+                logger.message("Server thresholds validation " +
+                        (thresholdsValid ? "passed. Marking build as PASSED" : "failed. Marking build as FAILED"));
+                return thresholdsValid ? BuildFinishedStatus.FINISHED_SUCCESS : BuildFinishedStatus.FINISHED_FAILED;
             }
         }else{
-            logger.warning("Server tresholds won't be validated: test-type is 'multi' ");
+            logger.warning("Server thresholds won't be validated: test-type is 'multi' ");
             return  BuildFinishedStatus.FINISHED_SUCCESS;
         }
     }

@@ -142,7 +142,7 @@ public class Utils {
                                                 BuildProgressLogger logger){
 
         BuildFinishedStatus buildStatus=null;
-        logger.message("Going to validate local tresholds...");
+        logger.message("Going to validate local thresholds...");
         try{
 
             int responseTimeUnstable = Integer.valueOf(responseTimeUnstableThreshold==null||
@@ -215,7 +215,7 @@ public class Utils {
 
 
         }catch (Exception e){
-            logger.message("Unexpected error occured while validating local tresholds");
+            logger.message("Unexpected error occured while validating local thresholds");
             logger.exception(e);
         }finally {
             return buildStatus;
