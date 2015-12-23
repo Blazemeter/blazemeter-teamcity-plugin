@@ -389,11 +389,12 @@ public class BzmServiceManager {
                 result = jo.getJSONObject(JsonConstants.RESULT);
                 thresholdsValid = result.getJSONObject(JsonConstants.DATA).getBoolean("success");
             } catch (NullPointerException e) {
-                logger.message("Server thresholds validation was not executed");
+                logger.message("Server thresholds validation was not executed due to NullPointerException");
                 logger.exception(e);
+                thresholdsValid=false;
             } catch (JSONException je) {
-                logger.message("Server thresholds validation was not executed");
-                logger.warning("Failed to get thresholds for  session=" + session);
+                logger.message("Server thresholds validation was not executed:failed to get thresholds for  session=" + session);
+                thresholdsValid=false;
             } finally {
                 logger.message("Server thresholds validation " +
                         (thresholdsValid ? "passed. Marking build as PASSED" : "failed. Marking build as FAILED"));
