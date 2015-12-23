@@ -1,17 +1,7 @@
-BlazeMeter plugin for TeamCity uses Ant to build the project. Also, you'll need the JDK 6 or later.
+BlazeMeter plugin for TeamCity uses Maven to build the project. Also, you'll need the JDK 6 or later.
 
 
-1. CONFIGURATION:
-	- build.properties : make sure that the path points to TeamCity installation folder.
-
-
-2. BUILD THE PLUGIN
-
-Use the following command line to build the plugin (in the root directory):
-
-	ant build.xml
-
-This will create the 'dist' folder that contains the plugin in a zip file and also the unpacked version.
+1. INSTALL THE PLUGIN
 
 To install the plugin just copy the generated 'BlazeMeter.zip' file to '[TeamCity Data Folder]/plugins' directory, and restart the TeamCity server and agents.
 
@@ -52,7 +42,7 @@ The statistics are available in the Build Configuration Statistics page.
 
 - creating test using JSON configuration;
 - updating test using JSON configuration;
-- validating build against server tresholds;
-- validating build against local tresholds;
+- validating build against server thresholds;
+- validating build against local thresholds;
 - updating test duration on server;
 - requesting JUNIT report;
