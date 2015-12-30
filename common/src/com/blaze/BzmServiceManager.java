@@ -147,7 +147,7 @@ public class BzmServiceManager {
                                             this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
         }
         // added on Jacob's request for issue investigation
-        System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey + " and server=" + this.blazeMeterUrl);
+        System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
 
         LinkedHashMultimap tests=LinkedHashMultimap.create();
         tests.put(Constants.CREATE_FROM_JSON, Constants.NEW_TEST);
@@ -161,17 +161,20 @@ public class BzmServiceManager {
                 System.out.println("TeamCity plugin: Key "+key + ", value"+tests.get(key));
             }
         } catch (IOException e) {
-            logger.exception(e);
             // added on Jacob's request for issue investigation
-            System.out.println("TeamCity plugin:IOException: Failed to get tests from server=" + this.blazeMeterUrl + " and userKey=" + this.userKey);
+            System.out.println(e);
+            System.out.println("TeamCity plugin:IOException: Failed to get tests from server="
+                    + this.blazeMeterUrl + " and userKey=" + this.userKey+": "+e.getMessage());
         } catch (JSONException e) {
-            logger.exception(e);
+            System.out.println(e);
+            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server="
+                    + this.blazeMeterUrl + " and userKey=" + this.userKey+": "+e.getMessage());
             // added on Jacob's request for issue investigation
-            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server=" + this.blazeMeterUrl + " and userKey=" + this.userKey);
         } catch (NullPointerException e){
-            logger.exception(e);
             // added on Jacob's request for issue investigation
-            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server=" + this.blazeMeterUrl + " and userKey=" + this.userKey);
+            System.out.println(e);
+            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server="
+                    + this.blazeMeterUrl + " and userKey=" + this.userKey+": "+e.getMessage());
         }finally {
             return tests;
         }
