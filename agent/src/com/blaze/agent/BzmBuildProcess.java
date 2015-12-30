@@ -1,10 +1,10 @@
 package com.blaze.agent;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 
 import com.blaze.BzmServiceManager;
-import com.blaze.api.TestType;
 import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
@@ -77,9 +77,14 @@ public class BzmBuildProcess implements BuildProcess{
 		} else {
 			//verify if the test still exists on BlazeMeter server
             LinkedHashMultimap<String, String> tests = bzmServiceManager.getTests();
+			Collection<String> values=tests.values();
+			logger.message("The following tests were found on server:");
+			for(String s:values){
+				logger.message(s);
+			}
 			if (tests != null){
-				if (!testId.equals(Constants.NEW_TEST)&&!tests.values().contains(testId)) {
-                    logger.warning("Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl());
+				if (!testId.equals(Constants.NEW_TEST)&&!values.contains(testId)) {
+					logger.warning("Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl());
 					return "Test was not found at BlazeMeter server "+bzmServiceManager.getBlazeMeterUrl();
 				}
 			}
