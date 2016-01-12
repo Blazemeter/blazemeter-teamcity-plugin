@@ -49,16 +49,7 @@
         </td>
     </tr>
 
-    <tr>
-        <th><label>Path to JSON configuration:</label></th>
-        <td>
-            <props:textProperty name="json_config"/>
-            <span class="error" id="error_data_folder"></span>
-            <span class="smallNote">Path to JSON test configuration. Relative to workspace</span>
-        </td>
-    </tr>
-
-
+    
     <tr>
         <th><label>Test duration(min):</label></th>
         <td>

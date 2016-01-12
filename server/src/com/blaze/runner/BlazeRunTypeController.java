@@ -22,107 +22,111 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Controller for user key page.
+ *
  * @author Mark
  *
  */
 public class BlazeRunTypeController extends BaseController {
-	private final WebControllerManager myManager;
-	private final String actualUrl;
-	private final String actualJsp;
-	private BlazeMeterServerSettings mainSettings;
-	private final ServerPaths serverPaths;
 
-	/**
-	 * 
-	 * @param actualUrl
-	 * @param actualJsp
-	 * @param manager
-	 * @param serverPaths
-	 */
-	public BlazeRunTypeController(@NotNull final String actualUrl, @NotNull final String actualJsp,
-			final WebControllerManager manager, final ServerPaths serverPaths) {
-		this.actualJsp = actualJsp;
-		this.actualUrl = actualUrl;
-		this.myManager = manager;
-		this.serverPaths = serverPaths;
-	}
+    private final WebControllerManager myManager;
+    private final String actualUrl;
+    private final String actualJsp;
+    private BlazeMeterServerSettings mainSettings;
+    private final ServerPaths serverPaths;
 
-	/**
-	 * Save user key to local file
-	 * @param keyFile
-	 */
-	private void saveSettings(final File keyFile) {
-		try {
-			Properties prop = new Properties();
-			FileReader inFile = new FileReader(keyFile);
-			FileOutputStream fos = new FileOutputStream(keyFile);
-			prop.load(inFile);
-			prop.setProperty("user_key", mainSettings.getUserKey());
-			prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
-			prop.setProperty("blazeMeterApiVersion", mainSettings.getBlazeMeterApiVersion());
-			prop.store(fos, "");
+    /**
+     *
+     * @param actualUrl
+     * @param actualJsp
+     * @param manager
+     * @param serverPaths
+     */
+    public BlazeRunTypeController(@NotNull final String actualUrl, @NotNull final String actualJsp,
+            final WebControllerManager manager, final ServerPaths serverPaths) {
+        this.actualJsp = actualJsp;
+        this.actualUrl = actualUrl;
+        this.myManager = manager;
+        this.serverPaths = serverPaths;
+    }
 
-			fos.close();
-			inFile.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Save user key to local file
+     *
+     * @param keyFile
+     */
+    private void saveSettings(final File keyFile) {
+        try {
+            Properties prop = new Properties();
+            FileReader inFile = new FileReader(keyFile);
+            FileOutputStream fos = new FileOutputStream(keyFile);
+            prop.load(inFile);
+            prop.setProperty("user_key", mainSettings.getUserKey());
+            prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
+            prop.setProperty("blazeMeterApiVersion", mainSettings.getBlazeMeterApiVersion());
+            prop.store(fos, "");
 
-	/**
-	 * Getter for mainSettings
-	 * @return
-	 */
-	public BlazeMeterServerSettings getMainSettings() {
-		return mainSettings;
-	}
+            fos.close();
+            inFile.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * 
-	 * @param mainSettings
-	 */
-	public void setMainSettings(BlazeMeterServerSettings mainSettings) {
-		this.mainSettings = mainSettings;
-	}
+    /**
+     * Getter for mainSettings
+     *
+     * @return
+     */
+    public BlazeMeterServerSettings getMainSettings() {
+        return mainSettings;
+    }
 
-	/**
-	 * Register controller
-	 */
-	public void register() {
-		myManager.registerController(actualUrl, this);
-	}
+    /**
+     *
+     * @param mainSettings
+     */
+    public void setMainSettings(BlazeMeterServerSettings mainSettings) {
+        this.mainSettings = mainSettings;
+    }
 
-	@Override
-	protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-		new AjaxRequestProcessor().processRequest(request, response, new AjaxRequestProcessor.RequestHandler() {
-			@Override
-			public void handleRequest(@NotNull final HttpServletRequest request, final @NotNull HttpServletResponse response,
-					@NotNull final Element xmlResponse) {
-				try {
-					doAction(request);
-				} catch (Exception e) {
-					Loggers.SERVER.warn(e);
-					ActionErrors errors = new ActionErrors();
-					errors.addError("blazeMessage", getMessageWithNested(e));
-					errors.serialize(xmlResponse);
-				}
-			}
-		});
+    /**
+     * Register controller
+     */
+    public void register() {
+        myManager.registerController(actualUrl, this);
+    }
 
-		return null;
-	}
+    @Override
+    protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+        new AjaxRequestProcessor().processRequest(request, response, new AjaxRequestProcessor.RequestHandler() {
+            @Override
+            public void handleRequest(@NotNull final HttpServletRequest request, final @NotNull HttpServletResponse response,
+                    @NotNull final Element xmlResponse) {
+                try {
+                    doAction(request);
+                } catch (Exception e) {
+                    Loggers.SERVER.warn(e);
+                    ActionErrors errors = new ActionErrors();
+                    errors.addError("blazeMessage", getMessageWithNested(e));
+                    errors.serialize(xmlResponse);
+                }
+            }
+        });
 
-	/**
-	 * 
-	 * @param request
-	 * @throws Exception
-	 */
-	private void doAction(final HttpServletRequest request) throws Exception {
-		String user_key = request.getParameter("user_key");
-		String blazeMeterUrl = request.getParameter("blazeMeterUrl");
-		String blazeMeterApiVersion = request.getParameter("blazeMeterApiVersion");
-		mainSettings.setUserKey(user_key);
-	if (blazeMeterUrl != null) {
+        return null;
+    }
+
+    /**
+     *
+     * @param request
+     * @throws Exception
+     */
+    private void doAction(final HttpServletRequest request) throws Exception {
+        String user_key = request.getParameter("user_key");
+        String blazeMeterUrl = request.getParameter("blazeMeterUrl");
+        String blazeMeterApiVersion = request.getParameter("blazeMeterApiVersion");
+        mainSettings.setUserKey(user_key);
+        if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }
 
@@ -130,19 +134,19 @@ public class BlazeRunTypeController extends BaseController {
             mainSettings.setBlazeMeterApiVersion(blazeMeterApiVersion);
         }
 
-	}
+    }
 
-	/**
-	 * 
-	 * @param e
-	 * @return
-	 */
-	static private String getMessageWithNested(Throwable e) {
-		String result = e.getMessage();
-		Throwable cause = e.getCause();
-		if (cause != null) {
-			result += " Caused by: " + getMessageWithNested(cause);
-		}
-		return result;
-	}
+    /**
+     *
+     * @param e
+     * @return
+     */
+    static private String getMessageWithNested(Throwable e) {
+        String result = e.getMessage();
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            result += " Caused by: " + getMessageWithNested(cause);
+        }
+        return result;
+    }
 }

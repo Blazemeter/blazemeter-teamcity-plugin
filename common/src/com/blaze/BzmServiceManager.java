@@ -99,11 +99,6 @@ public class BzmServiceManager {
                 } catch (Exception e) {
                     logger.warning("Failed to read JSON Configuration from " + jsonConfiguration);
                 }
-                if (testId.contains(Constants.NEW_TEST)) {
-                    testId = this.createTest(jsonConf);
-                } else {
-                    this.postJsonConfig(testId, jsonConf);
-                }
             } else {
                 if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
                     try {
@@ -133,7 +128,6 @@ public class BzmServiceManager {
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
 
         LinkedHashMultimap tests=LinkedHashMultimap.create();
-        tests.put(Constants.CREATE_FROM_JSON, Constants.NEW_TEST);
         try {
             // added on Jacob's request for issue investigation
             System.out.println("TeamCity plugin: Requesting tests from server " + this.blazeMeterUrl);
@@ -332,36 +326,7 @@ public class BzmServiceManager {
         return ti;
     }
 
-    public boolean postJsonConfig(String testId,JSONObject jsonConfig){
-        try {
-            this.blazemeterAPI.postJsonConfig(testId, jsonConfig);
-        } catch (NullPointerException e){
-            logger.exception(e);
-        } catch (Exception e) {
-            logger.warning("Problems with posting jsonConfiguration to server. Check URL and json configuration.");
-            return false;
-        }
-        return true;
-    }
 
-    public String createTest(JSONObject jsonConfig){
-        String testId=null;
-        try {
-            JSONObject jo=this.blazemeterAPI.createTest(jsonConfig);
-            if(jo.has(JsonConstants.ERROR)&&!jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)){
-                logger.warning("Failed to create test: " + jo.getString(JsonConstants.ERROR));
-                testId="";
-            }else{
-                testId = String.valueOf(jo.getJSONObject(JsonConstants.RESULT).getInt("id"));
-            }
-        } catch (NullPointerException e){
-            logger.exception(e);
-        }catch (Exception e) {
-            logger.warning("Problems with creating test on server. Check URL and json configuration.");
-        }finally {
-            return testId;
-        }
-    }
 
     public BuildFinishedStatus validateServerTresholds() {
         TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
