@@ -1,7 +1,3 @@
-<%--
-  Copyright 2012 Marcel Milea
-  --%>
-
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -34,40 +30,6 @@
         <c:set target="${bzmServiceManager}" property="blazeMeterApiVersion" value="${blazeMeterApiVersion}"/>
     </c:otherwise>
 </c:choose>
-
-<%--<c:choose>
-    <c:when test="${not empty propertiesBean.properties['SERVER_NAME']}">
-        <c:set target="${bzmServiceManager}" property="serverName" value="${propertiesBean.properties['SERVER_NAME']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${bzmServiceManager}" property="serverName" value="${serverName}"/>
-    </c:otherwise>
-</c:choose>
-<c:choose>
-    <c:when test="${not empty propertiesBean.properties['SERVER_PORT']}">
-        <c:set target="${bzmServiceManager}" property="serverPort" value="${propertiesBean.properties['SERVER_PORT']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${bzmServiceManager}" property="serverPort" value="${serverPort}"/>
-    </c:otherwise>
-</c:choose>
-<c:choose>
-    <c:when test="${not empty propertiesBean.properties['USERNAME']}">
-        <c:set target="${bzmServiceManager}" property="username" value="${propertiesBean.properties['USERNAME']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${bzmServiceManager}" property="username" value="${username}"/>
-    </c:otherwise>
-</c:choose>
-<c:choose>
-    <c:when test="${not empty propertiesBean.properties['PASSWORD']}">
-        <c:set target="${bzmServiceManager}" property="password" value="${propertiesBean.properties['PASSWORD']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${bzmServiceManager}" property="password" value="${password}"/>
-    </c:otherwise>
-</c:choose>--%>
-
 
 <l:settingsGroup title="BlazeMeter">
     <tr>
@@ -108,48 +70,4 @@
 
 
 
-    <tr>
-        <th><label>Error percentage threshold(%):</label></th>
-        <td>
-            <div class="posRel" style="width:80px">Unstable:</div>
-            <props:textProperty name="thr_unstable"/>
-            <span class="error" id="error_thr_unstable"></span>
-
-            <div class="posRel" style="width:80px">Fail:</div>
-            <props:textProperty name="thr_fail"/>
-            <span class="error" id="error_thr_fail"></span>
-            <span class="smallNote">Define the errors percentage threshold that specify the build as unstable or failed.</span>
-        </td>
-    </tr>
-    <tr>
-        <th><label>Response time threshold(ms):</label></th>
-        <td>
-            <div class="posRel" style="width:80px">Unstable:</div>
-            <props:textProperty name="resp_unstable"/>
-            <span class="error" id="error_resp_unstable"></span>
-
-            <div class="posRel" style="width:80px">Fail:</div>
-            <props:textProperty name="resp_fail"/>
-            <span class="error" id="error_resp_fail"></span>
-            <span class="smallNote">Define the response times that specify the build as unstable or failed.</span>
-        </td>
-    </tr>
-</l:settingsGroup>
-
-<%--
-<l:settingsGroup title="BlazeMeter Advanced">
-  <tr>
-    <th><label>Data folder</label></th>
-    <td><props:textProperty name="data_folder" />
-      <span class="error" id="error_data_folder"></span>
-      <span class="smallNote">Data folder to be uploaded. Supports full path or relative to checkout directory.</span>
-    </td>
-  </tr>
-  <tr>
-    <th><label>Main JMX</label></th>
-    <td><props:textProperty name="main_jmx" />
-      <span class="error" id="error_main_jmx"></span>
-      <span class="smallNote">Main JMX name in data folder specified above</span>
-    </td>
-  </tr>  
-</l:settingsGroup>--%>
+    </l:settingsGroup>

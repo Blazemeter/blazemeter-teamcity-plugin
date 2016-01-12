@@ -37,10 +37,6 @@ public class BzmBuildProcess implements BuildProcess{
 	private String testId;
     private String jsonConfiguration;
 	private String testDuration;
-	private String errorUnstableThreshold;
-    private String errorFailedThreshold;
-    private String responseTimeUnstableThreshold;
-    private String responseTimeFailedThreshold;
 	private String dataFolder;
 	private String mainJMX;
 	private BuildAgent agent;
@@ -114,10 +110,6 @@ public class BzmBuildProcess implements BuildProcess{
         }
 
         testDuration = params.get(Constants.SETTINGS_TEST_DURATION);
-        errorUnstableThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_UNSTABLE);
-        errorFailedThreshold = params.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
-        responseTimeUnstableThreshold = params.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
-        responseTimeFailedThreshold = params.get(Constants.SETTINGS_RESPONSE_TIME_FAIL);
 
 		dataFolder = params.get(Constants.SETTINGS_DATA_FOLDER);
 		if (PropertiesUtil.isEmptyOrNull(dataFolder)){
@@ -263,10 +255,6 @@ public class BzmBuildProcess implements BuildProcess{
         }else{
             logger.message("Test report is received...");
             logger.message(testResult.toString());
-			localTrRes = Utils.validateLocalTresholds(testResult, errorUnstableThreshold,
-					errorFailedThreshold,
-					responseTimeUnstableThreshold,
-					responseTimeFailedThreshold, logger);
 		}
         bzmServiceManager.retrieveJUNITXML(session,buildRunnerContext);
         bzmServiceManager.retrieveJTL(session,buildRunnerContext);

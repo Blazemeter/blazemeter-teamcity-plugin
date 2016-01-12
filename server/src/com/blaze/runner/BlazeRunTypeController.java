@@ -60,10 +60,6 @@ public class BlazeRunTypeController extends BaseController {
 			prop.setProperty("user_key", mainSettings.getUserKey());
 			prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
 			prop.setProperty("blazeMeterApiVersion", mainSettings.getBlazeMeterApiVersion());
-			prop.setProperty("serverName", mainSettings.getServerName());
-			prop.setProperty("serverPort", mainSettings.getServerPort());
-			prop.setProperty("username", mainSettings.getUsername());
-			prop.setProperty("password", mainSettings.getPassword());
 			prop.store(fos, "");
 
 			fos.close();
@@ -125,15 +121,8 @@ public class BlazeRunTypeController extends BaseController {
 		String user_key = request.getParameter("user_key");
 		String blazeMeterUrl = request.getParameter("blazeMeterUrl");
 		String blazeMeterApiVersion = request.getParameter("blazeMeterApiVersion");
-		String serverName = request.getParameter("serverName");
-		String serverPort = request.getParameter("serverPort");
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
 		mainSettings.setUserKey(user_key);
-		if (serverName != null) {
-			mainSettings.setServerName(serverName);
-		}
-        if (blazeMeterUrl != null) {
+	if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }
 
@@ -141,36 +130,6 @@ public class BlazeRunTypeController extends BaseController {
             mainSettings.setBlazeMeterApiVersion(blazeMeterApiVersion);
         }
 
-        if (serverPort != null) {
-			mainSettings.setServerPort(serverPort);
-		}
-		
-		if (username != null) {
-			mainSettings.setUsername(username);
-		}
-		
-		if (password != null) {
-			mainSettings.setPassword(password);
-		}
-
-		if (serverPaths != null) {
-			File keyFile = new File(serverPaths.getConfigDir() + Constants.BZM_PROPERTIES_FILE);
-			if (keyFile.exists()) {
-				saveSettings(keyFile);
-			} else {
-				boolean created;
-				try {
-					created = keyFile.createNewFile();
-					if (created) {
-						saveSettings(keyFile);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		} else {
-			Loggers.SERVER.warn("ServerPaths are null!");
-		}
 	}
 
 	/**
