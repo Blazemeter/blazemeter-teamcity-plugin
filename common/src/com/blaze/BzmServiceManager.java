@@ -41,10 +41,6 @@ public class BzmServiceManager {
     private String userKey;
     private String blazeMeterUrl;
     private String blazeMeterApiVersion;
-    private String serverName;
-    private String serverPort;
-    private String username;
-    private String password;
     private BuildProgressLogger logger;
     private BlazemeterApi blazemeterAPI;
     private String session;
@@ -57,12 +53,8 @@ public class BzmServiceManager {
 
         this.userKey = buildSharedMap.get(Constants.USER_KEY);
         this.blazeMeterUrl = buildSharedMap.get(Constants.BLAZEMETER_URL);
-        this.serverName = buildSharedMap.get(Constants.PROXY_SERVER_NAME);
-        this.serverPort = buildSharedMap.get(Constants.PROXY_SERVER_PORT);
-        this.username =buildSharedMap.get(Constants.PROXY_USERNAME);
-        this.password = buildSharedMap.get(Constants.PROXY_PASSWORD);
         this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.blazemeterAPI = APIFactory.getAPI(userKey, serverName, serverPort, username, password, blazeMeterUrl, blazeMeterApiVersion, logger);
+        this.blazemeterAPI = APIFactory.getAPI(userKey, blazeMeterUrl, blazeMeterApiVersion, logger);
         this.blazeMeterApiVersion=(this.blazemeterAPI instanceof BlazemeterApiV3Impl)?"v3":"v2";
         this.logger = logger;
     }
@@ -73,18 +65,10 @@ public class BzmServiceManager {
         }else{
             bzmServiceManager.setUserKey(buildSharedMap.get(Constants.USER_KEY));
             bzmServiceManager.setBlazeMeterUrl(buildSharedMap.get(Constants.BLAZEMETER_URL));
-            bzmServiceManager.setServerName(buildSharedMap.get(Constants.PROXY_SERVER_NAME));
-            bzmServiceManager.setServerPort(buildSharedMap.get(Constants.PROXY_SERVER_PORT));
-            bzmServiceManager.setUsername(buildSharedMap.get(Constants.PROXY_USERNAME));
-            bzmServiceManager.setPassword(buildSharedMap.get(Constants.PROXY_PASSWORD));
             bzmServiceManager.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
             bzmServiceManager.setLogger(logger);
             if(bzmServiceManager.blazemeterAPI==null){
                 BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
-                    buildSharedMap.get(Constants.PROXY_SERVER_NAME),
-                    buildSharedMap.get(Constants.PROXY_SERVER_PORT),
-                    buildSharedMap.get(Constants.PROXY_USERNAME),
-                    buildSharedMap.get(Constants.PROXY_PASSWORD),
                     buildSharedMap.get(Constants.BLAZEMETER_URL),
                     buildSharedMap.get(Constants.BLAZEMETER_API_VERSION),
                     logger);
@@ -143,8 +127,7 @@ public class BzmServiceManager {
 
     public LinkedHashMultimap<String, String> getTests() {
         if(this.blazemeterAPI==null){
-            blazemeterAPI=APIFactory.getAPI(this.userKey,this.serverName,this.serverPort,
-                                            this.username,this.password,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
+            blazemeterAPI=APIFactory.getAPI(this.userKey,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
         }
         // added on Jacob's request for issue investigation
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
@@ -460,38 +443,6 @@ public class BzmServiceManager {
 
     public void setUserKey(String userKey) {
         this.userKey = userKey;
-    }
-
-    public String getServerName() {
-        return serverName;
-    }
-
-    public void setServerName(String serverName) {
-        this.serverName = serverName;
-    }
-
-    public String getServerPort() {
-        return serverPort;
-    }
-
-    public void setServerPort(String serverPort) {
-        this.serverPort = serverPort;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getSession() {

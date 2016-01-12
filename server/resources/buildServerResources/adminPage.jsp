@@ -11,10 +11,6 @@
         var usrKey = $('user_key').value;
         var blazeMeterUrl = $('blazeMeterUrl').value;
         var blazeMeterApiVersion = $('blazeMeterApiVersion').value;
-        var serverName = $('serverName').value;
-        var serverPort = $('serverPort').value;
-        var username = $('username').value;
-        var password = $('password').value;
         usrKey = usrKey.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         if (!usrKey || usrKey.length == 0) {
             alert("User key is empty!");
@@ -25,11 +21,7 @@
         BS.ajaxRequest($('BlazeMeterAdminPageForm').action, {
             parameters: 'user_key=' + usrKey
                     + '&blazeMeterUrl=' + blazeMeterUrl
-                    + '&blazeMeterApiVersion=' + blazeMeterApiVersion
-                    + '&serverName=' + serverName
-                    + '&serverPort=' + serverPort
-                    + '&username=' + username
-                    + '&password=' + password,
+                    + '&blazeMeterApiVersion=' + blazeMeterApiVersion,
             onComplete: function (transport) {
                 if (transport.responseXML) {
                     $('refreshContainer').refresh();
@@ -73,34 +65,6 @@
                     </select>
                         <span class="error_blazeMeterUrl"><bs:messages key="blazeMessage"/></span>
                         <span class="smallNote">BlazeMeter API version</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Server:</label></td>
-                    <td><input type="text" id="serverName" name="serverName" value="<c:out value="${serverName}"/>"/>
-                        <span class="error_serverName"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter Proxy Server</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Port:</label></td>
-                    <td><input type="text" id="serverPort" name="serverPort" value="<c:out value="${serverPort}"/>"/>
-                        <span class="error_serverPort"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter Proxy Port</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Username:</label></td>
-                    <td><input type="text" id="username" name="username" value="<c:out value="${username}"/>"/>
-                        <span class="error_username"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter Proxy Username</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Password:</label></td>
-                    <td><input type="password" id="password" name="password" value="<c:out value="${password}"/>"/>
-                        <span class="error_password"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter Proxy Password</span>
                     </td>
                 </tr>
 

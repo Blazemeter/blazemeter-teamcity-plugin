@@ -106,15 +106,13 @@ public class Utils {
         }
     }
 
-    public static BzmServiceManager.ApiVersion autoDetectApiVersion(String userKey,String serverName,
-                                              String serverPort,String username,
-                                              String password,String blazeMeterUrl,
+    public static BzmServiceManager.ApiVersion autoDetectApiVersion(String userKey,
+                                              String blazeMeterUrl,
                                               BuildProgressLogger logger) {
         BlazemeterApi api = null;
         BzmServiceManager.ApiVersion detectedApiVersion = null;
-        api = APIFactory.getAPI(userKey,serverName,
-                                serverPort,username,
-                                password,blazeMeterUrl,
+        api = APIFactory.getAPI(userKey,
+                                blazeMeterUrl,
                                "v3",logger);
         boolean isV3 = false;
         try {

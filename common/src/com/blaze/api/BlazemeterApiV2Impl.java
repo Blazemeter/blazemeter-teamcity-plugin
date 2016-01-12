@@ -27,25 +27,16 @@ import com.blaze.runner.Constants;
 public class BlazemeterApiV2Impl implements BlazemeterApi {
 
     private String userKey;
-	private String serverName;
-	private int serverPort;
-	private String username;
-	private String password;
     private final JSONObject not_implemented;
 
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     BzmHttpClient bzmHttpClient;
     BmUrlManagerV2Impl urlManager;
 
-    public BlazemeterApiV2Impl(String userKey,String serverName, int serverPort, String username, String password, String bzmUrl) {
+    public BlazemeterApiV2Impl(String userKey, String bzmUrl) {
     	this.userKey = userKey;
-        this.serverName = serverName;
-    	this.serverPort = serverPort;
-    	this.username = username;
-    	this.password = password;
         urlManager = new BmUrlManagerV2Impl(bzmUrl);
-            bzmHttpClient = new BzmHttpClient(this.serverName,this.username,this.password,this.serverPort);
-            bzmHttpClient.configureProxy();
+            bzmHttpClient = new BzmHttpClient();
         not_implemented=new JSONObject();
         try {
             not_implemented.put(Constants.NOT_IMPLEMENTED,Constants.NOT_IMPLEMENTED);
@@ -199,38 +190,6 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
     
     
-
-    public String getServerName() {
-		return serverName;
-	}
-
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
-	}
-
-	public int getServerPort() {
-		return serverPort;
-	}
-
-	public void setServerPort(int serverPort) {
-		this.serverPort = serverPort;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
     @Override
     public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger) {

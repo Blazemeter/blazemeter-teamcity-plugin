@@ -39,10 +39,10 @@ public class BlazeMeterSettingsController extends BaseController {
         request.getSession().setAttribute("userKey", mySettings.getUserKey());
         request.getSession().setAttribute("blazeMeterUrl", mySettings.getBlazeMeterUrl());
         request.getSession().setAttribute("blazeMeterApiVersion", mySettings.getBlazeMeterApiVersion());
-        request.getSession().setAttribute("serverName", mySettings.getServerName());
-        request.getSession().setAttribute("serverPort", mySettings.getServerPort());
-        request.getSession().setAttribute("username", mySettings.getUsername());
-        request.getSession().setAttribute("password", mySettings.getPassword());
+//        request.getSession().setAttribute("serverName", mySettings.getServerName());
+//        request.getSession().setAttribute("serverPort", mySettings.getServerPort());
+//        request.getSession().setAttribute("username", mySettings.getUsername());
+//        request.getSession().setAttribute("password", mySettings.getPassword());
         Map<String,Object> params = new HashMap<String,Object>();
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("viewBlazeRunnerParams.jsp"), params);
 	}

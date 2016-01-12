@@ -34,7 +34,8 @@
         <c:set target="${bzmServiceManager}" property="blazeMeterApiVersion" value="${blazeMeterApiVersion}"/>
     </c:otherwise>
 </c:choose>
-<c:choose>
+
+<%--<c:choose>
     <c:when test="${not empty propertiesBean.properties['SERVER_NAME']}">
         <c:set target="${bzmServiceManager}" property="serverName" value="${propertiesBean.properties['SERVER_NAME']}"/>
     </c:when>
@@ -65,7 +66,7 @@
     <c:otherwise>
         <c:set target="${bzmServiceManager}" property="password" value="${password}"/>
     </c:otherwise>
-</c:choose>
+</c:choose>--%>
 
 
 <l:settingsGroup title="BlazeMeter">

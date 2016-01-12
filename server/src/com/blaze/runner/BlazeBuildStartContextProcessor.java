@@ -20,10 +20,6 @@ public class BlazeBuildStartContextProcessor implements BuildStartContextProcess
 		buildStartContext.addSharedParameter(Constants.USER_KEY, pluginSettings.getUserKey());
 		buildStartContext.addSharedParameter(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
 		buildStartContext.addSharedParameter(Constants.BLAZEMETER_API_VERSION, pluginSettings.getBlazeMeterApiVersion());
-		buildStartContext.addSharedParameter(Constants.PROXY_SERVER_NAME, pluginSettings.getServerName());
-		buildStartContext.addSharedParameter(Constants.PROXY_SERVER_PORT, pluginSettings.getServerPort());
-		buildStartContext.addSharedParameter(Constants.PROXY_USERNAME, pluginSettings.getUsername());
-		buildStartContext.addSharedParameter(Constants.PROXY_PASSWORD, pluginSettings.getPassword());
 	}
 
 	public void register(){
