@@ -92,7 +92,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         }
 
         try {
-            String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, testId);
+            String url = this.urlManager.masterStatus(APP_KEY, this.userKey, testId);
             JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
 
             if ("Test not found".equals(jo.get(JsonConstants.ERROR))) {
@@ -109,7 +109,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized String startTest(String testId) throws JSONException{
+    public synchronized String startTest(String testId,TestType testType) throws JSONException{
         if (StringUtils.isEmpty(userKey)&StringUtils.isEmpty(testId)) {
             return null;
         }
@@ -166,7 +166,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         LinkedHashMultimap<String, String> testListOrdered = null;
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
-            String url = this.urlManager.getTests(APP_KEY, userKey);
+            String url = this.urlManager.tests(APP_KEY, userKey);
             JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST,JSONObject.class);
                 String r = jo.get(JsonConstants.RESPONSE_CODE).toString();
                 if (r.equals("200")) {
@@ -243,7 +243,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
     @Override
     public JSONObject getTestsJSON() {
-        String url = this.urlManager.getTests(APP_KEY, userKey);
+        String url = this.urlManager.tests(APP_KEY, userKey);
         JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
@@ -262,5 +262,10 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     @Override
     public BmUrlManager getUrlManager() {
         return this.urlManager;
+    }
+
+    @Override
+    public boolean active(String testId) {
+        return false;
     }
 }

@@ -11,32 +11,32 @@ import java.net.URLEncoder;
  */
 public class BmUrlManagerV2Impl implements BmUrlManager{
 
-    private String SERVER_URL = Constants.DEFAULT_BZM_SERVER;
+    private String serverUrl = Constants.DEFAULT_BZM_SERVER;
     private TestType testType=TestType.http;
 
     public BmUrlManagerV2Impl(String blazeMeterUrl) {
-        SERVER_URL = blazeMeterUrl;
+        serverUrl = blazeMeterUrl;
     }
 
     @Override
     public String getServerUrl() {
-        return SERVER_URL;
+        return serverUrl;
     }
 
     @Override
-    public String getTests(String appKey, String userKey){
+    public String tests(String appKey, String userKey){
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/getTests.json/?app_key=%s&user_key=%s&test_id=all",
+        return serverUrl +String.format("/api/rest/blazemeter/getTests.json/?app_key=%s&user_key=%s&test_id=all",
                 appKey, userKey)+CLIENT_IDENTIFICATION;
     }
 
     @Override
-    public String testSessionStatus(String appKey, String userKey, String testId) {
+    public String masterStatus(String appKey, String userKey, String testId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
@@ -44,7 +44,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/testGetStatus.json/?app_key=%s&user_key=%s&test_id=%s&",
+        return serverUrl +String.format("/api/rest/blazemeter/testGetStatus.json/?app_key=%s&user_key=%s&test_id=%s&",
                 appKey, userKey, testId)+CLIENT_IDENTIFICATION;
     }
 
@@ -58,7 +58,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/testScriptUpload.json/?app_key=%s&user_key=%s&test_id=%s&file_name=%s&",
+        return serverUrl +String.format("/api/rest/blazemeter/testScriptUpload.json/?app_key=%s&user_key=%s&test_id=%s&file_name=%s&",
                 appKey, userKey, testId, fileName)+CLIENT_IDENTIFICATION;
     }
 
@@ -72,7 +72,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/testArtifactUpload.json/?app_key=%s&user_key=%s&test_id=%s&file_name=%s&",
+        return serverUrl +String.format("/api/rest/blazemeter/testArtifactUpload.json/?app_key=%s&user_key=%s&test_id=%s&file_name=%s&",
                 appKey, userKey, testId, fileName)+CLIENT_IDENTIFICATION;
     }
 
@@ -85,7 +85,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/testStart.json/?app_key=%s&user_key=%s&test_id=%s&",
+        return serverUrl +String.format("/api/rest/blazemeter/testStart.json/?app_key=%s&user_key=%s&test_id=%s&",
                 appKey, userKey, testId)+CLIENT_IDENTIFICATION;
     }
 
@@ -98,7 +98,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return SERVER_URL+String.format("/api/rest/blazemeter/testStop.json/?app_key=%s&user_key=%s&test_id=%s&",
+        return serverUrl +String.format("/api/rest/blazemeter/testStop.json/?app_key=%s&user_key=%s&test_id=%s&",
                 appKey, userKey, testId)+CLIENT_IDENTIFICATION;
     }
 
@@ -112,19 +112,19 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testAggregateReport=SERVER_URL+"/api/latest/sessions/"
+        testAggregateReport= serverUrl +"/api/latest/sessions/"
                 +reportId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testAggregateReport;
     }
 
     @Override
-    public String getTestInfo(String appKey, String userKey, String testId) {
+    public String testInfo(String appKey, String userKey, String testId) {
         return Constants.NOT_IMPLEMENTED;
     }
 
     @Override
-    public String getTresholds(String appKey, String userKey, String sessionId) {
+    public String thresholds(String appKey, String userKey, String sessionId) {
         return Constants.NOT_IMPLEMENTED;
     }
 
@@ -162,7 +162,7 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        generatePublicToken=SERVER_URL+"/api/latest/sessions/"+sessionId+
+        generatePublicToken= serverUrl +"/api/latest/sessions/"+sessionId+
                 "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return generatePublicToken;
@@ -174,12 +174,42 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
     }
 
     @Override
-    public TestType getTestType() {
+    public TestType testType() {
         return this.testType;
     }
 
     @Override
-    public void setTestType(TestType testType) {
+    public void testType(TestType testType) {
         this.testType=testType;
+    }
+
+    @Override
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl=serverUrl;
+    }
+
+    @Override
+    public String activeTests(String appKey, String userKey) {
+        return Constants.NOT_IMPLEMENTED;
+    }
+
+    @Override
+    public String collectionStart(String appKey, String userKey, String collectionId) {
+        return Constants.NOT_IMPLEMENTED;
+    }
+
+    @Override
+    public String ciStatus(String appKey, String userKey, String sessionId) {
+        return Constants.NOT_IMPLEMENTED;
+    }
+
+    @Override
+    public String testConfig(String appKey, String userKey, String testId) {
+        return Constants.NOT_IMPLEMENTED;
+    }
+
+    @Override
+    public String listOfSessionIds(String appKey, String userKey, String masterId) {
+        return Constants.NOT_IMPLEMENTED;
     }
 }

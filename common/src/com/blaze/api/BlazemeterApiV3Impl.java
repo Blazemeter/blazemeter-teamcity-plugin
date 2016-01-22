@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.io.IOException;
  * @author
  */
 public class BlazemeterApiV3Impl implements BlazemeterApi {
+    private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
 
     private String userKey;
 
@@ -81,13 +84,13 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
 
         try {
-            String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, testId);
+            String url = this.urlManager.masterStatus(APP_KEY, this.userKey, testId);
             JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             if (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) {
                 ti.setStatus(TestStatus.NotFound);
             } else {
-                if (this.urlManager.getTestType().equals(TestType.multi)) {
+                if (this.urlManager.testType().equals(TestType.multi)) {
                     ti.setId(String.valueOf(result.getInt("collectionId")));
                 } else {
                     ti.setId(String.valueOf(result.getInt("testId")));
@@ -110,16 +113,59 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public synchronized String startTest(String testId) throws JSONException {
-        if (StringUtils.isEmpty(userKey) & StringUtils.isEmpty(testId)) return null;
-        String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST,JSONObject.class);
-        JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
-        if (!this.urlManager.getTestType().equals(TestType.multi)) {
-            return ((JSONArray) result.get("sessionsId")).get(0).toString();
-        } else {
-            return String.valueOf(result.getInt(JsonConstants.ID));
+    public synchronized String startTest(String testId, TestType testType) throws JSONException {
+        if (StringUtils.isBlank(userKey) & StringUtils.isBlank(testId)) return null;
+        String url = "";
+        switch (testType) {
+            case multi:
+                url = this.urlManager.collectionStart(APP_KEY, userKey, testId);
+                break;
+            default:
+                url = this.urlManager.testStart(APP_KEY, userKey, testId);
         }
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST, JSONObject.class);
+
+        if (jo==null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Received NULL from server while start operation: will do 5 retries");
+            boolean isActive=this.active(testId);
+            if(!isActive){
+                int retries = 1;
+                while (retries < 6) {
+                    try {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Trying to repeat start request: " + retries + " retry.");
+                        logger.debug("Pausing thread for " + 10*retries + " seconds before doing "+retries+" retry.");
+                        Thread.sleep(10000*retries);
+                        jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST, JSONObject.class);
+                        if (jo!=null) {
+                            break;
+                        }
+                    } catch (InterruptedException ie) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Start operation was interrupted at pause during " + retries + " request retry.");
+                    } catch (Exception ex) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Received bad response from server while starting test: " + retries + " retry.");
+                    }
+                    finally {
+                        retries++;
+                    }
+                }
+
+
+            }
+        }
+        JSONObject result=null;
+        try{
+            result = (JSONObject) jo.get(JsonConstants.RESULT);
+        }catch (Exception e){
+            if (logger.isDebugEnabled())
+                logger.debug("Error while starting test: ",e);
+            throw new JSONException("Faild to get 'result' node "+e.getMessage());
+
+        }
+        return result.getString(JsonConstants.ID);
     }
 
     /**
@@ -167,7 +213,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
         if (userKey == null || userKey.trim().isEmpty()) {
         } else {
-            String url = this.urlManager.getTests(APP_KEY, userKey);
+            String url = this.urlManager.tests(APP_KEY, userKey);
             System.out.println("BlazemeterApiV3Impl: UserKey=" + this.userKey.substring(0, 5));
             System.out.println("BlazemeterApiV3Impl: Url=" + url);
             JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
@@ -201,7 +247,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             logger.message("ERROR: User apiKey is empty");
             return null;
         }
-        String url = this.urlManager.getTestInfo(APP_KEY, userKey, testId);
+        String url = this.urlManager.testInfo(APP_KEY, userKey, testId);
         JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
@@ -212,7 +258,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             logger.message("ERROR: User apiKey is empty");
             return null;
         }
-        String url = this.urlManager.getTestInfo(APP_KEY, userKey, testId);
+        String url = this.urlManager.testInfo(APP_KEY, userKey, testId);
         JSONObject jo = this.bzmHttpWrapper.response(url, data, BzmHttpWrapper.Method.PUT,JSONObject.class);
         return jo;
     }
@@ -234,7 +280,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (userKey == null || userKey.trim().isEmpty()) {
             return null;
         }
-        String url = this.urlManager.getTresholds(APP_KEY, userKey, sessionId);
+        String url = this.urlManager.thresholds(APP_KEY, userKey, sessionId);
         JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
@@ -289,7 +335,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return statusCode;
         }
         try {
-            String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, id);
+            String url = this.urlManager.masterStatus(APP_KEY, this.userKey, id);
             JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             statusCode = result.getInt("statusCode");
@@ -304,7 +350,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
     @Override
     public JSONObject getTestsJSON() {
-        String url = this.urlManager.getTests(APP_KEY, userKey);
+        String url = this.urlManager.tests(APP_KEY, userKey);
         JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
@@ -316,6 +362,42 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         String url = this.urlManager.testTerminate(APP_KEY, this.userKey, testId);
         return this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
 
+    }
+
+
+    @Override
+    public boolean active(String testId) {
+        boolean isActive=false;
+        String url = this.urlManager.activeTests(APP_KEY, userKey);
+        JSONObject jo = null;
+        try {
+            jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET, JSONObject.class);
+            JSONObject result = null;
+            if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
+                result = (JSONObject) jo.get(JsonConstants.RESULT);
+                JSONArray tests = (JSONArray) result.get(JsonConstants.TESTS);
+                for(int i=0;i<tests.length();i++){
+                    if(String.valueOf(tests.getInt(i)).equals(testId)){
+                        isActive=true;
+                        return isActive;
+                    }
+                }
+                JSONArray collections = (JSONArray) result.get(JsonConstants.COLLECTIONS);
+                for(int i=0;i<collections.length();i++){
+                    if(String.valueOf(collections.getInt(i)).equals(testId)){
+                        isActive=true;
+                        return isActive;
+                    }
+                }
+            }
+            return isActive;
+        } catch (JSONException je) {
+            logger.info("Failed to check if test=" + testId + " is active: received JSON = " + jo, je);
+            return false;
+        } catch (Exception e) {
+            logger.info("Failed to check if test=" + testId + " is active: received JSON = " + jo, e);
+            return false;
+        }
     }
 
     @Override

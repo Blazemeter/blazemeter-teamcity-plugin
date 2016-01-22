@@ -12,9 +12,17 @@ public interface BmUrlManager {
 
     String getServerUrl();
 
-    String getTests(String appKey, String userKey);
+    void setServerUrl(String serverUrl);
 
-    String testSessionStatus(String appKey, String userKey, String testId);
+    String masterStatus(String appKey, String userKey, String testId);
+
+    String tests(String appKey, String userKey);
+
+    String testInfo(String appKey, String userKey, String testId);
+
+    String thresholds(String appKey, String userKey, String sessionId);
+
+    String activeTests(String appKey, String userKey);
 
     String scriptUpload(String appKey, String userKey, String testId, String fileName);
 
@@ -22,13 +30,19 @@ public interface BmUrlManager {
 
     String testStart(String appKey, String userKey, String testId);
 
+    String collectionStart(String appKey, String userKey, String collectionId);
+
     String testStop(String appKey, String userKey, String testId);
+
+    String testTerminate(String appKey, String userKey, String testId);
 
     String testReport(String appKey, String userKey, String reportId);
 
-    String getTestInfo(String appKey, String userKey, String testId);
+    String getUser(String appKey, String userKey);
 
-    String getTresholds(String appKey, String userKey, String sessionId);
+    String ciStatus(String appKey, String userKey, String sessionId);
+
+    String testConfig(String appKey, String userKey, String testId);
 
     String postJsonConfig(String appKey, String userKey, String testId);
 
@@ -38,12 +52,12 @@ public interface BmUrlManager {
 
     String retrieveJTLZIP(String appKey, String userKey, String sessionId);
 
-    String getUser(String appKey, String userKey);
-
     String generatePublicToken(String appKey, String userKey, String sessionId);
 
-    String testTerminate(String appKey, String userKey, String testId);
-    TestType getTestType();
-    void setTestType(TestType testType);
+    String listOfSessionIds(String appKey, String userKey, String masterId);
+
+    TestType testType();
+
+    void testType(TestType testType);
 
 }

@@ -24,7 +24,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
     @Override
-    public String getTests(String appKey, String userKey) {
+    public String tests(String appKey, String userKey) {
         String getTests=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -38,7 +38,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
     @Override
-    public String testSessionStatus(String appKey, String userKey, String sessionId) {
+    public String masterStatus(String appKey, String userKey, String sessionId) {
         String testStatus=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -116,7 +116,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
 
 
     @Override
-    public String getTestInfo(String appKey, String userKey, String testId){
+    public String testInfo(String appKey, String userKey, String testId){
         String getTestInfo=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -130,7 +130,7 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
     @Override
-    public String getTresholds(String appKey, String userKey, String sessionId){
+    public String thresholds(String appKey, String userKey, String sessionId){
         String getTresholds=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -256,13 +256,91 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
     @Override
-    public TestType getTestType() {
+    public TestType testType() {
         return this.testType;
     }
 
     @Override
-    public void setTestType(TestType testType) {
+    public void testType(TestType testType) {
         this.testType=testType;
     }
 
+    @Override
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl=serverUrl;
+    }
+
+    @Override
+    public String activeTests(String appKey, String userKey) {
+        String activeTests=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        activeTests= serverUrl +"/api/latest/web/active?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        return activeTests;
+    }
+
+
+    @Override
+    public String collectionStart(String appKey, String userKey, String collectionId) {
+        String testStart=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+            collectionId = URLEncoder.encode(collectionId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        testStart= serverUrl +"/api/latest/collections/"
+                +collectionId+"/start?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return testStart;
+    }
+
+    @Override
+    public String ciStatus(String appKey, String userKey, String masterId) {
+        String ciStatus=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        ciStatus= serverUrl +"/api/latest/masters/"+masterId+"/ci-status?api_key="
+                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return ciStatus;
+    }
+
+    @Override
+    public String testConfig(String appKey, String userKey, String testId) {
+        String testConfig=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        testConfig= serverUrl +"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return testConfig;
+    }
+
+    @Override
+    public String listOfSessionIds(String appKey, String userKey, String masterId) {
+        String listOfSessionIds=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        listOfSessionIds= serverUrl +"/api/latest/masters/"+masterId+
+                "/sessions?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return listOfSessionIds;
+    }
 }

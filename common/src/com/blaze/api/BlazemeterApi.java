@@ -22,7 +22,7 @@ public interface BlazemeterApi {
 
     TestInfo getTestInfo(String testId) throws JSONException;
 
-    String startTest(String testId) throws JSONException;
+    String startTest(String testId,TestType testType) throws JSONException;
 
     boolean stopTest(String testId) throws Exception;
 
@@ -35,6 +35,8 @@ public interface BlazemeterApi {
     JSONObject getTestInfo(String testId, BuildProgressLogger logger);
 
     JSONObject getUser();
+
+    boolean active(String testId);
 
     JSONObject getTresholds(String sessionId);
 

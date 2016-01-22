@@ -88,7 +88,7 @@ public class BzmServiceManager {
         if(!this.blazeMeterApiVersion.equals("v2")){
             testType=this.getTestType(testId);
         }
-        this.blazemeterAPI.getUrlManager().setTestType(testType);
+        this.blazemeterAPI.getUrlManager().testType(testType);
         if (!testType.equals(TestType.multi)) {
             if (jsonConfiguration != null && !jsonConfiguration.isEmpty()) {
                 try {
@@ -163,7 +163,11 @@ public class BzmServiceManager {
     public String startTest(String testId, BuildProgressLogger logger) {
         String session=null;
         try {
-            session = this.blazemeterAPI.startTest(testId);
+            TestType testType=TestType.http;
+            if(!this.blazeMeterApiVersion.equals("v2")){
+                testType=this.getTestType(testId);
+            }
+            session = this.blazemeterAPI.startTest(testId,testType);
             this.session=session;
         } catch (JSONException e) {
             logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
@@ -183,7 +187,7 @@ public class BzmServiceManager {
     }
 
     public void retrieveJUNITXML(String session, BuildRunnerContext buildRunnerContext) {
-        TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+        TestType testType = this.blazemeterAPI.getUrlManager().testType();
         if (!testType.equals(TestType.multi)) {
             String junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
             logger.message("Received Junit report from server.... Saving it to the disc...");
@@ -200,7 +204,7 @@ public class BzmServiceManager {
     public boolean stopTestSession(String testId, BuildProgressLogger logger) {
         boolean terminate = false;
         try {
-            TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+            TestType testType = this.blazemeterAPI.getUrlManager().testType();
             if (testType != TestType.multi) {
                 int statusCode = this.blazemeterAPI.getTestSessionStatusCode(session);
                 if (statusCode < 100 & statusCode != 0) {
@@ -224,7 +228,7 @@ public class BzmServiceManager {
     }
 
     public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
-        TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+        TestType testType = this.blazemeterAPI.getUrlManager().testType();
         if (!testType.equals(TestType.multi)) {
 
             JSONObject jo = this.blazemeterAPI.retrieveJTLZIP(session);
@@ -328,7 +332,7 @@ public class BzmServiceManager {
 
 
     public BuildFinishedStatus validateServerTresholds() {
-        TestType testType = this.blazemeterAPI.getUrlManager().getTestType();
+        TestType testType = this.blazemeterAPI.getUrlManager().testType();
         if (!testType.equals(TestType.multi)) {
             JSONObject jo = null;
             boolean thresholdsValid = true;
@@ -361,7 +365,7 @@ public class BzmServiceManager {
         String publicToken="";
         String reportUrl=null;
         try {
-            TestType testType=this.blazemeterAPI.getUrlManager().getTestType();
+            TestType testType=this.blazemeterAPI.getUrlManager().testType();
             String reportType=(testType!=null&&testType.equals(TestType.multi))?"masters":"reports";
             jo = this.blazemeterAPI.generatePublicToken(sessionId);
             if(jo.get("error").equals(JSONObject.NULL)){

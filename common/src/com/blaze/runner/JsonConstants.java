@@ -18,4 +18,7 @@ public interface JsonConstants {
     String STATUS="status";
     String DATA_URL="dataUrl";
     String NAME="name";
+    String TESTS="tests";
+    String COLLECTIONS="collections";
+
 }
