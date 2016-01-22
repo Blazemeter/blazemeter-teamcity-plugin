@@ -54,7 +54,7 @@ public class BzmServiceManager {
         this.userKey = buildSharedMap.get(Constants.USER_KEY);
         this.blazeMeterUrl = buildSharedMap.get(Constants.BLAZEMETER_URL);
         this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.blazemeterAPI = APIFactory.getAPI(userKey, blazeMeterUrl, blazeMeterApiVersion, logger);
+        this.blazemeterAPI = APIFactory.getAPI(userKey, blazeMeterUrl, blazeMeterApiVersion);
         this.blazeMeterApiVersion=(this.blazemeterAPI instanceof BlazemeterApiV3Impl)?"v3":"v2";
         this.logger = logger;
     }
@@ -70,8 +70,7 @@ public class BzmServiceManager {
             if(bzmServiceManager.blazemeterAPI==null){
                 BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
                     buildSharedMap.get(Constants.BLAZEMETER_URL),
-                    buildSharedMap.get(Constants.BLAZEMETER_API_VERSION),
-                    logger);
+                    buildSharedMap.get(Constants.BLAZEMETER_API_VERSION));
             bzmServiceManager.setBlazemeterAPI(blazemeterAPI);
             }
         }
@@ -122,7 +121,7 @@ public class BzmServiceManager {
 
     public LinkedHashMultimap<String, String> getTests() {
         if(this.blazemeterAPI==null){
-            blazemeterAPI=APIFactory.getAPI(this.userKey,this.blazeMeterUrl,this.blazeMeterApiVersion,logger);
+            blazemeterAPI=APIFactory.getAPI(this.userKey,this.blazeMeterUrl,this.blazeMeterApiVersion);
         }
         // added on Jacob's request for issue investigation
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);

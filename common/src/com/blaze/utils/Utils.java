@@ -4,11 +4,12 @@ import com.blaze.APIFactory;
 import com.blaze.BzmServiceManager;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.runner.JsonConstants;
-import com.blaze.testresult.TestResult;
 import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 
 import java.io.*;
 import java.util.Properties;
@@ -17,6 +18,8 @@ import java.util.Properties;
  * Created by dzmitrykashlach on 9/12/14.
  */
 public class Utils {
+
+    private static Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
     private Utils(){}
 
@@ -107,13 +110,12 @@ public class Utils {
     }
 
     public static BzmServiceManager.ApiVersion autoDetectApiVersion(String userKey,
-                                              String blazeMeterUrl,
-                                              BuildProgressLogger logger) {
+                                                                    String blazeMeterUrl) {
         BlazemeterApi api = null;
         BzmServiceManager.ApiVersion detectedApiVersion = null;
         api = APIFactory.getAPI(userKey,
                                 blazeMeterUrl,
-                               "v3",logger);
+                               "v3");
         boolean isV3 = false;
         try {
             isV3 = api.getUser().getJSONObject("features").getBoolean("v3");
@@ -123,9 +125,9 @@ public class Utils {
                 detectedApiVersion=BzmServiceManager.ApiVersion.v2;
             }
         } catch (JSONException je) {
-            logger.exception(je);
+            Utils.logger.error("Error occuired while auto-detecting API version",je);
         } catch (NullPointerException npe) {
-            logger.exception(npe);
+            Utils.logger.error("Error occuired while auto-detecting API version",npe);
             return BzmServiceManager.ApiVersion.v3;
         }
         return detectedApiVersion;

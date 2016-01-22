@@ -25,14 +25,14 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     private String userKey;
 
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
-    BzmHttpClient bzmHttpClient;
+    BzmHttpWrapper bzmHttpWrapper;
     BmUrlManagerV3Impl urlManager;
 
     public BlazemeterApiV3Impl(String userKey, String bzmUrl) {
         this.userKey = userKey;
         urlManager = new BmUrlManagerV3Impl(bzmUrl);
         try {
-            bzmHttpClient = new BzmHttpClient();
+            bzmHttpWrapper = new BzmHttpWrapper();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -55,7 +55,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         JSONObject jmxData = new JSONObject();
         String fileCon = FileUtil.readText(new File(pathName));
         jmxData.put(JsonConstants.DATA, fileCon);
-        upLoadJMX = this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST) != null;
+        upLoadJMX = this.bzmHttpWrapper.response(url, jmxData, BzmHttpWrapper.Method.POST,JSONObject.class) != null;
         return upLoadJMX;
     }
 
@@ -68,7 +68,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         String fileCon = null;
         fileCon = FileUtil.readText(new File(pathName));
         jmxData.put(JsonConstants.DATA, fileCon);
-        return this.bzmHttpClient.getResponseAsJson(url, jmxData, BzmHttpClient.Method.POST);
+        return this.bzmHttpWrapper.response(url, jmxData, BzmHttpWrapper.Method.POST,JSONObject.class);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
         try {
             String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, testId);
-            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             if (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) {
                 ti.setStatus(TestStatus.NotFound);
@@ -113,7 +113,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     public synchronized String startTest(String testId) throws JSONException {
         if (StringUtils.isEmpty(userKey) & StringUtils.isEmpty(testId)) return null;
         String url = this.urlManager.testStart(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST,JSONObject.class);
         JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
         if (!this.urlManager.getTestType().equals(TestType.multi)) {
             return ((JSONArray) result.get("sessionsId")).get(0).toString();
@@ -132,7 +132,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey) & StringUtil.isEmptyOrSpaces(testId)) return false;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
 
         if (jo.getJSONArray(JsonConstants.RESULT).length() > 0) {
             return true;
@@ -153,7 +153,8 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey) & StringUtil.isEmptyOrSpaces(reportId)) return null;
 
         String url = this.urlManager.testReport(APP_KEY, userKey, reportId);
-        JSONObject summary = (JSONObject) this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET).getJSONObject(JsonConstants.RESULT)
+        JSONObject summary = (JSONObject)
+                this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class).getJSONObject(JsonConstants.RESULT)
                 .getJSONArray("summary")
                 .get(0);
         return summary;
@@ -169,7 +170,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             String url = this.urlManager.getTests(APP_KEY, userKey);
             System.out.println("BlazemeterApiV3Impl: UserKey=" + this.userKey.substring(0, 5));
             System.out.println("BlazemeterApiV3Impl: Url=" + url);
-            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
             System.out.println("BlazemeterApiV3Impl: JSONObject=" + jo.toString());
             JSONArray result = (JSONArray) jo.get(JsonConstants.RESULT);
             System.out.println("BlazemeterApiV3Impl: JSONResult=" + result.toString());
@@ -201,7 +202,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return null;
         }
         String url = this.urlManager.getTestInfo(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
 
@@ -212,7 +213,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return null;
         }
         String url = this.urlManager.getTestInfo(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.PUT);
+        JSONObject jo = this.bzmHttpWrapper.response(url, data, BzmHttpWrapper.Method.PUT,JSONObject.class);
         return jo;
     }
 
@@ -221,7 +222,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     public JSONObject createTest(JSONObject data) {
         if (StringUtil.isEmptyOrSpaces(userKey)) return null;
         String url = this.urlManager.createTest(APP_KEY, userKey);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.POST);
+        JSONObject jo = this.bzmHttpWrapper.response(url, data, BzmHttpWrapper.Method.POST,JSONObject.class);
         return jo;
     }
 
@@ -234,7 +235,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             return null;
         }
         String url = this.urlManager.getTresholds(APP_KEY, userKey, sessionId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
 
@@ -243,7 +244,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtils.isEmpty(userKey) & StringUtils.isEmpty(testId)) return null;
 
         String url = this.urlManager.postJsonConfig(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, data, BzmHttpClient.Method.POST);
+        JSONObject jo = this.bzmHttpWrapper.response(url, data, BzmHttpWrapper.Method.POST,JSONObject.class);
         return jo;
     }
 
@@ -251,7 +252,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     public String retrieveJUNITXML(String sessionId) {
         if (StringUtil.isEmptyOrSpaces((userKey)) & StringUtil.isEmptyOrSpaces(sessionId)) return null;
         String url = this.urlManager.retrieveJUNITXML(APP_KEY, userKey, sessionId);
-        String xmlJunit = this.bzmHttpClient.getResponseAsString(url, null, BzmHttpClient.Method.GET);
+        String xmlJunit = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,String.class);
         return xmlJunit;
     }
 
@@ -259,7 +260,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     public JSONObject retrieveJTLZIP(String sessionId) {
         if (StringUtil.isEmptyOrSpaces(userKey) & StringUtil.isEmptyOrSpaces((sessionId))) return null;
         String url = this.urlManager.retrieveJTLZIP(APP_KEY, userKey, sessionId);
-        JSONObject jtlzip = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jtlzip = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jtlzip;
     }
 
@@ -267,7 +268,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     public JSONObject getUser() {
         if (StringUtils.isEmpty(userKey)) return null;
         String url = this.urlManager.getUser(APP_KEY, userKey);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
 
@@ -277,7 +278,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtils.isEmpty(userKey) & StringUtils.isEmpty(sessionId)) return null;
 
         String url = this.urlManager.generatePublicToken(APP_KEY, userKey, sessionId);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.POST);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST,JSONObject.class);
         return jo;
     }
 
@@ -289,7 +290,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
         try {
             String url = this.urlManager.testSessionStatus(APP_KEY, this.userKey, id);
-            JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             statusCode = result.getInt("statusCode");
         } catch (Exception e) {
@@ -304,7 +305,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     @Override
     public JSONObject getTestsJSON() {
         String url = this.urlManager.getTests(APP_KEY, userKey);
-        JSONObject jo = this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
 
@@ -313,7 +314,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtils.isEmpty(this.userKey) & StringUtils.isEmpty(testId)) return null;
 
         String url = this.urlManager.testTerminate(APP_KEY, this.userKey, testId);
-        return this.bzmHttpClient.getResponseAsJson(url, null, BzmHttpClient.Method.GET);
+        return this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
 
     }
 
