@@ -18,15 +18,7 @@ public interface BmUrlManager {
 
     String tests(String appKey, String userKey);
 
-    String testInfo(String appKey, String userKey, String testId);
-
-    String thresholds(String appKey, String userKey, String sessionId);
-
     String activeTests(String appKey, String userKey);
-
-    String scriptUpload(String appKey, String userKey, String testId, String fileName);
-
-    String fileUpload(String appKey, String userKey, String testId, String fileName);
 
     String testStart(String appKey, String userKey, String testId);
 
@@ -55,9 +47,5 @@ public interface BmUrlManager {
     String generatePublicToken(String appKey, String userKey, String sessionId);
 
     String listOfSessionIds(String appKey, String userKey, String masterId);
-
-    TestType testType();
-
-    void testType(TestType testType);
 
 }

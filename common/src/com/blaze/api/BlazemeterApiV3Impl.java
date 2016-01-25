@@ -2,7 +2,6 @@ package com.blaze.api;
 
 import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
-import com.blaze.entities.TestInfo;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
@@ -41,75 +40,39 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
     }
 
-    /**
-     * @param testId   - test id
-     * @param fileName - test name
-     * @param pathName - jmx file path
-     *                 //     * @return test id
-     *                 //     * @throws java.io.IOException
-     *                 //     * @throws org.json.JSONException
-     */
     @Override
-    public synchronized boolean uploadJmx(String testId, String fileName, String pathName)
-            throws JSONException, IOException {
-        if (StringUtil.isEmptyOrSpaces(userKey) & StringUtil.isEmptyOrSpaces(testId)) return false;
-        boolean upLoadJMX = false;
-        String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
-        JSONObject jmxData = new JSONObject();
-        String fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put(JsonConstants.DATA, fileCon);
-        upLoadJMX = this.bzmHttpWrapper.response(url, jmxData, BzmHttpWrapper.Method.POST,JSONObject.class) != null;
-        return upLoadJMX;
-    }
+    public TestStatus getTestStatus(String id) {
+        TestStatus testStatus = null;
 
-    @Override
-    public synchronized JSONObject uploadFile(String testId, String fileName, String pathName)
-            throws JSONException, IOException {
-        if (StringUtil.isEmptyOrSpaces(userKey) & StringUtil.isEmptyOrSpaces(testId)) return null;
-        String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
-        JSONObject jmxData = new JSONObject();
-        String fileCon = null;
-        fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put(JsonConstants.DATA, fileCon);
-        return this.bzmHttpWrapper.response(url, jmxData, BzmHttpWrapper.Method.POST,JSONObject.class);
-    }
-
-    @Override
-    public TestInfo getTestInfo(String testId) throws JSONException {
-        TestInfo ti = new TestInfo();
-
-        if (StringUtils.isEmpty(this.userKey) & StringUtils.isEmpty(testId)) {
-            ti.setStatus(TestStatus.NotFound);
-            return ti;
+        if (StringUtils.isBlank(userKey) & StringUtils.isBlank(id)) {
+            testStatus = TestStatus.NotFound;
+            return testStatus;
         }
 
         try {
-            String url = this.urlManager.masterStatus(APP_KEY, this.userKey, testId);
-            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
+            String url = this.urlManager.masterStatus(APP_KEY, userKey, id);
+            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET, JSONObject.class);
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             if (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) {
-                ti.setStatus(TestStatus.NotFound);
+                testStatus = TestStatus.NotFound;
             } else {
-                if (this.urlManager.testType().equals(TestType.multi)) {
-                    ti.setId(String.valueOf(result.getInt("collectionId")));
+                if (result.has("status") && !result.getString("status").equals("ENDED")) {
+                    testStatus = TestStatus.Running;
                 } else {
-                    ti.setId(String.valueOf(result.getInt("testId")));
-                }
-                ti.setName(result.getString(JsonConstants.NAME));
-                if (!result.has("ended") || String.valueOf(result.getInt("ended")).equals(JSONObject.NULL) || String.valueOf(result.getInt("ended")).isEmpty()) {
-                    ti.setStatus(TestStatus.Running);
-                } else {
+                    logger.info("Test is not running on server");
                     if (result.has("errors") && !result.get("errors").equals(JSONObject.NULL)) {
-                        ti.setStatus(TestStatus.Error);
+                        logger.debug("Error received from server: " + result.get("errors").toString());
+                        testStatus = TestStatus.Error;
                     } else {
-                        ti.setStatus(TestStatus.NotRunning);
+                        testStatus = TestStatus.NotRunning;
                     }
                 }
             }
         } catch (Exception e) {
-            ti.setStatus(TestStatus.Error);
+            logger.warn("Error getting status ", e);
+            testStatus = TestStatus.Error;
         }
-        return ti;
+        return testStatus;
     }
 
     @Override
@@ -242,12 +205,12 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject getTestInfo(String testId, BuildProgressLogger logger) {
+    public JSONObject getTestStatus(String testId, BuildProgressLogger logger) {
         if (userKey == null || userKey.trim().isEmpty()) {
             logger.message("ERROR: User apiKey is empty");
             return null;
         }
-        String url = this.urlManager.testInfo(APP_KEY, userKey, testId);
+        String url = this.urlManager.testConfig(APP_KEY, userKey, testId);
         JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
         return jo;
     }
@@ -258,7 +221,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             logger.message("ERROR: User apiKey is empty");
             return null;
         }
-        String url = this.urlManager.testInfo(APP_KEY, userKey, testId);
+        String url = this.urlManager.testConfig(APP_KEY, userKey, testId);
         JSONObject jo = this.bzmHttpWrapper.response(url, data, BzmHttpWrapper.Method.PUT,JSONObject.class);
         return jo;
     }
@@ -276,12 +239,10 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
 
 
     @Override
-    public JSONObject getTresholds(String sessionId) {
-        if (userKey == null || userKey.trim().isEmpty()) {
-            return null;
-        }
-        String url = this.urlManager.thresholds(APP_KEY, userKey, sessionId);
-        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
+    public JSONObject getCIStatus(String sessionId) throws JSONException, NullPointerException {
+        if (StringUtils.isBlank(userKey) & StringUtils.isBlank(sessionId)) return null;
+        String url = this.urlManager.ciStatus(APP_KEY, userKey, sessionId);
+        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET, JSONObject.class).getJSONObject(JsonConstants.RESULT);
         return jo;
     }
 
@@ -401,7 +362,30 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public BmUrlManager getUrlManager() {
-        return this.urlManager;
+    public String getBlazeMeterURL() {
+        return this.urlManager.getServerUrl();
     }
+
+
+
+    @Override
+    public int getTestMasterStatusCode(String id) {
+        int statusCode = 0;
+        if (StringUtils.isBlank(userKey) & StringUtils.isBlank(id)) {
+            return statusCode;
+        }
+        try {
+            String url = this.urlManager.masterStatus(APP_KEY, userKey, id);
+            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET, JSONObject.class);
+            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
+            statusCode = result.getInt("progress");
+        } catch (Exception e) {
+            logger.warn("Error getting status ", e);
+        } finally {
+            {
+                return statusCode;
+            }
+        }
+    }
+
 }

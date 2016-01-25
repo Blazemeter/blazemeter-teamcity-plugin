@@ -27,7 +27,7 @@ public class Utils {
     public static int getTestDuration(String apiKey,BlazemeterApi api, String testId, BuildProgressLogger logger){
         int testDuration=-1;
         try {
-            JSONObject jo = api.getTestInfo(testId,logger);
+            JSONObject jo = api.getTestStatus(testId,logger);
             JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
             JSONObject configuration = result.getJSONObject(JsonConstants.CONFIGURATION);
             JSONObject plugins = configuration.getJSONObject(JsonConstants.PLUGINS);
@@ -47,7 +47,7 @@ public class Utils {
 
     public static void updateTestDuration(BlazemeterApi api, String testId, String updDuration, BuildProgressLogger logger) {
         try {
-            JSONObject jo = api.getTestInfo(testId,logger);
+            JSONObject jo = api.getTestStatus(testId,logger);
             JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
             JSONObject configuration = result.getJSONObject(JsonConstants.CONFIGURATION);
             JSONObject plugins = configuration.getJSONObject(JsonConstants.PLUGINS);

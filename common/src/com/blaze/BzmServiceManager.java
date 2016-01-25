@@ -10,9 +10,10 @@ import java.util.Map;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.api.BlazemeterApiV3Impl;
 import com.blaze.api.TestType;
-import com.blaze.entities.TestInfo;
+import com.blaze.runner.CIStatus;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
+import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
@@ -35,8 +36,6 @@ public class BzmServiceManager {
         v3, v2,autoDetect
     }
     private static BzmServiceManager bzmServiceManager=null;
-    //Default properties
-    public final static String DEFAULT_SETTINGS_DATA_FOLDER = "/DataFolder";
 
     private String userKey;
     private String blazeMeterUrl;
@@ -81,43 +80,6 @@ public class BzmServiceManager {
     public String getDebugKey() {
         return "Debug Key";
     }
-
-    public String prepareTest(String testId,String jsonConfiguration,String testDuration){
-        JSONObject jsonConf = null;
-        TestType testType=TestType.http;
-        if(!this.blazeMeterApiVersion.equals("v2")){
-            testType=this.getTestType(testId);
-        }
-        this.blazemeterAPI.getUrlManager().testType(testType);
-        if (!testType.equals(TestType.multi)) {
-            if (jsonConfiguration != null && !jsonConfiguration.isEmpty()) {
-                try {
-                    File jsonF = new File(jsonConfiguration);
-                    String jsonStr = new String(FileUtils.readFileToString((jsonF)));
-                    jsonConf = new JSONObject(jsonStr);
-                } catch (Exception e) {
-                    logger.warning("Failed to read JSON Configuration from " + jsonConfiguration);
-                }
-            } else {
-                if (!PropertiesUtil.isEmptyOrNull(testDuration)) {
-                    try {
-                        logger.message("Attempting to update testDuration for test with id:" + testId);
-                        bzmServiceManager.updateTestDuration(testId, testDuration, logger);
-                    } catch (NumberFormatException nfe) {
-                        logger.exception(nfe);
-                        logger.warning("Test duration is not a number.");
-                        return "Test duration is not a number.";
-                    }
-                }
-            }
-        }else{
-            logger.warning("Updating test-configuration will be skipped: test-type is 'multi'");
-        }
-        return testId;
-    }
-
-
-
 
     public LinkedHashMultimap<String, String> getTests() {
         if(this.blazemeterAPI==null){
@@ -186,46 +148,40 @@ public class BzmServiceManager {
         }
     }
 
-    public void retrieveJUNITXML(String session, BuildRunnerContext buildRunnerContext) {
-        TestType testType = this.blazemeterAPI.getUrlManager().testType();
-        if (!testType.equals(TestType.multi)) {
-            String junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
-            logger.message("Received Junit report from server.... Saving it to the disc...");
-            String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + session + ".xml";
-            Utils.saveReport(junitReport, reportFilePath, logger);
-
-        } else {
-            logger.warning("JUNIT report will not be downloaded: test-type is 'multi' ");
+    public void retrieveJUNITXML(String masterId, BuildRunnerContext buildRunnerContext) {
+        String junitReport = "";
+        logger.message("Requesting JUNIT report from server, masterId=" + masterId);
+        try {
+                junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
+                logger.message("Received Junit report from server.... Saving it to the disc...");
+                String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + session + ".xml";
+                Utils.saveReport(junitReport, reportFilePath, logger);
+        } catch (Exception e) {
+            logger.message("Problems with receiving JUNIT report from server, masterId=" + masterId + ": " + e.getMessage());
         }
     }
 
 
 
-    public boolean stopTestSession(String testId, BuildProgressLogger logger) {
+    public boolean stopTestSession(String masterId, BuildProgressLogger logger) {
         boolean terminate = false;
         try {
-            TestType testType = this.blazemeterAPI.getUrlManager().testType();
-            if (testType != TestType.multi) {
-                int statusCode = this.blazemeterAPI.getTestSessionStatusCode(session);
-                if (statusCode < 100 & statusCode != 0) {
-                    this.blazemeterAPI.terminateTest(testId);
-                    terminate = true;
-                }
-                if (statusCode >= 100 | statusCode == -1 | statusCode == 0) {
-                    this.blazemeterAPI.stopTest(testId);
-                    terminate = false;
-                }
-            } else {
-                this.blazemeterAPI.stopTest(testId);
+            int statusCode = blazemeterAPI.getTestMasterStatusCode(masterId);
+            if (statusCode < 100 & statusCode != 0) {
+                blazemeterAPI.terminateTest(masterId);
+                terminate = true;
+            }
+            if (statusCode >= 100 | statusCode == -1 | statusCode == 0) {
+                blazemeterAPI.stopTest(masterId);
                 terminate = false;
             }
-
         } catch (Exception e) {
-            logger.warning("Error while trying to stop test with testId=" + testId + ", " + e.getMessage());
+            logger.warning("Error while trying to stop test with testId=" + masterId + ", " + e.getMessage());
         } finally {
             return terminate;
         }
     }
+/*
 
     public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
         TestType testType = this.blazemeterAPI.getUrlManager().testType();
@@ -261,6 +217,7 @@ public class BzmServiceManager {
             logger.warning("JTLZIP will not be downloaded: test-type is 'multi' ");
         }
     }
+*/
 
     /**
      * Get report results.
@@ -285,103 +242,75 @@ public class BzmServiceManager {
         }
     }
 
-    public boolean uploadJMX(String testId, String filename, String pathname) {
-        boolean uploadJMX=false;
+
+    public TestStatus getTestSessionStatus(String testId) {
+        TestStatus status=null;
         try {
-            uploadJMX=this.blazemeterAPI.uploadJmx(testId, filename, pathname);
+            status=this.blazemeterAPI.getTestStatus(testId);
         } catch (JSONException e) {
             logger.exception(e);
-        } catch (IOException ioe) {
-            logger.exception(ioe);
-            logger.error("Could not upload file " + filename + " " + ioe.getMessage());
         } catch (NullPointerException e){
             logger.exception(e);
         }
-        return uploadJMX;
+        return status;
     }
 
-    public void uploadFile(String testId, String dataFolder, String fileName, BuildProgressLogger logger) {
+
+
+    public CIStatus validateCIStatus(String masterId,BuildProgressLogger logger){
+        CIStatus ciStatus= CIStatus.success;
+        JSONObject jo;
+        JSONArray failures=new JSONArray();
+        JSONArray errors=new JSONArray();
         try {
-            org.json.JSONObject json = this.blazemeterAPI.uploadFile(testId, fileName, dataFolder + File.separator + fileName);
-            if (!json.get(JsonConstants.RESPONSE_CODE).equals(new Integer(200))) {
-                logger.error("Could not upload file " + fileName + " " + json.get(JsonConstants.ERROR).toString());
+            jo=blazemeterAPI.getCIStatus(masterId);
+            logger.message("Test status object = " + jo.toString());
+            failures=jo.getJSONArray(JsonConstants.FAILURES);
+            errors=jo.getJSONArray(JsonConstants.ERRORS);
+        } catch (JSONException je) {
+            logger.message("No thresholds on server: setting 'success' for CIStatus ");
+        } catch (Exception e) {
+            logger.message("No thresholds on server: setting 'success' for CIStatus ");
+        }finally {
+            if(errors.length()>0){
+                logger.message("Having errors while test status validation...");
+                logger.message("Errors: " + errors.toString());
+                ciStatus=CIStatus.errors;
+                logger.message("Setting CIStatus="+CIStatus.errors.name());
+                return ciStatus;
             }
-        } catch (JSONException e) {
-            logger.exception(e);
-            logger.error("Could not upload file " + fileName + " " + e.getMessage());
-        } catch (IOException ioe) {
-            logger.exception(ioe);
-            logger.error("Could not upload file " + fileName + " " + ioe.getMessage());
-        } catch (NullPointerException e){
-            logger.exception(e);
-        }
-    }
-
-    public TestInfo getTestSessionStatus(String testId) {
-        TestInfo ti=null;
-        try {
-            ti=this.blazemeterAPI.getTestInfo(testId);
-        } catch (JSONException e) {
-            logger.exception(e);
-        } catch (NullPointerException e){
-            logger.exception(e);
-        }
-        return ti;
-    }
-
-
-
-    public BuildFinishedStatus validateServerTresholds() {
-        TestType testType = this.blazemeterAPI.getUrlManager().testType();
-        if (!testType.equals(TestType.multi)) {
-            JSONObject jo = null;
-            boolean thresholdsValid = true;
-            JSONObject result = null;
-            logger.message("Going to validate server thresholds...");
-            try {
-                jo = this.blazemeterAPI.getTresholds(session);
-                result = jo.getJSONObject(JsonConstants.RESULT);
-                thresholdsValid = result.getJSONObject(JsonConstants.DATA).getBoolean("success");
-            } catch (NullPointerException e) {
-                logger.message("Server thresholds validation was not executed due to NullPointerException");
-                logger.exception(e);
-                thresholdsValid=false;
-            } catch (JSONException je) {
-                logger.message("Server thresholds validation was not executed:failed to get thresholds for  session=" + session);
-                thresholdsValid=false;
-            } finally {
-                logger.message("Server thresholds validation " +
-                        (thresholdsValid ? "passed. Marking build as PASSED" : "failed. Marking build as FAILED"));
-                return thresholdsValid ? BuildFinishedStatus.FINISHED_SUCCESS : BuildFinishedStatus.FINISHED_FAILED;
+            if(failures.length()>0){
+                logger.message("Having failures while test status validation...");
+                logger.message("Failures: " + failures.toString());
+                ciStatus=CIStatus.failures;
+                logger.message("Setting CIStatus="+CIStatus.failures.name());
+                return ciStatus;
             }
-        }else{
-            logger.warning("Server thresholds won't be validated: test-type is 'multi' ");
-            return  BuildFinishedStatus.FINISHED_SUCCESS;
+            logger.message("No errors/failures while validating CIStatus: setting "+CIStatus.success.name());
         }
+        return ciStatus;
     }
 
-    public String getReportUrl(String sessionId) {
+    public String getReportUrl(String masterId) {
         JSONObject jo=null;
         String publicToken="";
         String reportUrl=null;
         try {
-            TestType testType=this.blazemeterAPI.getUrlManager().testType();
-            String reportType=(testType!=null&&testType.equals(TestType.multi))?"masters":"reports";
-            jo = this.blazemeterAPI.generatePublicToken(sessionId);
-            if(jo.get("error").equals(JSONObject.NULL)){
-                JSONObject result=jo.getJSONObject("result");
+            jo = this.blazemeterAPI.generatePublicToken(masterId);
+            if(jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)){
+                JSONObject result=jo.getJSONObject(JsonConstants.RESULT);
                 publicToken=result.getString("publicToken");
-                reportUrl=this.blazeMeterUrl+"/app/?public-token="+publicToken+"#"+reportType+"/"+sessionId+"/summary";
+                reportUrl=this.blazemeterAPI.getBlazeMeterURL()+"/app/?public-token="+publicToken+"#masters/"+masterId+"/summary";
             }else{
-                logger.error("Problems with generating public-token for report URL: " + jo.get("error").toString());
-                reportUrl=this.blazeMeterUrl+"/app/#reports/"+sessionId+"/summary";
+                logger.warning("Problems with generating public-token for report URL: "+jo.get(JsonConstants.ERROR).toString());
+                reportUrl=this.blazemeterAPI.getBlazeMeterURL()+"/app/#masters/"+masterId+"/summary";
             }
+
         } catch (Exception e){
-            logger.error("Problems with generating public-token for report URL: " + e);
+            logger.warning("Problems with generating public-token for report URL");
         }finally {
             return reportUrl;
-        }
-    }
+        }}
 
     private TestType getTestType(String testId){
         TestType testType=TestType.http;

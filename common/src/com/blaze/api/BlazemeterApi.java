@@ -1,7 +1,7 @@
 package com.blaze.api;
 
 import com.blaze.api.urlmanager.BmUrlManager;
-import com.blaze.entities.TestInfo;
+import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
@@ -14,13 +14,7 @@ import java.io.IOException;
  */
 public interface BlazemeterApi {
 
-    boolean uploadJmx(String testId, String fileName, String pathName)
-            throws JSONException,IOException;
-
-    JSONObject uploadFile(String testId, String fileName, String pathName)
-            throws JSONException,IOException;
-
-    TestInfo getTestInfo(String testId) throws JSONException;
+    TestStatus getTestStatus(String testId) throws JSONException;
 
     String startTest(String testId,TestType testType) throws JSONException;
 
@@ -32,13 +26,15 @@ public interface BlazemeterApi {
 
     JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
 
-    JSONObject getTestInfo(String testId, BuildProgressLogger logger);
+    JSONObject getTestStatus(String testId, BuildProgressLogger logger);
 
     JSONObject getUser();
 
     boolean active(String testId);
 
-    JSONObject getTresholds(String sessionId);
+    int getTestMasterStatusCode(String id);
+
+    JSONObject getCIStatus(String sessionId) throws JSONException;
 
     JSONObject postJsonConfig(String testId, JSONObject data);
 
@@ -56,6 +52,6 @@ public interface BlazemeterApi {
 
     JSONObject getTestsJSON();
 
-    BmUrlManager getUrlManager();
+    String getBlazeMeterURL();
 
 }

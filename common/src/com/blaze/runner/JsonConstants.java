@@ -20,5 +20,7 @@ public interface JsonConstants {
     String NAME="name";
     String TESTS="tests";
     String COLLECTIONS="collections";
-
+    String SUCCESS="success";
+    String FAILURES="failures";
+    String ERRORS="errors";
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
-import com.blaze.entities.TestInfo;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
@@ -48,64 +47,27 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
 
-
-
-    /**
-     * @param testId   - test id
-     * @param fileName - test name
-     * @param pathName - jmx file path
-     *                 //     * @return test id
-     *                 //     * @throws java.io.IOException
-     *                 //     * @throws org.json.JSONException
-     */
     @Override
-    public synchronized boolean uploadJmx(String testId, String fileName, String pathName)
-            throws JSONException, IOException {
-        boolean upLoadJMX=false;
-        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return false;
-        String url = this.urlManager.scriptUpload(APP_KEY, userKey, testId, fileName);
-        JSONObject jmxData = new JSONObject();
-        String fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put(JsonConstants.DATA, fileCon);
-        upLoadJMX=this.bzmHttpWrapper.response(url, jmxData, BzmHttpWrapper.Method.POST,JSONObject.class)!=null;
-        return upLoadJMX;
-    }
-
-    @Override
-    public synchronized JSONObject uploadFile(String testId, String fileName, String pathName)
-            throws JSONException, IOException {
-        if (StringUtil.isEmptyOrSpaces(userKey)&StringUtil.isEmptyOrSpaces(testId)) return null;
-        String url = this.urlManager.fileUpload(APP_KEY, userKey, testId, fileName);
-        JSONObject jmxData = new JSONObject();
-        String fileCon = FileUtil.readText(new File(pathName));
-        jmxData.put(JsonConstants.DATA, fileCon);
-        return this.bzmHttpWrapper.response(url, jmxData, BzmHttpWrapper.Method.POST,JSONObject.class);
-    }
-
-    @Override
-    public TestInfo getTestInfo(String testId) throws JSONException {
-        TestInfo ti = new TestInfo();
-
-        if (StringUtils.isEmpty(this.userKey)&StringUtils.isEmpty(testId)) {
-            ti.setStatus(TestStatus.NotFound);
-            return ti;
+    public TestStatus getTestStatus(String id) {
+        TestStatus testStatus=null;
+        if (StringUtils.isBlank(userKey)&StringUtils.isBlank(id)) {
+            testStatus=TestStatus.NotFound;
+            return testStatus;
         }
 
         try {
-            String url = this.urlManager.masterStatus(APP_KEY, this.userKey, testId);
+            String url = this.urlManager.masterStatus(APP_KEY, userKey, id);
             JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
 
             if ("Test not found".equals(jo.get(JsonConstants.ERROR))) {
-                ti.setStatus(TestStatus.NotFound);
+                testStatus=TestStatus.NotFound;
             } else {
-                ti.setId(jo.getString(JsonConstants.TEST_ID));
-                ti.setName(jo.getString("test_name"));
-                ti.setStatus(TestStatus.valueOf(jo.getString(JsonConstants.STATUS).equals("Not Running") ? "NotRunning" : jo.getString(JsonConstants.STATUS)));
+                testStatus=TestStatus.valueOf(jo.getString(JsonConstants.STATUS).equals("Not Running")?"NotRunning":jo.getString(JsonConstants.STATUS));
             }
         } catch (Exception e) {
-            ti.setStatus(TestStatus.Error);
+            testStatus=TestStatus.Error;
         }
-        return ti;
+        return testStatus;
     }
 
     @Override
@@ -198,12 +160,7 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject getTestInfo(String testId, BuildProgressLogger logger) {
-        return not_implemented;
-    }
-
-    @Override
-    public JSONObject getTresholds(String sessionId) {
+    public JSONObject getTestStatus(String testId, BuildProgressLogger logger) {
         return not_implemented;
     }
 
@@ -260,12 +217,23 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
 
 
     @Override
-    public BmUrlManager getUrlManager() {
-        return this.urlManager;
+    public String getBlazeMeterURL() {
+        return this.urlManager.getServerUrl();
     }
 
     @Override
     public boolean active(String testId) {
         return false;
     }
+
+    @Override
+    public JSONObject getCIStatus(String sessionId) throws JSONException {
+        return not_implemented;
+    }
+
+    @Override
+    public int getTestMasterStatusCode(String id) {
+        return -1;
+    }
+
 }

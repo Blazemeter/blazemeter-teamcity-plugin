@@ -49,34 +49,6 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
     }
 
     @Override
-    public String scriptUpload(String appKey, String userKey, String testId, String fileName) {
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-            testId = URLEncoder.encode(testId, "UTF-8");
-            fileName = URLEncoder.encode(fileName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl +String.format("/api/rest/blazemeter/testScriptUpload.json/?app_key=%s&user_key=%s&test_id=%s&file_name=%s&",
-                appKey, userKey, testId, fileName)+CLIENT_IDENTIFICATION;
-    }
-
-    @Override
-    public String fileUpload(String appKey, String userKey, String testId, String fileName) {
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-            testId = URLEncoder.encode(testId, "UTF-8");
-            fileName = URLEncoder.encode(fileName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl +String.format("/api/rest/blazemeter/testArtifactUpload.json/?app_key=%s&user_key=%s&test_id=%s&file_name=%s&",
-                appKey, userKey, testId, fileName)+CLIENT_IDENTIFICATION;
-    }
-
-    @Override
     public String testStart(String appKey, String userKey, String testId) {
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -118,15 +90,6 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
         return testAggregateReport;
     }
 
-    @Override
-    public String testInfo(String appKey, String userKey, String testId) {
-        return Constants.NOT_IMPLEMENTED;
-    }
-
-    @Override
-    public String thresholds(String appKey, String userKey, String sessionId) {
-        return Constants.NOT_IMPLEMENTED;
-    }
 
     @Override
     public String postJsonConfig(String appKey, String userKey, String testId) {
@@ -171,16 +134,6 @@ public class BmUrlManagerV2Impl implements BmUrlManager{
     @Override
     public String testTerminate(String appKey, String userKey, String testId) {
         return Constants.NOT_IMPLEMENTED;
-    }
-
-    @Override
-    public TestType testType() {
-        return this.testType;
-    }
-
-    @Override
-    public void testType(TestType testType) {
-        this.testType=testType;
     }
 
     @Override

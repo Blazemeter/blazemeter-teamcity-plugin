@@ -31,8 +31,6 @@ public interface Constants {
 	String DEFAULT_SETTINGS_DATA_FOLDER = "DataFolder";
 	String BZM_PROPERTIES_FILE="/userKeyFile.properties";
     String NOT_IMPLEMENTED="This call is not implemented.";
-    String CREATE_FROM_JSON="create from JSON";
-    String NEW_TEST="New test";
 
     String V2="v2";
 	String REPORT_URL="reportUrl_";

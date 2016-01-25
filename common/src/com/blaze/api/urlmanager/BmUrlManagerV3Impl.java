@@ -11,16 +11,28 @@ import java.net.URLEncoder;
  */
 public class BmUrlManagerV3Impl implements BmUrlManager{
 
-    private String serverUrl = Constants.DEFAULT_BZM_SERVER;
-    private TestType testType=TestType.http;
-
+    private String serverUrl = "";
     public BmUrlManagerV3Impl(String blazeMeterUrl) {
-        serverUrl = blazeMeterUrl;
+        this.serverUrl = blazeMeterUrl;
     }
 
     @Override
     public String getServerUrl() {
         return serverUrl;
+    }
+
+    @Override
+    public String masterStatus(String appKey, String userKey, String masterId) {
+        String testStatus=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+            masterId = URLEncoder.encode(masterId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        testStatus= serverUrl +"/api/latest/masters/"+masterId+"/status?events=false&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        return testStatus;
     }
 
     @Override
@@ -38,32 +50,6 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
     @Override
-    public String masterStatus(String appKey, String userKey, String sessionId) {
-        String testStatus=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-            sessionId = URLEncoder.encode(sessionId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"masters":"sessions";
-        testStatus= serverUrl +"/api/latest/"+type+"/"+sessionId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-        return testStatus;
-    }
-
-
-    @Override
-    public String scriptUpload(String appKey, String userKey, String testId, String fileName) {
-        return Constants.NOT_IMPLEMENTED;
-    }
-
-    @Override
-    public String fileUpload(String appKey, String userKey, String testId, String fileName) {
-        return Constants.NOT_IMPLEMENTED;
-    }
-
-    @Override
     public String testStart(String appKey, String userKey, String testId) {
         String testStart=null;
         try {
@@ -73,216 +59,11 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"collections":"tests";
-        testStart= serverUrl +"/api/latest/"+type+"/"
+        testStart= serverUrl +"/api/latest/tests/"
                 +testId+"/start?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testStart;
     }
-
-    @Override
-    public String testStop(String appKey, String userKey, String testId) {
-        String testStop=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-            testId = URLEncoder.encode(testId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"collections":"tests";
-        testStop= serverUrl +"/api/latest/"+type+"/"
-                +testId+"/stop?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return testStop;
-    }
-
-    @Override
-    public String testReport(String appKey, String userKey, String sessionId) {
-        String testAggregateReport=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-            sessionId = URLEncoder.encode(sessionId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"masters":"sessions";
-        testAggregateReport= serverUrl +"/api/latest/"+type+"/"
-                +sessionId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return testAggregateReport;
-    }
-
-
-    @Override
-    public String testInfo(String appKey, String userKey, String testId){
-        String getTestInfo=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return getTestInfo;
-    }
-
-    @Override
-    public String thresholds(String appKey, String userKey, String sessionId){
-        String getTresholds=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        getTresholds= serverUrl +"/api/latest/sessions/"+sessionId+"/reports/thresholds?api_key="
-                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return getTresholds;
-
-    }
-
-
-    @Override
-    public String postJsonConfig(String appKey, String userKey, String testId) {
-        String getTestInfo=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return getTestInfo;
-    }
-
-    @Override
-    public String createTest(String appKey, String userKey) {
-        String createTest=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        createTest= serverUrl +"/api/latest/tests/custom?custom_test_type=yahoo&api_key="
-                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-        return createTest;
-    }
-
-    @Override
-    public String retrieveJUNITXML(String appKey, String userKey, String sessionId) {
-        String retrieveJUNITXML=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        retrieveJUNITXML= serverUrl +"/api/latest/sessions/"+sessionId+
-                "/reports/thresholds/data?format=junit&api_key="
-                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return retrieveJUNITXML;
-    }
-
-
-    @Override
-    public String retrieveJTLZIP(String appKey, String userKey, String sessionId) {
-        String retrieveJTLZIP=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        retrieveJTLZIP= serverUrl +"/api/latest/sessions/"+sessionId+
-                "/reports/logs?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return retrieveJTLZIP;
-    }
-
-    @Override
-    public String getUser(String appKey, String userKey) {
-        String getUser=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        getUser= serverUrl +"/api/latest/user?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return getUser;
-
-    }
-
-    @Override
-    public String generatePublicToken(String appKey, String userKey, String sessionId) {
-        String generatePublicToken=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"masters":"sessions";
-        generatePublicToken= serverUrl +"/api/latest/"+type+"/"+sessionId+
-                "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return generatePublicToken;
-    }
-
-    @Override
-    public String testTerminate(String appKey, String userKey, String testId) {
-        String testTerminate=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-            testId = URLEncoder.encode(testId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        String type=(this.testType!=null&&this.testType.equals(TestType.multi))?"collections":"tests";
-        testTerminate= serverUrl +"/api/latest/"+type+"/"
-                +testId+"/terminate?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return testTerminate;
-    }
-
-    @Override
-    public TestType testType() {
-        return this.testType;
-    }
-
-    @Override
-    public void testType(TestType testType) {
-        this.testType=testType;
-    }
-
-    @Override
-    public void setServerUrl(String serverUrl) {
-        this.serverUrl=serverUrl;
-    }
-
-    @Override
-    public String activeTests(String appKey, String userKey) {
-        String activeTests=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        activeTests= serverUrl +"/api/latest/web/active?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-        return activeTests;
-    }
-
 
     @Override
     public String collectionStart(String appKey, String userKey, String collectionId) {
@@ -301,33 +82,180 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
     }
 
     @Override
-    public String ciStatus(String appKey, String userKey, String masterId) {
-        String ciStatus=null;
+    public String testStop(String appKey, String userKey, String masterId) {
+        String testStop=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
+            masterId = URLEncoder.encode(masterId, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        ciStatus= serverUrl +"/api/latest/masters/"+masterId+"/ci-status?api_key="
-                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        testStop= serverUrl +"/api/latest/masters/"
+                +masterId+"/stop?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
-        return ciStatus;
+        return testStop;
     }
 
     @Override
-    public String testConfig(String appKey, String userKey, String testId) {
-        String testConfig=null;
+    public String testTerminate(String appKey, String userKey, String masterId) {
+        String testTerminate=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+            masterId = URLEncoder.encode(masterId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        testTerminate= serverUrl +"/api/latest/masters/"
+                +masterId+"/terminate?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return testTerminate;
+    }
+
+    @Override
+    public String testReport(String appKey, String userKey, String masterId) {
+        String testAggregateReport=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+            masterId = URLEncoder.encode(masterId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        testAggregateReport= serverUrl +"/api/latest/masters/"
+                +masterId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return testAggregateReport;
+    }
+
+    @Override
+    public String getUser(String appKey, String userKey) {
+        String getUser=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testConfig= serverUrl +"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getUser= serverUrl +"/api/latest/user?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
-        return testConfig;
+        return getUser;
     }
+
+    @Override
+    public String testConfig(String appKey, String userKey, String testId){
+        String getTestInfo=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return getTestInfo;
+    }
+
+    @Override
+    public String createTest(String appKey, String userKey) {
+        String createTest=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        createTest= serverUrl +"/api/latest/tests/custom?custom_test_type=yahoo&api_key="
+                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return createTest;
+    }
+
+    @Override
+    public String ciStatus(String appKey, String userKey, String masterId){
+        String getTresholds=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        getTresholds= serverUrl +"/api/latest/masters/"+masterId+"/ci-status?api_key="
+                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return getTresholds;
+
+    }
+
+    @Override
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl =serverUrl;
+    }
+
+    @Override
+    public String retrieveJUNITXML(String appKey, String userKey, String masterId) {
+        String retrieveJUNITXML=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        retrieveJUNITXML= serverUrl +"/api/latest/masters/"+masterId+
+                "/reports/thresholds?format=junit&api_key="
+                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return retrieveJUNITXML;
+    }
+
+
+
+    @Override
+    public String postJsonConfig(String appKey, String userKey, String testId) {
+        String getTestInfo=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return getTestInfo;
+    }
+
+    @Override
+    public String retrieveJTLZIP(String appKey, String userKey, String sessionId) {
+        String retrieveJTLZIP=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        retrieveJTLZIP= serverUrl +"/api/latest/sessions/"+sessionId+
+                "/reports/logs?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return retrieveJTLZIP;
+    }
+
+    @Override
+    public String generatePublicToken(String appKey, String userKey, String masterId) {
+        String generatePublicToken=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        generatePublicToken= serverUrl +"/api/latest/masters/"+masterId+
+                "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+        return generatePublicToken;
+    }
+
 
     @Override
     public String listOfSessionIds(String appKey, String userKey, String masterId) {
@@ -343,4 +271,20 @@ public class BmUrlManagerV3Impl implements BmUrlManager{
 
         return listOfSessionIds;
     }
+
+    @Override
+    public String activeTests(String appKey, String userKey) {
+        String activeTests=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+            userKey = URLEncoder.encode(userKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return activeTests= serverUrl +"/api/latest/web/active?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+
+    }
+
+
+
 }
