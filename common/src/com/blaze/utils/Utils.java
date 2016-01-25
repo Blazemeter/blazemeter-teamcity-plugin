@@ -24,46 +24,6 @@ public class Utils {
     private Utils(){}
 
 
-    public static int getTestDuration(String apiKey,BlazemeterApi api, String testId, BuildProgressLogger logger){
-        int testDuration=-1;
-        try {
-            JSONObject jo = api.getTestStatus(testId,logger);
-            JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
-            JSONObject configuration = result.getJSONObject(JsonConstants.CONFIGURATION);
-            JSONObject plugins = configuration.getJSONObject(JsonConstants.PLUGINS);
-            String type = configuration.getString("type");
-            JSONObject options = plugins.getJSONObject(type);
-            JSONObject override = options.getJSONObject(JsonConstants.OVERRIDE);
-            testDuration=override.getInt(JsonConstants.DURATION);
-        } catch (JSONException je) {
-            logger.message("Failed to get testDuration from server: "+ je);
-            logger.exception(je);
-        } catch (Exception e) {
-            logger.message("Failed to get testDuration from server: "+ e);
-            logger.exception(e);
-        }
-        return testDuration;
-    }
-
-    public static void updateTestDuration(BlazemeterApi api, String testId, String updDuration, BuildProgressLogger logger) {
-        try {
-            JSONObject jo = api.getTestStatus(testId,logger);
-            JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
-            JSONObject configuration = result.getJSONObject(JsonConstants.CONFIGURATION);
-            JSONObject plugins = configuration.getJSONObject(JsonConstants.PLUGINS);
-            String type = configuration.getString("type");
-            JSONObject options = plugins.getJSONObject(type);
-            JSONObject override = options.getJSONObject(JsonConstants.OVERRIDE);
-            override.put(JsonConstants.DURATION, Integer.parseInt(updDuration));
-            api.putTestInfo(testId, result,logger);
-
-        } catch (JSONException je) {
-            logger.message("Received JSONException while saving testDuration: "+ je);
-        } catch (Exception e) {
-            logger.message("Received JSONException while saving testDuration: "+ e);
-        }
-    }
-
     public static String getVersion() {
         Properties props = new Properties();
         try {

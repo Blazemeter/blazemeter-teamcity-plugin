@@ -48,17 +48,4 @@
             <span class="smallNote">Select the test to execute.</span>
         </td>
     </tr>
-
-    
-    <tr>
-        <th><label>Test duration(min):</label></th>
-        <td>
-            <props:textProperty name="test_duration"/>
-            <span class="error" id="error_data_folder"></span>
-            <span class="smallNote">Duration of the BlazeMeter test.</span>
-        </td>
-    </tr>
-
-
-
     </l:settingsGroup>

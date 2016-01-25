@@ -13,7 +13,6 @@ public interface JsonConstants {
     String CONFIGURATION="configuration";
     String PLUGINS="plugins";
     String OVERRIDE="override";
-    String DURATION="duration";
     String DATA="data";
     String STATUS="status";
     String DATA_URL="dataUrl";

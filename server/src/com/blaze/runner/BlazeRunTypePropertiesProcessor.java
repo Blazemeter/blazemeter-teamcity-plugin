@@ -21,7 +21,6 @@ public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 		final String errThFail = (String) properties.get(Constants.SETTINGS_ERROR_THRESHOLD_FAIL);
 		final String errRespTimeUnstable = (String) properties.get(Constants.SETTINGS_RESPONSE_TIME_UNSTABLE);
 		final String errRespTimeFail = (String) properties.get(Constants.SETTINGS_RESPONSE_TIME_FAIL);
-		final String testDuration = (String) properties.get(Constants.SETTINGS_TEST_DURATION);
 		String dataFolder = (String) properties.get(Constants.SETTINGS_DATA_FOLDER);
 		final String mainJMX = (String) properties.get(Constants.SETTINGS_MAIN_JMX);
 

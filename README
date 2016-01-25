@@ -16,13 +16,6 @@ The user key configuration page is accesible from:
 Next, you should add a new build step of type 'BlazeMeter'. The build step has the following configuration options:
 
 * BlazeMeter tests : select the test to run during this build step
-* Error percentage threshold : enter error percentages that specify if the build should be Unstable or Fail
-* Response time threshold : enter response time that specify if the build should be Unstable or Fail
-* Test duration : select how much the test should run
-* Data Folder : files from this folder will be uploaded to BlazeMeter. Paths can be:
-	* Absolute path (ex: in Windows: C:/Test/DataFolder, in Linux: /mnt/share/datafolder)
-	* Relative path. This is relative to checkout directory. Example: DataFolder , this assumes that your checkout structure contains the DataFolder in the main node.
-* Main JMX : main JMX name from the Data Folder
 
 
 4. STATISTICS
@@ -43,6 +36,5 @@ The statistics are available in the Build Configuration Statistics page.
 - creating test using JSON configuration;
 - updating test using JSON configuration;
 - validating build against server thresholds;
-- validating build against local thresholds;
-- updating test duration on server;
 - requesting JUNIT report;
+- requesting JTL report;

@@ -140,14 +140,6 @@ public class BzmServiceManager {
         return session;
     }
 
-    public void updateTestDuration(String testId, String testDuration, BuildProgressLogger logger) {
-        if(this.blazemeterAPI instanceof BlazemeterApiV3Impl) {
-            Utils.updateTestDuration(this.blazemeterAPI, testId, testDuration, logger);
-        } else {
-            logger.message("Updating test duration is not implemented for D6");
-        }
-    }
-
     public void retrieveJUNITXML(String masterId, BuildRunnerContext buildRunnerContext) {
         String junitReport = "";
         logger.message("Requesting JUNIT report from server, masterId=" + masterId);
