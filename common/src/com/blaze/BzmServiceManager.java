@@ -132,7 +132,7 @@ public class BzmServiceManager {
             session = this.blazemeterAPI.startTest(testId,testType);
             this.session=session;
         } catch (JSONException e) {
-            logger.error("Error: Exception while starting BlazeMeter Test [" + e.getMessage() + "]");
+            logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
             logger.exception(e);
         } catch (NullPointerException e){
             logger.exception(e);

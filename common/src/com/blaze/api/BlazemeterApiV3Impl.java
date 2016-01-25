@@ -128,7 +128,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
             throw new JSONException("Faild to get 'result' node "+e.getMessage());
 
         }
-        return result.getString(JsonConstants.ID);
+        return String.valueOf(result.getInt(JsonConstants.ID));
     }
 
     /**
