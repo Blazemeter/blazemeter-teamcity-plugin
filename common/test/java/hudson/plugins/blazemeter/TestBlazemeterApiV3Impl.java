@@ -61,9 +61,9 @@ public class TestBlazemeterApiV3Impl {
     }
 
     @Test
-    public void testStatus_null(){
+    public void testStatus_NotFound(){
         blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(null,TestConstants.mockedApiUrl,ApiVersion.v3.name());
-        Assert.assertEquals(blazemeterApiV3.getTestStatus(null), null);
+        Assert.assertEquals(blazemeterApiV3.getTestStatus(null), TestStatus.NotFound);
     }
 
     @Test
@@ -117,10 +117,10 @@ public class TestBlazemeterApiV3Impl {
     }
 
    @Test
-    public void stopTest_null(){
+    public void stopTest_false(){
        blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(null,TestConstants.mockedApiUrl,ApiVersion.v3.name());
        try {
-           Assert.assertEquals(blazemeterApiV3.stopTest(null), null);
+           Assert.assertEquals(blazemeterApiV3.stopTest(null), false);
        } catch (Exception e) {
            e.printStackTrace();
        }

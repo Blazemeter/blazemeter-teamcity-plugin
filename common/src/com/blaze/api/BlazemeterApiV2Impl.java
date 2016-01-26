@@ -160,11 +160,6 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject getTestStatus(String testId, BuildProgressLogger logger) {
-        return not_implemented;
-    }
-
-    @Override
     public JSONObject postJsonConfig(String testId, JSONObject data) {
         return not_implemented;
     }

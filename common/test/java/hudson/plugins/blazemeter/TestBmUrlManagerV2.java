@@ -40,7 +40,7 @@ public class TestBmUrlManagerV2 {
 
     @Test
     public void getTests(){
-    String expGetTestsUrl=bmUrlManager.getServerUrl()+"/api/rest/blazemeter/tests.json/?app_key="+appKey+
+    String expGetTestsUrl=bmUrlManager.getServerUrl()+"/api/rest/blazemeter/getTests.json/?app_key="+appKey+
             "&user_key="+userKey+"&test_id=all"+BmUrlManager.CLIENT_IDENTIFICATION;
     String actGetTestsUrl=bmUrlManager.tests(appKey,userKey);
         Assert.assertEquals(expGetTestsUrl, actGetTestsUrl);
@@ -74,8 +74,7 @@ public class TestBmUrlManagerV2 {
 
     @Test
     public void getUser(){
-        String expGetUser=bmUrlManager.getServerUrl()+"/api/rest/blazemeter/getUserInfo/?app_key="+appKey+
-                "&user_key="+userKey+BmUrlManager.CLIENT_IDENTIFICATION;
+        String expGetUser=Constants.NOT_IMPLEMENTED;
         String actGetUser=bmUrlManager.getUser(appKey, userKey);
         Assert.assertEquals(expGetUser,actGetUser);
     }

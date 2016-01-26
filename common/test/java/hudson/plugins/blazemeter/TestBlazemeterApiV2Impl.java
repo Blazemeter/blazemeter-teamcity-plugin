@@ -52,12 +52,12 @@ public class TestBlazemeterApiV2Impl {
 
     @Test
     public void getTestStatus(){
-        Assert.assertEquals(blazemeterApiV2.getTestStatus(null), BlazemeterApiV2Impl.not_implemented);
+        Assert.assertEquals(TestStatus.NotFound,blazemeterApiV2.getTestStatus(null));
     }
 
     @Test
     public void getUser(){
-        Assert.assertEquals(blazemeterApiV2.getUser(), null);
+        Assert.assertEquals(BlazemeterApiV2Impl.not_implemented,blazemeterApiV2.getUser());
     }
  
     @Test
@@ -74,7 +74,7 @@ public class TestBlazemeterApiV2Impl {
    @Test
     public void stopTest(){
        try {
-           Assert.assertEquals(blazemeterApiV2.stopTest(null), null);
+           Assert.assertEquals(false,blazemeterApiV2.stopTest(null));
        } catch (Exception e) {
            e.printStackTrace();
        }

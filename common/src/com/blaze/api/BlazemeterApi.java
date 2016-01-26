@@ -26,7 +26,7 @@ public interface BlazemeterApi {
 
     JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
 
-    JSONObject getTestStatus(String testId, BuildProgressLogger logger);
+//    JSONObject getTestStatus(String testId, BuildProgressLogger logger);
 
     JSONObject getUser();
 

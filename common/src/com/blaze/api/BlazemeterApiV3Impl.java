@@ -205,17 +205,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public JSONObject getTestStatus(String testId, BuildProgressLogger logger) {
-        if (userKey == null || userKey.trim().isEmpty()) {
-            logger.message("ERROR: User apiKey is empty");
-            return null;
-        }
-        String url = this.urlManager.testConfig(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
-        return jo;
-    }
-
-    @Override
     public JSONObject putTestInfo(String testId, JSONObject data, BuildProgressLogger logger) {
         if (userKey == null || userKey.trim().isEmpty()) {
             logger.message("ERROR: User apiKey is empty");
