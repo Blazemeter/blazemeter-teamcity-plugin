@@ -1,9 +1,6 @@
 package com.blaze;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -17,12 +14,9 @@ import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.util.PropertiesUtil;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +33,7 @@ public class BzmServiceManager {
     private String blazeMeterApiVersion;
     private BuildProgressLogger logger;
     private BlazemeterApi blazemeterAPI;
-    private String session;
+    private String masterId;
     private JSONObject aggregate;
 
     public BzmServiceManager() {
@@ -120,30 +114,30 @@ public class BzmServiceManager {
     }
 
     public String startTest(String testId, BuildProgressLogger logger) {
-        String session=null;
+        String masterId=null;
         try {
             TestType testType=TestType.http;
             if(!this.blazeMeterApiVersion.equals("v2")){
                 testType=this.getTestType(testId);
             }
-            session = this.blazemeterAPI.startTest(testId,testType);
-            this.session=session;
+            masterId = this.blazemeterAPI.startTest(testId,testType);
+            this.masterId=masterId;
         } catch (JSONException e) {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
             logger.exception(e);
         } catch (NullPointerException e){
             logger.exception(e);
         }
-        return session;
+        return masterId;
     }
 
     public void retrieveJUNITXML(String masterId, BuildRunnerContext buildRunnerContext) {
         String junitReport = "";
         logger.message("Requesting JUNIT report from server, masterId=" + masterId);
         try {
-                junitReport = this.blazemeterAPI.retrieveJUNITXML(session);
+                junitReport = this.blazemeterAPI.retrieveJUNITXML(masterId);
                 logger.message("Received Junit report from server.... Saving it to the disc...");
-                String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + session + ".xml";
+                String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + masterId + ".xml";
                 Utils.saveReport(junitReport, reportFilePath, logger);
         } catch (Exception e) {
             logger.message("Problems with receiving JUNIT report from server, masterId=" + masterId + ": " + e.getMessage());
@@ -152,7 +146,11 @@ public class BzmServiceManager {
 
 
 
-    public boolean stopTestSession(String masterId, BuildProgressLogger logger) {
+    public boolean active(String testId, BuildProgressLogger logger){
+        return blazemeterAPI.active(testId);
+    }
+
+    public boolean stopMaster(String masterId, BuildProgressLogger logger) {
         boolean terminate = false;
         try {
             int statusCode = blazemeterAPI.getTestMasterStatusCode(masterId);
@@ -217,7 +215,7 @@ public class BzmServiceManager {
     public TestResult getReport(BuildProgressLogger logger) {
         TestResult testResult = null;
         try {
-            this.aggregate=this.blazemeterAPI.testReport(this.session);
+            this.aggregate=this.blazemeterAPI.testReport(this.masterId);
             testResult = new TestResult(this.aggregate);
         } catch (JSONException e) {
             logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
@@ -331,8 +329,8 @@ public class BzmServiceManager {
         this.userKey = userKey;
     }
 
-    public String getSession() {
-        return session;
+    public String masterId() {
+        return masterId;
     }
 
     public String getBlazeMeterUrl() {

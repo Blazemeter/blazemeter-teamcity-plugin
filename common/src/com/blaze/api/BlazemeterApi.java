@@ -1,9 +1,7 @@
 package com.blaze.api;
 
-import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
-import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,10 +22,6 @@ public interface BlazemeterApi {
 
     LinkedHashMultimap<String, String> getTestList() throws IOException, JSONException;
 
-    JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger);
-
-//    JSONObject getTestStatus(String testId, BuildProgressLogger logger);
-
     JSONObject getUser();
 
     boolean active(String testId);
@@ -45,8 +39,6 @@ public interface BlazemeterApi {
     JSONObject retrieveJTLZIP(String sessionId);
 
     JSONObject generatePublicToken(String sessionId);
-
-    int getTestSessionStatusCode(String id) throws Exception;
 
     JSONObject terminateTest(String testId);
 

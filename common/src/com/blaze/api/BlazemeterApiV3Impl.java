@@ -1,13 +1,10 @@
 package com.blaze.api;
 
-import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.text.StringUtil;
-import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.util.FileUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -141,12 +137,12 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         if (StringUtil.isEmptyOrSpaces(userKey) & StringUtil.isEmptyOrSpaces(testId)) return false;
 
         String url = this.urlManager.testStop(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
+        JSONObject stopJSON = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.POST, JSONObject.class);
 
-        if (jo.getJSONArray(JsonConstants.RESULT).length() > 0) {
+        if (stopJSON.getJSONArray(JsonConstants.RESULT).length() > 0) {
             return true;
         } else {
-            String error = jo.get(JsonConstants.RESULT).toString();
+            String error = stopJSON.get(JsonConstants.RESULT).toString();
             throw new Exception("Error stopping test with ID=" + testId + ". Reported error is: " + error.toString());
         }
 
@@ -203,18 +199,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
         return testListOrdered;
     }
-
-    @Override
-    public JSONObject putTestInfo(String testId, JSONObject data, BuildProgressLogger logger) {
-        if (userKey == null || userKey.trim().isEmpty()) {
-            logger.message("ERROR: User apiKey is empty");
-            return null;
-        }
-        String url = this.urlManager.testConfig(APP_KEY, userKey, testId);
-        JSONObject jo = this.bzmHttpWrapper.response(url, data, BzmHttpWrapper.Method.PUT,JSONObject.class);
-        return jo;
-    }
-
 
     @Override
     public JSONObject createTest(JSONObject data) {
@@ -278,25 +262,6 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         return jo;
     }
 
-    @Override
-    public int getTestSessionStatusCode(String id) throws Exception {
-        int statusCode = 0;
-        if (StringUtils.isEmpty(this.userKey) & StringUtils.isEmpty(id)) {
-            return statusCode;
-        }
-        try {
-            String url = this.urlManager.masterStatus(APP_KEY, this.userKey, id);
-            JSONObject jo = this.bzmHttpWrapper.response(url, null, BzmHttpWrapper.Method.GET,JSONObject.class);
-            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
-            statusCode = result.getInt("statusCode");
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            {
-                return statusCode;
-            }
-        }
-    }
 
     @Override
     public JSONObject getTestsJSON() {

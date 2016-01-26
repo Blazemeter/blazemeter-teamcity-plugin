@@ -1,16 +1,12 @@
 package com.blaze.api;
 
-import java.io.File;
 import java.io.IOException;
 
-import com.blaze.api.urlmanager.BmUrlManager;
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
 import com.intellij.openapi.util.text.StringUtil;
-import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.util.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -152,12 +148,6 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         return testListOrdered;
     }
     
-    
-
-    @Override
-    public JSONObject putTestInfo(String testId, JSONObject data,BuildProgressLogger logger) {
-        return null;
-    }
 
     @Override
     public JSONObject postJsonConfig(String testId, JSONObject data) {
@@ -200,10 +190,6 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         return jo;
     }
 
-    @Override
-    public int getTestSessionStatusCode(String id) throws Exception {
-        return -1;
-    }
 
     @Override
     public JSONObject terminateTest(String testId) {

@@ -1,6 +1,5 @@
 package com.blaze.agent;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
@@ -48,11 +47,6 @@ public class BzmBuildProcess implements BuildProcess {
 
         logger = agentRunningBuild.getBuildLogger();
         Map<String, String> buildSharedMap = agentRunningBuild.getSharedConfigParameters();
-        String proxyPortStr = buildSharedMap.get(Constants.PROXY_SERVER_PORT);
-        int proxyPortInt = 0;
-        if (proxyPortStr != null && !proxyPortStr.isEmpty()) {
-            proxyPortInt = Integer.parseInt(proxyPortStr);
-        }
         bzmServiceManager = BzmServiceManager.getBzmServiceManager(buildSharedMap, logger);
     }
 
@@ -82,9 +76,13 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void interrupt() {
-        logger.message("BlazeMeter agent interrupted.");
-        bzmServiceManager.stopTestSession(testId, logger);
-        interrupted = true;
+        logger.message("Interrupting test# "+testId);
+        logger.message("Check if test# "+testId+" is active");
+        if(bzmServiceManager.active(testId,logger)){
+            String masterId=bzmServiceManager.masterId();
+            bzmServiceManager.stopMaster(masterId, logger);
+            interrupted = true;
+        }
     }
 
     @Override
@@ -142,7 +140,7 @@ public class BzmBuildProcess implements BuildProcess {
         BuildInterruptReason buildInterruptReason;
         do {
             Utils.sleep(CHECK_INTERVAL, logger);
-            status = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.getSession());
+            status = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.masterId());
             logger.message("Check if the test is initialized...");
             initTimeOutPassed = System.currentTimeMillis() > testInitStart + INIT_TEST_TIMEOUT;
             buildInterruptReason = agentRunningBuild.getInterruptReason();
@@ -162,7 +160,7 @@ public class BzmBuildProcess implements BuildProcess {
         do {
             Utils.sleep(CHECK_INTERVAL, logger);
             logger.message("Check if the test is still running. Time passed since start: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
-            status = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.getSession());
+            status = bzmServiceManager.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServiceManager.masterId());
             logger.message("TestInfo=" + status.toString());
             buildInterruptReason = agentRunningBuild.getInterruptReason();
         } while (buildInterruptReason == null && !status.equals(TestStatus.NotRunning));
@@ -175,7 +173,6 @@ public class BzmBuildProcess implements BuildProcess {
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         Utils.sleep(180000, logger);
         TestResult testResult = bzmServiceManager.getReport(logger);
-        BuildFinishedStatus localTrRes = null;
         if (testResult == null) {
             logger.warning("Failed to get report from server...");
         } else {
