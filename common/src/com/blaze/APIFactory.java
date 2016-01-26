@@ -15,9 +15,9 @@ public class APIFactory {
                                        String blazeMeterUrl,
                                        String blazeMeterApiVersion) {
         BlazemeterApi blazemeterAPI=null;
-            switch (BzmServiceManager.ApiVersion.valueOf(blazeMeterApiVersion)) {
+            switch (ApiVersion.valueOf(blazeMeterApiVersion)) {
                 case autoDetect:
-                    BzmServiceManager.ApiVersion apiVersion= Utils.autoDetectApiVersion(userKey,blazeMeterUrl);
+                    ApiVersion apiVersion= Utils.autoDetectApiVersion(userKey,blazeMeterUrl);
                     blazemeterAPI = new BlazemeterApiV3Impl(userKey, blazeMeterUrl);
                     switch (apiVersion) {
                         case v3:

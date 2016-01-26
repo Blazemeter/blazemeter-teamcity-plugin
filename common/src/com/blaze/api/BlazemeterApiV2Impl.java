@@ -26,7 +26,7 @@ import com.blaze.runner.Constants;
 public class BlazemeterApiV2Impl implements BlazemeterApi {
 
     private String userKey;
-    private final JSONObject not_implemented;
+    public static JSONObject not_implemented;
 
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     BzmHttpWrapper bzmHttpWrapper;
@@ -236,4 +236,13 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
         return -1;
     }
 
+    @Override
+    public BzmHttpWrapper getBzmHttpWr() {
+        return this.bzmHttpWrapper;
+    }
+
+    @Override
+    public void setBzmHttpWr(BzmHttpWrapper bzmHttpWr) {
+        this.bzmHttpWrapper=bzmHttpWr;
+    }
 }

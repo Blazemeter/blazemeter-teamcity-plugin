@@ -32,9 +32,6 @@ import org.json.JSONObject;
  * @author Marcel Milea
  */
 public class BzmServiceManager {
-    public enum ApiVersion {
-        v3, v2,autoDetect
-    }
     private static BzmServiceManager bzmServiceManager=null;
 
     private String userKey;

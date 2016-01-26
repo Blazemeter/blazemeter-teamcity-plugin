@@ -54,4 +54,6 @@ public interface BlazemeterApi {
 
     String getBlazeMeterURL();
 
+    BzmHttpWrapper getBzmHttpWr();
+    void setBzmHttpWr(BzmHttpWrapper bzmHttpWr);
 }

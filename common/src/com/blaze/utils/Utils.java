@@ -1,6 +1,7 @@
 package com.blaze.utils;
 
 import com.blaze.APIFactory;
+import com.blaze.ApiVersion;
 import com.blaze.BzmServiceManager;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.runner.JsonConstants;
@@ -69,10 +70,10 @@ public class Utils {
         }
     }
 
-    public static BzmServiceManager.ApiVersion autoDetectApiVersion(String userKey,
-                                                                    String blazeMeterUrl) {
+    public static ApiVersion autoDetectApiVersion(String userKey,
+                                                  String blazeMeterUrl) {
         BlazemeterApi api = null;
-        BzmServiceManager.ApiVersion detectedApiVersion = null;
+        ApiVersion detectedApiVersion = null;
         api = APIFactory.getAPI(userKey,
                                 blazeMeterUrl,
                                "v3");
@@ -80,15 +81,15 @@ public class Utils {
         try {
             isV3 = api.getUser().getJSONObject("features").getBoolean("v3");
             if (isV3) {
-                detectedApiVersion=BzmServiceManager.ApiVersion.v3;
+                detectedApiVersion=ApiVersion.v3;
             } else {
-                detectedApiVersion=BzmServiceManager.ApiVersion.v2;
+                detectedApiVersion=ApiVersion.v2;
             }
         } catch (JSONException je) {
             Utils.logger.error("Error occuired while auto-detecting API version",je);
         } catch (NullPointerException npe) {
             Utils.logger.error("Error occuired while auto-detecting API version",npe);
-            return BzmServiceManager.ApiVersion.v3;
+            return ApiVersion.v3;
         }
         return detectedApiVersion;
     }

@@ -388,4 +388,14 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
         }
     }
 
+
+    @Override
+    public BzmHttpWrapper getBzmHttpWr() {
+        return this.bzmHttpWrapper;
+    }
+
+    @Override
+    public void setBzmHttpWr(BzmHttpWrapper bzmHttpWr) {
+        this.bzmHttpWrapper=bzmHttpWr;
+    }
 }
