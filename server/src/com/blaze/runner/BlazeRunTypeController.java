@@ -3,7 +3,6 @@ package com.blaze.runner;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ public class BlazeRunTypeController extends BaseController {
     private final WebControllerManager myManager;
     private final String actualUrl;
     private final String actualJsp;
-    private BlazeMeterServerSettings mainSettings;
+    private AdminSettings mainSettings;
     private final ServerPaths serverPaths;
 
     /**
@@ -77,7 +76,7 @@ public class BlazeRunTypeController extends BaseController {
      *
      * @return
      */
-    public BlazeMeterServerSettings getMainSettings() {
+    public AdminSettings getMainSettings() {
         return mainSettings;
     }
 
@@ -85,7 +84,7 @@ public class BlazeRunTypeController extends BaseController {
      *
      * @param mainSettings
      */
-    public void setMainSettings(BlazeMeterServerSettings mainSettings) {
+    public void setMainSettings(AdminSettings mainSettings) {
         this.mainSettings = mainSettings;
     }
 

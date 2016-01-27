@@ -14,20 +14,15 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * Controller that helps to load the user key in the edit runner settings page.
- * @author Marcel Milea
- * Controller for administration page
- */
 public class BlazeMeterSettingsController extends BaseController {
     private final WebControllerManager myWebManager;
     private final PluginDescriptor myPluginDescriptor;
-    private final BlazeMeterServerSettings mySettings;
+    private final AdminSettings mySettings;
     
 	public BlazeMeterSettingsController(final SBuildServer server,
                                      final WebControllerManager webManager,
                                      final PluginDescriptor pluginDescriptor,
-                                     @NotNull final BlazeMeterServerSettings pluginSettings){
+                                     @NotNull final AdminSettings pluginSettings){
 		super(server);
 		this.myWebManager = webManager;
 	    this.myPluginDescriptor = pluginDescriptor;

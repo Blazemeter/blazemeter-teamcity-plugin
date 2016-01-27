@@ -22,11 +22,11 @@ public class BlazeRunType extends RunType {
 
 	Map<String, String> defaultProperties = null;
 
-	private BlazeMeterServerSettings pluginSettings;
+	private AdminSettings pluginSettings;
 
 	public BlazeRunType(final RunTypeRegistry runTypeRegistry, 
 			@NotNull final PluginDescriptor pluginDescriptor,
-			@NotNull final BlazeMeterServerSettings pluginSettings) {
+			@NotNull final AdminSettings pluginSettings) {
 		this.pluginDescriptor = pluginDescriptor;
 		this.pluginSettings = pluginSettings;
 		
@@ -58,7 +58,6 @@ public class BlazeRunType extends RunType {
 	}
 
 	private void setupDefaultProperties(Map<String, String> params) {
-		params.put(Constants.SETTINGS_DATA_FOLDER, Constants.DEFAULT_SETTINGS_DATA_FOLDER);
 
 		if (pluginSettings != null) {
 			params.remove(Constants.USER_KEY);
@@ -85,11 +84,11 @@ public class BlazeRunType extends RunType {
 		return pluginDescriptor.getPluginResourcesPath(viewParamsPageName);
 	}
 
-	public BlazeMeterServerSettings getPluginSettings() {
+	public AdminSettings getPluginSettings() {
 		return pluginSettings;
 	}
 
-	public void setPluginSettings(BlazeMeterServerSettings pluginSettings) {
+	public void setPluginSettings(AdminSettings pluginSettings) {
 		this.pluginSettings = pluginSettings;
 	}
 

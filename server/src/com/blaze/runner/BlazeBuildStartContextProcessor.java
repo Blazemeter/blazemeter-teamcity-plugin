@@ -7,10 +7,10 @@ import jetbrains.buildServer.serverSide.BuildStartContextProcessor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlazeBuildStartContextProcessor implements BuildStartContextProcessor{
-	private BlazeMeterServerSettings pluginSettings;
+	private AdminSettings pluginSettings;
 	private ExtensionHolder extensionHolder;
 	
-	public BlazeBuildStartContextProcessor(@NotNull final BlazeMeterServerSettings pluginSettings, @NotNull ExtensionHolder extensionHolder){
+	public BlazeBuildStartContextProcessor(@NotNull final AdminSettings pluginSettings, @NotNull ExtensionHolder extensionHolder){
 		this.pluginSettings = pluginSettings;
 		this.extensionHolder = extensionHolder;
 	}
