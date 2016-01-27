@@ -25,7 +25,6 @@ public class AgentListener extends AgentLifeCycleAdapter{
 	@Override
 	public void beforeBuildInterrupted(@NotNull AgentRunningBuild runningBuild, @NotNull BuildInterruptReason reason) {
 		super.beforeBuildInterrupted(runningBuild, reason);
-		stopTest(runningBuild);
 	}
 
 	@Override
@@ -41,8 +40,8 @@ public class AgentListener extends AgentLifeCycleAdapter{
 		bzmServiceManager = BzmServiceManager.getBzmServiceManager(buildSharedMap,runningBuild.getBuildLogger());
 		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
 		String testId = runnerParams.get(Constants.SETTINGS_ALL_TESTS_ID);
-        if(bzmServiceManager.active(testId,runningBuild.getBuildLogger())){
-			String masterId=bzmServiceManager.masterId();
+		String masterId=bzmServiceManager.masterId();
+		if(bzmServiceManager.active(testId,runningBuild.getBuildLogger())){
 			bzmServiceManager.stopMaster(masterId, runningBuild.getBuildLogger());
 		}
 	}

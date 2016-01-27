@@ -76,13 +76,6 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void interrupt() {
-        logger.message("Interrupting test# "+testId);
-        logger.message("Check if test# "+testId+" is active");
-        if(bzmServiceManager.active(testId,logger)){
-            String masterId=bzmServiceManager.masterId();
-            bzmServiceManager.stopMaster(masterId, logger);
-            interrupted = true;
-        }
     }
 
     @Override
