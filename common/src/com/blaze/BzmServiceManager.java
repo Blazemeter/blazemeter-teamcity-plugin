@@ -1,7 +1,11 @@
 package com.blaze;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.blaze.api.BlazemeterApi;
@@ -17,6 +21,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +37,7 @@ public class BzmServiceManager {
     private String blazeMeterUrl;
     private String blazeMeterApiVersion;
     private BuildProgressLogger logger;
-    private BlazemeterApi blazemeterAPI;
+    private BlazemeterApi api;
     private String masterId;
     private JSONObject aggregate;
 
@@ -44,8 +49,8 @@ public class BzmServiceManager {
         this.userKey = buildSharedMap.get(Constants.USER_KEY);
         this.blazeMeterUrl = buildSharedMap.get(Constants.BLAZEMETER_URL);
         this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.blazemeterAPI = APIFactory.getAPI(userKey, blazeMeterUrl, blazeMeterApiVersion);
-        this.blazeMeterApiVersion=(this.blazemeterAPI instanceof BlazemeterApiV3Impl)?"v3":"v2";
+        this.api = APIFactory.getAPI(userKey, blazeMeterUrl, blazeMeterApiVersion);
+        this.blazeMeterApiVersion=(this.api instanceof BlazemeterApiV3Impl)?"v3":"v2";
         this.logger = logger;
     }
 
@@ -57,11 +62,11 @@ public class BzmServiceManager {
             bzmServiceManager.setBlazeMeterUrl(buildSharedMap.get(Constants.BLAZEMETER_URL));
             bzmServiceManager.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
             bzmServiceManager.setLogger(logger);
-            if(bzmServiceManager.blazemeterAPI==null){
+            if(bzmServiceManager.api ==null){
                 BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
                     buildSharedMap.get(Constants.BLAZEMETER_URL),
                     buildSharedMap.get(Constants.BLAZEMETER_API_VERSION));
-            bzmServiceManager.setBlazemeterAPI(blazemeterAPI);
+            bzmServiceManager.setApi(blazemeterAPI);
             }
         }
         return bzmServiceManager;
@@ -73,8 +78,8 @@ public class BzmServiceManager {
     }
 
     public LinkedHashMultimap<String, String> getTests() {
-        if(this.blazemeterAPI==null){
-            blazemeterAPI=APIFactory.getAPI(this.userKey,this.blazeMeterUrl,this.blazeMeterApiVersion);
+        if(this.api ==null){
+            api =APIFactory.getAPI(this.userKey,this.blazeMeterUrl,this.blazeMeterApiVersion);
         }
         // added on Jacob's request for issue investigation
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
@@ -83,7 +88,7 @@ public class BzmServiceManager {
         try {
             // added on Jacob's request for issue investigation
             System.out.println("TeamCity plugin: Requesting tests from server " + this.blazeMeterUrl);
-            tests.putAll(this.blazemeterAPI.getTestList());
+            tests.putAll(this.api.getTestList());
             // added on Jacob's request for issue investigation
             System.out.println("TeamCity plugin: Received " + tests.entries().size() + " tests");
             for(Object key : tests.keySet()){
@@ -120,7 +125,7 @@ public class BzmServiceManager {
             if(!this.blazeMeterApiVersion.equals("v2")){
                 testType=this.getTestType(testId);
             }
-            masterId = this.blazemeterAPI.startTest(testId,testType);
+            masterId = this.api.startTest(testId,testType);
             this.masterId=masterId;
         } catch (JSONException e) {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
@@ -131,11 +136,11 @@ public class BzmServiceManager {
         return masterId;
     }
 
-    public void retrieveJUNITXML(String masterId, BuildRunnerContext buildRunnerContext) {
+    public void junitXml(String masterId, BuildRunnerContext buildRunnerContext) {
         String junitReport = "";
         logger.message("Requesting JUNIT report from server, masterId=" + masterId);
         try {
-                junitReport = this.blazemeterAPI.retrieveJUNITXML(masterId);
+                junitReport = this.api.retrieveJUNITXML(masterId);
                 logger.message("Received Junit report from server.... Saving it to the disc...");
                 String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + masterId + ".xml";
                 Utils.saveReport(junitReport, reportFilePath, logger);
@@ -147,19 +152,19 @@ public class BzmServiceManager {
 
 
     public boolean active(String testId, BuildProgressLogger logger){
-        return blazemeterAPI.active(testId);
+        return api.active(testId);
     }
 
     public boolean stopMaster(String masterId, BuildProgressLogger logger) {
         boolean terminate = false;
         try {
-            int statusCode = blazemeterAPI.getTestMasterStatusCode(masterId);
+            int statusCode = api.getTestMasterStatusCode(masterId);
             if (statusCode < 100 & statusCode != 0) {
-                blazemeterAPI.terminateTest(masterId);
+                api.terminateTest(masterId);
                 terminate = true;
             }
             if (statusCode >= 100 | statusCode == -1 | statusCode == 0) {
-                blazemeterAPI.stopTest(masterId);
+                api.stopTest(masterId);
                 terminate = false;
             }
         } catch (Exception e) {
@@ -168,13 +173,17 @@ public class BzmServiceManager {
             return terminate;
         }
     }
-/*
 
-    public void retrieveJTL(String session,BuildRunnerContext buildRunnerContext){
-        TestType testType = this.blazemeterAPI.getUrlManager().testType();
-        if (!testType.equals(TestType.multi)) {
+    public void jtlReports(String masterId, BuildRunnerContext ctxt) {
+        List<String> sessionsIds = this.api.getListOfSessionIds(masterId);
+        for (String s : sessionsIds) {
+            this.retrieveJtlForSession(s,ctxt);
+        }
+    }
 
-            JSONObject jo = this.blazemeterAPI.retrieveJTLZIP(session);
+
+    public void retrieveJtlForSession(String sessionId, BuildRunnerContext ctxt){
+            JSONObject jo = this.api.retrieveJTLZIP(sessionId);
             String dataUrl = null;
             try {
                 JSONArray data = jo.getJSONObject(JsonConstants.RESULT).getJSONArray(JsonConstants.DATA);
@@ -185,26 +194,22 @@ public class BzmServiceManager {
                         break;
                     }
                 }
-                String jtlFilePath = buildRunnerContext.getWorkingDirectory() + "/" + session + ".zip";
+                String jtlFilePath = ctxt.getWorkingDirectory() + "/" + sessionId + ".zip";
 
                 File jtlZip = new File(jtlFilePath);
                 URL url = new URL(dataUrl + "?api_key=" + userKey);
                 FileUtils.copyURLToFile(url, jtlZip);
                 logger.message("Downloading JTLZIP from " + url + "to " + jtlZip.getCanonicalPath());
             } catch (JSONException e) {
-                logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+                logger.warning("Unable to get  JTLZIP: "+e.getMessage());
             } catch (MalformedURLException e) {
-                logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+                logger.warning("Unable to get  JTLZIP: "+e.getMessage());
             } catch (IOException e) {
-                logger.warning("Unable to get  JTLZIP: check test status, try to download manually");
+                logger.warning("Unable to get  JTLZIP: "+e.getMessage());
             } catch (NullPointerException e) {
-                logger.exception(e);
+                logger.warning("Unable to get  JTLZIP: "+e.getMessage());
             }
-        }else {
-            logger.warning("JTLZIP will not be downloaded: test-type is 'multi' ");
-        }
     }
-*/
 
     /**
      * Get report results.
@@ -215,7 +220,7 @@ public class BzmServiceManager {
     public TestResult getReport(BuildProgressLogger logger) {
         TestResult testResult = null;
         try {
-            this.aggregate=this.blazemeterAPI.testReport(this.masterId);
+            this.aggregate=this.api.testReport(this.masterId);
             testResult = new TestResult(this.aggregate);
         } catch (JSONException e) {
             logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
@@ -233,7 +238,7 @@ public class BzmServiceManager {
     public TestStatus getTestSessionStatus(String testId) {
         TestStatus status=null;
         try {
-            status=this.blazemeterAPI.getTestStatus(testId);
+            status=this.api.getTestStatus(testId);
         } catch (JSONException e) {
             logger.exception(e);
         } catch (NullPointerException e){
@@ -250,7 +255,7 @@ public class BzmServiceManager {
         JSONArray failures=new JSONArray();
         JSONArray errors=new JSONArray();
         try {
-            jo=blazemeterAPI.getCIStatus(masterId);
+            jo= api.getCIStatus(masterId);
             logger.message("Test status object = " + jo.toString());
             failures=jo.getJSONArray(JsonConstants.FAILURES);
             errors=jo.getJSONArray(JsonConstants.ERRORS);
@@ -283,14 +288,14 @@ public class BzmServiceManager {
         String publicToken="";
         String reportUrl=null;
         try {
-            jo = this.blazemeterAPI.generatePublicToken(masterId);
+            jo = this.api.generatePublicToken(masterId);
             if(jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)){
                 JSONObject result=jo.getJSONObject(JsonConstants.RESULT);
                 publicToken=result.getString("publicToken");
-                reportUrl=this.blazemeterAPI.getBlazeMeterURL()+"/app/?public-token="+publicToken+"#masters/"+masterId+"/summary";
+                reportUrl=this.api.getBlazeMeterURL()+"/app/?public-token="+publicToken+"#masters/"+masterId+"/summary";
             }else{
                 logger.warning("Problems with generating public-token for report URL: "+jo.get(JsonConstants.ERROR).toString());
-                reportUrl=this.blazemeterAPI.getBlazeMeterURL()+"/app/#masters/"+masterId+"/summary";
+                reportUrl=this.api.getBlazeMeterURL()+"/app/#masters/"+masterId+"/summary";
             }
 
         } catch (Exception e){
@@ -303,7 +308,7 @@ public class BzmServiceManager {
         TestType testType=TestType.http;
         logger.message("Detecting testType....");
         try{
-            JSONArray result=this.blazemeterAPI.getTestsJSON().getJSONArray(JsonConstants.RESULT);
+            JSONArray result=this.api.getTestsJSON().getJSONArray(JsonConstants.RESULT);
             int resultLength=result.length();
             for (int i=0;i<resultLength;i++){
                 JSONObject jo=result.getJSONObject(i);
@@ -357,11 +362,11 @@ public class BzmServiceManager {
         this.logger = logger;
     }
 
-    public BlazemeterApi getBlazemeterAPI() {
-        return blazemeterAPI;
+    public BlazemeterApi getApi() {
+        return api;
     }
 
-    public void setBlazemeterAPI(BlazemeterApi blazemeterAPI) {
-        this.blazemeterAPI = blazemeterAPI;
+    public void setApi(BlazemeterApi api) {
+        this.api = api;
     }
 }

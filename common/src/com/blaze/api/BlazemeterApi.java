@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by dzmitrykashlach on 9/12/14.
@@ -48,4 +49,6 @@ public interface BlazemeterApi {
 
     BzmHttpWrapper getBzmHttpWr();
     void setBzmHttpWr(BzmHttpWrapper bzmHttpWr);
+
+    List<String> getListOfSessionIds(String masterId);
 }

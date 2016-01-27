@@ -1,6 +1,7 @@
 package com.blaze.api;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.runner.JsonConstants;
@@ -225,5 +226,10 @@ public class BlazemeterApiV2Impl implements BlazemeterApi {
     @Override
     public void setBzmHttpWr(BzmHttpWrapper bzmHttpWr) {
         this.bzmHttpWrapper=bzmHttpWr;
+    }
+
+    @Override
+    public List<String> getListOfSessionIds(String masterId) {
+        return null;
     }
 }
