@@ -140,7 +140,12 @@ public class BzmBuildProcess implements BuildProcess {
         }
         while (buildInterruptReason == null && (!(status.equals(TestStatus.Running) | initTimeOutPassed)));
         if (buildInterruptReason != null) {
-            log.warning("Build was be aborted by user");
+            log.warning("Build was aborted by user");
+            boolean terminate=bzmServMan.stopMaster(masterId,log);
+            if(!terminate){
+                bzmServMan.junitXml(masterId, buildRunCtxt);
+                bzmServMan.jtlReports(masterId, buildRunCtxt);
+            }
             return BuildFinishedStatus.INTERRUPTED;
         }
         if (initTimeOutPassed & !status.equals(TestStatus.Running)) {
@@ -158,7 +163,13 @@ public class BzmBuildProcess implements BuildProcess {
             buildInterruptReason = agentRunningBuild.getInterruptReason();
         } while (buildInterruptReason == null && !status.equals(TestStatus.NotRunning));
         if (buildInterruptReason != null) {
-            log.warning("Build was be aborted by user");
+            log.warning("Build was aborted by user");
+            boolean terminate=bzmServMan.stopMaster(masterId,log);
+            if(!terminate){
+                Utils.sleep(180000, log);
+                bzmServMan.junitXml(masterId, buildRunCtxt);
+                bzmServMan.jtlReports(masterId, buildRunCtxt);
+            }
             return BuildFinishedStatus.INTERRUPTED;
         }
         log.message("Test finished. Checking for test report...");

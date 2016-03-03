@@ -30,19 +30,5 @@ public class AgentListener extends AgentLifeCycleAdapter{
 	@Override
 	public void buildFinished(@NotNull AgentRunningBuild runningBuild, @NotNull BuildFinishedStatus buildStatus) {
 		super.buildFinished(runningBuild, buildStatus);
-		this.stopTest(runningBuild);
-	}
-
-	private void stopTest(AgentRunningBuild runningBuild) {
-		Map<String, String> buildSharedMap = runningBuild
-				.getSharedConfigParameters();
-
-		bzmServiceManager = BzmServiceManager.getBzmServiceManager(buildSharedMap,runningBuild.getBuildLogger());
-		Map<String, String> runnerParams = runningBuild.getRunnerParameters();
-		String testId = runnerParams.get(Constants.SETTINGS_ALL_TESTS_ID);
-		String masterId=bzmServiceManager.masterId();
-		if(bzmServiceManager.active(testId,runningBuild.getBuildLogger())){
-			bzmServiceManager.stopMaster(masterId, runningBuild.getBuildLogger());
-		}
 	}
 }
