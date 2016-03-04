@@ -9,23 +9,23 @@
   <artifactId>build</artifactId>
   <packaging>pom</packaging>
   <properties>
-      <maven.build.timestamp.format>yyyyddMMHHmmss</maven.build.timestamp.format>
+      <jenkins.build.number>local</jenkins.build.number>
   </properties>
   <dependencies>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter-agent</artifactId>
-          <version>1.1</version>
+          <version>${version}</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter-common</artifactId>
-          <version>1.1</version>
+          <version>${version}</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter</artifactId>
-          <version>1.1</version>
+          <version>${version}</version>
       </dependency>
   </dependencies>
   <build>
@@ -47,8 +47,8 @@
                 <outputFile>${basedir}/target/teamcity-plugin.xml</outputFile>
                 <replacements>
                     <replacement>
-                        <token>@maven.build.timestamp@</token>
-                        <value>snapshot-${maven.build.timestamp}</value>
+                        <token>@version@</token>
+                        <value>${version}.${jenkins.build.number}</value>
                     </replacement>
                 </replacements>                        
             </configuration>
