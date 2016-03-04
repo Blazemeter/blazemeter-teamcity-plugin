@@ -16,8 +16,7 @@
 
         BS.ajaxRequest($('BlazeMeterAdminPageForm').action, {
             parameters: 'user_key=' + usrKey
-                    + '&blazeMeterUrl=' + blazeMeterUrl
-                    + '&blazeMeterApiVersion=' + blazeMeterApiVersion,
+                    + '&blazeMeterUrl=' + blazeMeterUrl,
             onComplete: function (transport) {
                 if (transport.responseXML) {
                     $('refreshContainer').refresh();
@@ -51,19 +50,6 @@
                         <span class="smallNote">BlazeMeter URL</span>
                     </td>
                 </tr>
-                <tr>
-                    <td><label>BlazeMeter API version:</label></td>
-                    <td>
-                    <select type="text" id="blazeMeterApiVersion" name="blazeMeterApiVersion" value="<c:out value="${blazeMeterApiVersion}"/>">
-                        <option value="autoDetect">Auto Detect</option>
-                        <option value="v3">V3(force)</option>
-                        <option value="v2">V2(deprecated)</option>
-                    </select>
-                        <span class="error_blazeMeterUrl"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter API version</span>
-                    </td>
-                </tr>
-
             </table>
             <div class="saveButtonsBlock">
                 <input type="button" name="submitBlazeMeterAdminPageForm" value="Save" onclick="return sendReqSave();"
@@ -71,14 +57,4 @@
             </div>
         </div>
     </form>
-                        <script type="text/javascript">
-var apiVersionSelect=document.getElementById("blazeMeterApiVersion");
-var apiVersionValue=apiVersionSelect.getAttribute("value");
-var selectedLength = apiVersionSelect.options.length;
-for(var i=0;i<selectedLength;i++){
-   if(apiVersionSelect.options[i].value===apiVersionValue){
-      apiVersionSelect.selectedIndex=i;
-   }
-}
-</script>
 </bs:refreshable>

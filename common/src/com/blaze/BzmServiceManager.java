@@ -35,7 +35,6 @@ public class BzmServiceManager {
 
     private String userKey;
     private String blazeMeterUrl;
-    private String blazeMeterApiVersion;
     private BuildProgressLogger logger;
     private BlazemeterApi api;
     private String masterId;
@@ -48,9 +47,7 @@ public class BzmServiceManager {
 
         this.userKey = buildSharedMap.get(Constants.USER_KEY);
         this.blazeMeterUrl = buildSharedMap.get(Constants.BLAZEMETER_URL);
-        this.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
-        this.api = APIFactory.getAPI(userKey, blazeMeterUrl, blazeMeterApiVersion);
-        this.blazeMeterApiVersion=(this.api instanceof BlazemeterApiV3Impl)?"v3":"v2";
+        this.api = new BlazemeterApiV3Impl(userKey, blazeMeterUrl);
         this.logger = logger;
     }
 
@@ -60,12 +57,10 @@ public class BzmServiceManager {
         }else{
             bzmServiceManager.setUserKey(buildSharedMap.get(Constants.USER_KEY));
             bzmServiceManager.setBlazeMeterUrl(buildSharedMap.get(Constants.BLAZEMETER_URL));
-            bzmServiceManager.blazeMeterApiVersion = buildSharedMap.get(Constants.BLAZEMETER_API_VERSION);
             bzmServiceManager.setLogger(logger);
             if(bzmServiceManager.api ==null){
-                BlazemeterApi blazemeterAPI = APIFactory.getAPI(buildSharedMap.get(Constants.USER_KEY),
-                    buildSharedMap.get(Constants.BLAZEMETER_URL),
-                    buildSharedMap.get(Constants.BLAZEMETER_API_VERSION));
+                BlazemeterApi blazemeterAPI = new BlazemeterApiV3Impl(buildSharedMap.get(Constants.USER_KEY),
+                    buildSharedMap.get(Constants.BLAZEMETER_URL));
             bzmServiceManager.setApi(blazemeterAPI);
             }
         }
@@ -79,7 +74,7 @@ public class BzmServiceManager {
 
     public LinkedHashMultimap<String, String> getTests() {
         if(this.api ==null){
-            api =APIFactory.getAPI(this.userKey,this.blazeMeterUrl,this.blazeMeterApiVersion);
+            api =new BlazemeterApiV3Impl(this.userKey,this.blazeMeterUrl);
         }
         // added on Jacob's request for issue investigation
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
@@ -121,10 +116,7 @@ public class BzmServiceManager {
     public String startTest(String testId, BuildProgressLogger logger) {
         String masterId=null;
         try {
-            TestType testType=TestType.http;
-            if(!this.blazeMeterApiVersion.equals("v2")){
-                testType=this.getTestType(testId);
-            }
+            TestType testType=this.getTestType(testId);
             masterId = this.api.startTest(testId,testType);
             this.masterId=masterId;
         } catch (JSONException e) {
@@ -235,10 +227,10 @@ public class BzmServiceManager {
     }
 
 
-    public TestStatus getTestSessionStatus(String testId) {
+    public TestStatus masterStatus(String testId) {
         TestStatus status=null;
         try {
-            status=this.api.getTestStatus(testId);
+            status=this.api.masterStatus(testId);
         } catch (JSONException e) {
             logger.exception(e);
         } catch (NullPointerException e){
@@ -344,14 +336,6 @@ public class BzmServiceManager {
 
     public void setBlazeMeterUrl(String blazeMeterUrl) {
         this.blazeMeterUrl = blazeMeterUrl;
-    }
-
-    public String getBlazeMeterApiVersion() {
-        return blazeMeterApiVersion;
-    }
-
-    public void setBlazeMeterApiVersion(String blazeMeterApiVersion) {
-        this.blazeMeterApiVersion = blazeMeterApiVersion;
     }
 
     public BuildProgressLogger getLogger() {

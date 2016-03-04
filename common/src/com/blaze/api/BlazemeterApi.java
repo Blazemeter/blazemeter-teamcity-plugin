@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface BlazemeterApi {
 
-    TestStatus getTestStatus(String testId) throws JSONException;
+    TestStatus masterStatus(String testId) throws JSONException;
 
     String startTest(String testId,TestType testType) throws JSONException;
 

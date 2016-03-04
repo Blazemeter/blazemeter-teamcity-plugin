@@ -1,7 +1,6 @@
 package hudson.plugins.blazemeter;
 
 import com.blaze.api.urlmanager.BmUrlManager;
-import com.blaze.api.urlmanager.BmUrlManagerV2Impl;
 import com.blaze.runner.Constants;
 import org.junit.Assert;
 import org.junit.Test;

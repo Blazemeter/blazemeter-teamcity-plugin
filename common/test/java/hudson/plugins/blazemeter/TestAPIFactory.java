@@ -1,7 +1,5 @@
 package hudson.plugins.blazemeter;
 
-import com.blaze.APIFactory;
-import com.blaze.ApiVersion;
 import com.blaze.api.*;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;

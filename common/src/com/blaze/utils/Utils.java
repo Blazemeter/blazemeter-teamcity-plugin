@@ -1,13 +1,8 @@
 package com.blaze.utils;
 
-import com.blaze.APIFactory;
-import com.blaze.ApiVersion;
-import com.blaze.BzmServiceManager;
 import com.blaze.api.BlazemeterApi;
-import com.blaze.runner.JsonConstants;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -68,29 +63,5 @@ public class Utils {
             logger.exception(e);
             logger.warning("Test was interrupted during sleeping");
         }
-    }
-
-    public static ApiVersion autoDetectApiVersion(String userKey,
-                                                  String blazeMeterUrl) {
-        BlazemeterApi api = null;
-        ApiVersion detectedApiVersion = null;
-        api = APIFactory.getAPI(userKey,
-                                blazeMeterUrl,
-                               "v3");
-        boolean isV3 = false;
-        try {
-            isV3 = api.getUser().getJSONObject("features").getBoolean("v3");
-            if (isV3) {
-                detectedApiVersion=ApiVersion.v3;
-            } else {
-                detectedApiVersion=ApiVersion.v2;
-            }
-        } catch (JSONException je) {
-            Utils.logger.error("Error occuired while auto-detecting API version",je);
-        } catch (NullPointerException npe) {
-            Utils.logger.error("Error occuired while auto-detecting API version",npe);
-            return ApiVersion.v3;
-        }
-        return detectedApiVersion;
     }
 }

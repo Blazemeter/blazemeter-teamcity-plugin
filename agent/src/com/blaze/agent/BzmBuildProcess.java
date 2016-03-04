@@ -127,13 +127,12 @@ public class BzmBuildProcess implements BuildProcess {
 
         log.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestStatus status;
-        String apiVersion = bzmServMan.getBlazeMeterApiVersion();
         long testInitStart = System.currentTimeMillis();
         boolean initTimeOutPassed = false;
         BuildInterruptReason buildInterruptReason;
         do {
             Utils.sleep(CHECK_INTERVAL, log);
-            status = bzmServMan.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServMan.masterId());
+            status = bzmServMan.masterStatus(bzmServMan.masterId());
             log.message("Check if the test is initialized...");
             initTimeOutPassed = System.currentTimeMillis() > testInitStart + INIT_TEST_TIMEOUT;
             buildInterruptReason = agentRunningBuild.getInterruptReason();
@@ -158,7 +157,7 @@ public class BzmBuildProcess implements BuildProcess {
         do {
             Utils.sleep(CHECK_INTERVAL, log);
             log.message("Check if the test is still running. Time passed since start: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
-            status = bzmServMan.getTestSessionStatus(apiVersion.equals(Constants.V2) ? testId : bzmServMan.masterId());
+            status = bzmServMan.masterStatus(bzmServMan.masterId());
             log.message("TestInfo=" + status.toString());
             buildInterruptReason = agentRunningBuild.getInterruptReason();
         } while (buildInterruptReason == null && !status.equals(TestStatus.NotRunning));

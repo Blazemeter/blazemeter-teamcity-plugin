@@ -39,7 +39,7 @@ public class BlazemeterApiV3Impl implements BlazemeterApi {
     }
 
     @Override
-    public TestStatus getTestStatus(String id) {
+    public TestStatus masterStatus(String id) {
         TestStatus testStatus = null;
 
         if (StringUtils.isBlank(userKey) & StringUtils.isBlank(id)) {

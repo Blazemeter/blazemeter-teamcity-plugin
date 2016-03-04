@@ -1,8 +1,5 @@
 package hudson.plugins.blazemeter;
 
-import com.blaze.APIFactory;
-import com.blaze.ApiVersion;
-import com.blaze.api.BlazemeterApiV2Impl;
 import com.blaze.runner.Constants;
 import com.blaze.runner.TestStatus;
 import org.json.JSONException;
@@ -10,8 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**

@@ -1,20 +1,15 @@
 package hudson.plugins.blazemeter;
 
-import com.blaze.APIFactory;
-import com.blaze.ApiVersion;
 import com.blaze.api.BlazemeterApi;
 import com.blaze.api.BlazemeterApiV3Impl;
 import com.blaze.api.BzmHttpWrapper;
 import com.blaze.api.TestType;
 import com.blaze.runner.TestStatus;
-import com.google.common.collect.LinkedHashMultimap;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.mockito.Mockito;
 
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
@@ -63,14 +58,14 @@ public class TestBlazemeterApiV3Impl {
     @Test
     public void testStatus_NotFound(){
         blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(null,TestConstants.mockedApiUrl,ApiVersion.v3.name());
-        Assert.assertEquals(blazemeterApiV3.getTestStatus(null), TestStatus.NotFound);
+        Assert.assertEquals(blazemeterApiV3.masterStatus(null), TestStatus.NotFound);
     }
 
     @Test
     public void getTestStatus_Running(){
         blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(TestConstants.MOCKED_USER_KEY_VALID,TestConstants.mockedApiUrl,
                 ApiVersion.v3.name());
-        TestStatus testStatus=blazemeterApiV3.getTestStatus(TestConstants.TEST_MASTER_100);
+        TestStatus testStatus=blazemeterApiV3.masterStatus(TestConstants.TEST_MASTER_100);
         Assert.assertEquals(testStatus, TestStatus.Running);
     }
 
@@ -78,7 +73,7 @@ public class TestBlazemeterApiV3Impl {
     public void getTestInfo_NotRunning(){
         blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(TestConstants.MOCKED_USER_KEY_VALID,
                 TestConstants.mockedApiUrl,ApiVersion.v3.name());
-        TestStatus testStatus=blazemeterApiV3.getTestStatus(TestConstants.TEST_MASTER_140);
+        TestStatus testStatus=blazemeterApiV3.masterStatus(TestConstants.TEST_MASTER_140);
         Assert.assertEquals(testStatus, TestStatus.NotRunning);
     }
 
@@ -87,14 +82,14 @@ public class TestBlazemeterApiV3Impl {
     public void getTestInfo_Error(){
         blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(TestConstants.MOCKED_USER_KEY_VALID,
                 TestConstants.mockedApiUrl,ApiVersion.v3.name());
-        TestStatus testStatus=blazemeterApiV3.getTestStatus(TestConstants.TEST_MASTER_NOT_FOUND);
+        TestStatus testStatus=blazemeterApiV3.masterStatus(TestConstants.TEST_MASTER_NOT_FOUND);
         Assert.assertEquals(testStatus, TestStatus.Error);
     }
 
     @Test
     public void getTestInfo_NotFound(){
         blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI("",TestConstants.mockedApiUrl,ApiVersion.v3.name());
-        TestStatus testStatus=blazemeterApiV3.getTestStatus("");
+        TestStatus testStatus=blazemeterApiV3.masterStatus("");
         Assert.assertEquals(testStatus, TestStatus.NotFound);
     }
 
@@ -178,7 +173,7 @@ public class TestBlazemeterApiV3Impl {
    @Test
     public void getTestRunStatus_notFound(){
        blazemeterApiV3=(BlazemeterApiV3Impl)APIFactory.getAPI(null,TestConstants.mockedApiUrl,ApiVersion.v3.name());
-       Assert.assertEquals(blazemeterApiV3.getTestStatus(null), TestStatus.NotFound);
+       Assert.assertEquals(blazemeterApiV3.masterStatus(null), TestStatus.NotFound);
     }
 
 
