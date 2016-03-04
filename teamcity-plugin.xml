@@ -6,5 +6,5 @@
     <display-name>BlazeMeter</display-name>
     <version>@version@</version>
   </info>
-  <deployment use-separate-classloader="true"/>
+  <deployment use-separate-classloader="false"/>
 </teamcity-plugin>
