@@ -10,7 +10,6 @@ public class AdminSettings {
 	public ServerPaths serverPaths;
 	private String userKey = "";
 	private String blazeMeterUrl = "";
-	private String blazeMeterApiVersion = "";
 
 	public AdminSettings(ServerPaths serverPaths){
 		this.serverPaths = serverPaths;
@@ -28,7 +27,6 @@ public class AdminSettings {
 			outFile = new FileWriter(keyFile);
 			prop.put("user_key",this.userKey);
 			prop.put("blazeMeterUrl",this.blazeMeterUrl);
-			prop.put("blazeMeterApiVersion",this.blazeMeterApiVersion);
 		    prop.store(outFile,null);
 //			outFile.close();
 		} catch (FileNotFoundException e) {
@@ -57,7 +55,6 @@ public class AdminSettings {
 			prop.load(inFile);
 			this.userKey=prop.getProperty("user_key");
 			this.blazeMeterUrl=prop.getProperty("blazeMeterUrl");
-			this.blazeMeterApiVersion=prop.getProperty("blazeMeterApiVersion");
 			inFile.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Cannot load configuration: "+e.getMessage());
@@ -105,13 +102,5 @@ public class AdminSettings {
 
     public void setBlazeMeterUrl(String blazeMeterUrl) {
         this.blazeMeterUrl = blazeMeterUrl;
-    }
-
-    public String getBlazeMeterApiVersion() {
-        return blazeMeterApiVersion;
-    }
-
-    public void setBlazeMeterApiVersion(String blazeMeterApiVersion) {
-        this.blazeMeterApiVersion = blazeMeterApiVersion;
     }
 }

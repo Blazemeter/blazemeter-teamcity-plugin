@@ -61,7 +61,6 @@ public class BlazeRunTypeController extends BaseController {
             prop.load(inFile);
             prop.setProperty("user_key", mainSettings.getUserKey());
             prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
-            prop.setProperty("blazeMeterApiVersion", mainSettings.getBlazeMeterApiVersion());
             prop.store(fos, "");
 
             fos.close();
@@ -128,12 +127,7 @@ public class BlazeRunTypeController extends BaseController {
         if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }
-
-        if (blazeMeterApiVersion != null) {
-            mainSettings.setBlazeMeterApiVersion(blazeMeterApiVersion);
-        }
-
-    }
+}
 
     /**
      *

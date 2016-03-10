@@ -38,7 +38,6 @@ public class ConfPage extends AdminPage{
 		if (mainSettings != null){
 			model.put("user_key", mainSettings.getUserKey());
 			model.put("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
-			model.put("blazeMeterApiVersion", mainSettings.getBlazeMeterApiVersion());
 			mainSettings.saveProperties();
 		}
 	}

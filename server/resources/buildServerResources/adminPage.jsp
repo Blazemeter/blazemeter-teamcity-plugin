@@ -6,7 +6,6 @@
     function sendReqSave() {
         var usrKey = $('user_key').value;
         var blazeMeterUrl = $('blazeMeterUrl').value;
-        var blazeMeterApiVersion = $('blazeMeterApiVersion').value;
         usrKey = usrKey.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         if (!usrKey || usrKey.length == 0) {
             alert("User key is empty!");
