@@ -16,4 +16,9 @@ public interface Constants {
     String NOT_IMPLEMENTED="This call is not implemented.";
 
 	String REPORT_URL="reportUrl_";
+
+	String PROXY_HOST="http.proxyHost";
+	String PROXY_PORT="http.proxyPort";
+	String PROXY_USER="http.proxyUser";
+	String PROXY_PASS="http.proxyPassword";
 }

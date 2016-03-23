@@ -1,16 +1,21 @@
 package com.blaze.api;
 
+import com.blaze.runner.Constants;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,17 +29,40 @@ import java.io.IOException;
  */
 public class BzmHttpWrapper {
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
+    private String proxyHost=null;
+    private int proxyPort=0;
+    private String proxyUser=null;
+    private String proxyPass=null;
 
     public enum Method {GET, POST, PUT}
 
-    private transient DefaultHttpClient httpClient = null;
+    private transient CloseableHttpClient httpClient = null;
+    private HttpHost proxy=null;
+
 
     public BzmHttpWrapper() {
-        this.httpClient = new DefaultHttpClient();
-        HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, 90000);
-        HttpConnectionParams.setSoTimeout(httpParams, 90000);
-        this.httpClient.setParams(httpParams);
+        this.httpClient = HttpClients.createDefault();
+        proxyHost=System.getProperty(Constants.PROXY_HOST);
+
+        try{
+            this.proxyPort=Integer.parseInt(System.getProperty(Constants.PROXY_PORT));
+        }catch (NumberFormatException nfe){
+            logger.warn("Failed to read http.proxyPort: ",nfe);
+        }
+
+        if(!StringUtils.isBlank(this.proxyHost)){
+            this.proxy=new HttpHost(proxyHost,proxyPort);
+            this.proxyUser=System.getProperty(Constants.PROXY_USER);
+            this.proxyPass=System.getProperty(Constants.PROXY_PASS);
+            if(!StringUtils.isEmpty(this.proxyUser)&&!StringUtils.isEmpty(this.proxyPass)){
+                CredentialsProvider credsProvider = new BasicCredentialsProvider();
+                credsProvider.setCredentials(
+                        new AuthScope(proxyHost, proxyPort),
+                        new UsernamePasswordCredentials(proxyUser, proxyPass));
+                this.httpClient = HttpClients.custom()
+                        .setDefaultCredentialsProvider(credsProvider).build();
+            }
+        }
     }
 
     public HttpResponse httpResponse(String url, JSONObject data, Method method) throws IOException {
@@ -63,7 +91,12 @@ public class BzmHttpWrapper {
             }
             request.setHeader("Accept", "application/json");
             request.setHeader("Content-type", "application/json; charset=UTF-8");
-
+            if(proxy!=null){
+                RequestConfig conf = RequestConfig.custom()
+                        .setProxy(proxy)
+                        .build();
+                request.setConfig(conf);
+            }
             response = this.httpClient.execute(request);
 
 
