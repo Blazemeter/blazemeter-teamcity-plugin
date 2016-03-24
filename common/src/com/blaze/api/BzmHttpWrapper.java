@@ -54,14 +54,14 @@ public class BzmHttpWrapper {
             this.proxy=new HttpHost(proxyHost,proxyPort);
             this.proxyUser=System.getProperty(Constants.PROXY_USER);
             this.proxyPass=System.getProperty(Constants.PROXY_PASS);
-            if(!StringUtils.isEmpty(this.proxyUser)&&!StringUtils.isEmpty(this.proxyPass)){
+            /*if(!StringUtils.isEmpty(this.proxyUser)&&!StringUtils.isEmpty(this.proxyPass)){
                 CredentialsProvider credsProvider = new BasicCredentialsProvider();
                 credsProvider.setCredentials(
                         new AuthScope(proxyHost, proxyPort),
                         new UsernamePasswordCredentials(proxyUser, proxyPass));
                 this.httpClient = HttpClients.custom()
                         .setDefaultCredentialsProvider(credsProvider).build();
-            }
+            }*/
         }
     }
 
