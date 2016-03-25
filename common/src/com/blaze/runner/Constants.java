@@ -21,4 +21,5 @@ public interface Constants {
 	String PROXY_PORT="http.proxyPort";
 	String PROXY_USER="http.proxyUser";
 	String PROXY_PASS="http.proxyPassword";
+	String USE_PROXY="http.useProxy";
 }

@@ -5,9 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -29,6 +29,7 @@ import java.io.IOException;
  */
 public class BzmHttpWrapper {
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
+    private boolean useProxy=false;
     private String proxyHost=null;
     private int proxyPort=0;
     private String proxyUser=null;
@@ -42,6 +43,7 @@ public class BzmHttpWrapper {
 
     public BzmHttpWrapper() {
         this.httpClient = HttpClients.createDefault();
+        useProxy=Boolean.parseBoolean(System.getProperty(Constants.USE_PROXY));
         proxyHost=System.getProperty(Constants.PROXY_HOST);
 
         try{
@@ -50,18 +52,20 @@ public class BzmHttpWrapper {
             logger.warn("Failed to read http.proxyPort: ",nfe);
         }
 
-        if(!StringUtils.isBlank(this.proxyHost)){
+        if(useProxy&&!StringUtils.isBlank(this.proxyHost)){
             this.proxy=new HttpHost(proxyHost,proxyPort);
+
             this.proxyUser=System.getProperty(Constants.PROXY_USER);
             this.proxyPass=System.getProperty(Constants.PROXY_PASS);
-            /*if(!StringUtils.isEmpty(this.proxyUser)&&!StringUtils.isEmpty(this.proxyPass)){
+            if(!StringUtils.isEmpty(this.proxyUser)&&!StringUtils.isEmpty(this.proxyPass)){
+                Credentials cr=new UsernamePasswordCredentials(proxyUser, proxyPass);
+                AuthScope aus=new AuthScope(proxyHost, proxyPort);
                 CredentialsProvider credsProvider = new BasicCredentialsProvider();
-                credsProvider.setCredentials(
-                        new AuthScope(proxyHost, proxyPort),
-                        new UsernamePasswordCredentials(proxyUser, proxyPass));
-                this.httpClient = HttpClients.custom()
-                        .setDefaultCredentialsProvider(credsProvider).build();
-            }*/
+                credsProvider.setCredentials(aus,cr);
+                this.httpClient = HttpClients.custom().setProxy(proxy).setDefaultCredentialsProvider(credsProvider).build();
+            }else {
+                this.httpClient = HttpClients.custom().setProxy(proxy).build();
+            }
         }
     }
 
@@ -91,12 +95,6 @@ public class BzmHttpWrapper {
             }
             request.setHeader("Accept", "application/json");
             request.setHeader("Content-type", "application/json; charset=UTF-8");
-            if(proxy!=null){
-                RequestConfig conf = RequestConfig.custom()
-                        .setProxy(proxy)
-                        .build();
-                request.setConfig(conf);
-            }
             response = this.httpClient.execute(request);
 
 
@@ -105,9 +103,9 @@ public class BzmHttpWrapper {
                     logger.debug("Erroneous response (Probably null) for url: \n", url);
                 response = null;
             }
-        } catch (Exception e) {
+        } catch (Throwable thr) {
             if(logger.isDebugEnabled())
-                logger.debug("Problems with creating and sending request: \n", e);
+                logger.debug("Problems with creating and sending request: \n", thr);
         }
         return response;
     }
