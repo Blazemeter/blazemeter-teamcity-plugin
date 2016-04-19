@@ -73,9 +73,7 @@ public class BzmServiceManager {
     }
 
     public LinkedHashMultimap<String, String> getTests() {
-        if(this.api ==null){
-            api =new BlazemeterApiV3Impl(this.userKey,this.blazeMeterUrl);
-        }
+        api =new BlazemeterApiV3Impl(this.userKey,this.blazeMeterUrl);
         // added on Jacob's request for issue investigation
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
 
