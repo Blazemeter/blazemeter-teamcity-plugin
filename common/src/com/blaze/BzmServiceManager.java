@@ -187,9 +187,10 @@ public class BzmServiceManager {
                 String jtlFilePath = ctxt.getWorkingDirectory() + "/" + sessionId + ".zip";
 
                 File jtlZip = new File(jtlFilePath);
-                URL url = new URL(dataUrl + "?api_key=" + userKey);
+                URL url = new URL(dataUrl);
                 FileUtils.copyURLToFile(url, jtlZip);
-                logger.message("Downloading JTLZIP from " + url + "to " + jtlZip.getCanonicalPath());
+                logger.message("Downloading JTLZIP from " + url);
+                logger.message("JTL zip location: " + jtlZip.getCanonicalPath());
             } catch (JSONException e) {
                 logger.warning("Unable to get  JTLZIP: "+e.getMessage());
             } catch (MalformedURLException e) {
