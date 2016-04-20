@@ -54,8 +54,8 @@ public class BzmBuildProcess implements BuildProcess {
 
         testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
         if (StringUtil.isEmptyOrSpaces(testId)) {
-            log.warning("No test was defined in the configuration page.");
-            return "No test was defined in the configuration page.";
+            log.warning(Constants.NO_TEST_WAS_DEFINED);
+            return Constants.NO_TEST_WAS_DEFINED;
         } else {
             //verify if the test still exists on BlazeMeter server
             LinkedHashMultimap<String, String> tests = bzmServMan.getTests();
@@ -66,8 +66,11 @@ public class BzmBuildProcess implements BuildProcess {
             }
             if (tests != null) {
                 if (!values.contains(testId)) {
-                    log.warning("Test was not found at BlazeMeter server " + bzmServMan.getBlazeMeterUrl());
-                    return "Test was not found at BlazeMeter server " + bzmServMan.getBlazeMeterUrl();
+                    log.warning(Constants.PROBLEM_WITH_VALIDATING);
+                    log.warning("Server url="+bzmServMan.getBlazeMeterUrl());
+                    log.warning("UserKey="+bzmServMan.getUserKey().substring(0,4)+"...");
+                    log.warning("Check the following settings: serverUrl, userKey, proxy settings at buildAgent");
+                    return Constants.PROBLEM_WITH_VALIDATING;
                 }
             }
         }

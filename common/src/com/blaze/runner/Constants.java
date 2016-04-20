@@ -15,8 +15,9 @@ public interface Constants {
 	String BZM_PROPERTIES_FILE="/userKeyFile.properties";
     String NOT_IMPLEMENTED="This call is not implemented.";
 
+	String NO_TEST_WAS_DEFINED="No test was defined in the configuration page.";
 	String REPORT_URL="reportUrl_";
-
+    String PROBLEM_WITH_VALIDATING="Problem with validating testId, serverUrl, userKey";
 	String PROXY_HOST="http.proxyHost";
 	String PROXY_PORT="http.proxyPort";
 	String PROXY_USER="http.proxyUser";
