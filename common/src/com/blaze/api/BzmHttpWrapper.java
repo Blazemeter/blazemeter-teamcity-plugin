@@ -53,10 +53,16 @@ public class BzmHttpWrapper {
         }
 
         if(useProxy&&!StringUtils.isBlank(this.proxyHost)){
+            logger.info("Using proxy="+String.valueOf(this.useProxy));
             this.proxy=new HttpHost(proxyHost,proxyPort);
+            logger.info("Using proxy.host="+this.proxyHost);
+            logger.info("Using proxy.port="+this.proxyPort);
 
             this.proxyUser=System.getProperty(Constants.PROXY_USER);
+            logger.info("Using proxy.user="+this.proxyUser);
             this.proxyPass=System.getProperty(Constants.PROXY_PASS);
+            logger.info("Using proxy.pass="+this.proxyPass);
+
             if(!StringUtils.isEmpty(this.proxyUser)&&!StringUtils.isEmpty(this.proxyPass)){
                 Credentials cr=new UsernamePasswordCredentials(proxyUser, proxyPass);
                 AuthScope aus=new AuthScope(proxyHost, proxyPort);
@@ -66,6 +72,8 @@ public class BzmHttpWrapper {
             }else {
                 this.httpClient = HttpClients.custom().setProxy(proxy).build();
             }
+        }else {
+            logger.info("Using proxy="+String.valueOf(this.useProxy));
         }
     }
 
