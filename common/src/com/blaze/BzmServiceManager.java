@@ -32,6 +32,7 @@ import org.json.JSONObject;
  */
 public class BzmServiceManager {
     private static BzmServiceManager bzmServiceManager=null;
+    private static final int CHECK_INTERVAL = 60000;
 
     private String userKey;
     private String blazeMeterUrl;
@@ -214,11 +215,11 @@ public class BzmServiceManager {
             this.aggregate=this.api.testReport(this.masterId);
             testResult = new TestResult(this.aggregate);
         } catch (JSONException e) {
-            logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
+            logger.warning("Failed to get aggregate report from server "+e);
         } catch (IOException e) {
-            logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
+            logger.warning("Failed to get aggregate report from server"+e);
         } catch (NullPointerException e) {
-            logger.warning("Failed to get aggregate report from server, local thresholds won't be validated");
+            logger.warning("Failed to get aggregate report from server"+e);
         }
         finally {
             return testResult;
@@ -315,6 +316,23 @@ public class BzmServiceManager {
         }
     }
 
+    public void waitNotActive(String testId){
+
+        boolean active=true;
+        int activeCheck=1;
+        while(active&&activeCheck<11){
+            try {
+                Thread.currentThread().sleep(CHECK_INTERVAL);
+            } catch (InterruptedException e) {
+                logger.warning("Thread was interrupted during sleep()");
+                logger.warning("Received interrupted Exception: " + e.getMessage());
+                break;
+            }
+            logger.message("Checking, if test is active, testId="+testId+", retry # "+activeCheck);
+            active=this.api.active(testId);
+            activeCheck++;
+        }
+    }
 
 
     public String getUserKey() {

@@ -168,7 +168,7 @@ public class BzmBuildProcess implements BuildProcess {
             log.warning("Build was aborted by user");
             boolean terminate=bzmServMan.stopMaster(masterId,log);
             if(!terminate){
-                Utils.sleep(180000, log);
+                bzmServMan.waitNotActive(this.testId);
                 bzmServMan.junitXml(masterId, buildRunCtxt);
                 bzmServMan.jtlReports(masterId, buildRunCtxt);
             }
@@ -177,7 +177,7 @@ public class BzmBuildProcess implements BuildProcess {
         log.message("Test finished. Checking for test report...");
         log.message("Actual test duration was: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
         log.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-        Utils.sleep(180000, log);
+        bzmServMan.waitNotActive(this.testId);
         TestResult testResult = bzmServMan.getReport(log);
         if (testResult == null) {
             log.warning("Failed to get report from server...");

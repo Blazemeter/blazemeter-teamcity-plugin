@@ -18,7 +18,6 @@ public class TestResult {
     protected double max              ;
     protected double samples          ;
     protected double median           ;
-    protected double percentile90     ;
     protected double percentile99     ;
     protected double errorPercentage  ;
     protected double hits             ;
@@ -37,8 +36,6 @@ public class TestResult {
         // not implemented because such field is absent in JSON
 //        this.median = json.getDouble("median");
         this.median=-1;
-        this.percentile90 = json.getDouble("tp90");
-
         // not implemented because such field is absent in JSON
 //        this.errorPercentage = json.getDouble("errorPercentage");
         this.errorPercentage=(json.getDouble("failed")/json.getDouble("hits"))*100;
@@ -52,11 +49,12 @@ public class TestResult {
 
     @Override
     public String toString() {
-        return "Aggregate Test Result -> Samples=" + hits +
-               " Errors percentage=" + String.format("%.5g%n", errorPercentage)+
-               " Average=" + average +
-               " Min=" + min +
-               " Max=" + max;
+        return "Aggregate Test Result -> \n" +
+                "Samples=" + hits +
+               "\nErrors percentage=" + String.format("%.5g%n", errorPercentage)+
+               "Average=" + average +
+               "\nMin=" + min +
+               "\nMax=" + max;
     }
 
     public double getStd() {
@@ -105,14 +103,6 @@ public class TestResult {
 
     public void setMedian(double median) {
         this.median = median;
-    }
-
-    public double getPercentile90() {
-        return percentile90;
-    }
-
-    public void setPercentile90(double percentile90) {
-        this.percentile90 = percentile90;
     }
 
     public double getPercentile99() {
