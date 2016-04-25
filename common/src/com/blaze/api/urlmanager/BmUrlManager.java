@@ -7,8 +7,8 @@ import com.blaze.utils.Utils;
  * Created by dzmitrykashlach on 9/12/14.
  */
 public interface BmUrlManager {
-    String CLIENT_IDENTIFICATION = "_clientId=CI_TEAMCITY&_clientVersion="
-            + Utils.getVersion()+"&​";
+    String CLIENT_IDENTIFICATION = "&_clientId=CI_TEAMCITY&_clientVersion="
+            + Utils.getVersion();
 
     String getServerUrl();
 
