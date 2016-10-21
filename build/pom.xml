@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
   </parent>
   <artifactId>build</artifactId>
   <packaging>pom</packaging>
@@ -15,17 +15,17 @@
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter-agent</artifactId>
-          <version>${version}</version>
+          <version>${project.version}</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter-common</artifactId>
-          <version>${version}</version>
+          <version>${project.version}</version>
       </dependency>
       <dependency>
            <groupId>com.blazemeter.teamcity</groupId>
            <artifactId>BlazeMeter</artifactId>
-          <version>${version}</version>
+          <version>${project.version}</version>
       </dependency>
   </dependencies>
   <build>
@@ -48,7 +48,7 @@
                 <replacements>
                     <replacement>
                         <token>@version@</token>
-                        <value>${version}.${jenkins.build.number}</value>
+                        <value>${project.version}.${jenkins.build.number}</value>
                     </replacement>
                 </replacements>                        
             </configuration>
