@@ -39,4 +39,12 @@
             <span class="smallNote">Select the test to execute.</span>
         </td>
     </tr>
+
+<tr id="blazeMeterPlugin.reports">
+    <th><label for="blazeMeterPlugin">Request junit:</label></th>
+    <td>
+        <props:checkboxProperty name="blazeMeterPlugin.request.junit" treatFalseValuesCorrectly="${true}"
+                                uncheckedValue="false"/>
+    </td>
+</tr>
     </l:settingsGroup>

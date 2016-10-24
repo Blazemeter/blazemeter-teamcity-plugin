@@ -142,10 +142,11 @@ public class BzmServiceManager {
         String junitReport = "";
         logger.message("Requesting JUNIT report from server, masterId=" + masterId);
         try {
-                junitReport = this.api.retrieveJUNITXML(masterId);
-                logger.message("Received Junit report from server.... Saving it to the disc...");
-                String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + masterId + ".xml";
-                Utils.saveReport(junitReport, reportFilePath, logger);
+            junitReport = this.api.retrieveJUNITXML(masterId);
+            logger.message("Received Junit report from server");
+            String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + masterId + ".xml";
+            logger.message("Saving junit report to " +reportFilePath);
+            Utils.saveReport(junitReport, reportFilePath, logger);
         } catch (Exception e) {
             logger.message("Problems with receiving JUNIT report from server, masterId=" + masterId + ": " + e.getMessage());
         }
