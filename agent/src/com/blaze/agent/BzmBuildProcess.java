@@ -43,6 +43,7 @@ public class BzmBuildProcess implements BuildProcess {
     private String validationError;
     private String testId;
     private boolean junit;
+    private boolean jtl;
     private BuildAgent agent;
 
     final BuildProgressLogger log;
@@ -110,6 +111,7 @@ public class BzmBuildProcess implements BuildProcess {
         log.activityStarted("Parameter validation", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         Map<String, String> params = buildRunCtxt.getRunnerParameters();
         junit=Boolean.valueOf(params.get(Constants.SETTINGS_JUNIT));
+        jtl=Boolean.valueOf(params.get(Constants.SETTINGS_JTL));
         validationError = validateParams(params);
         if (validationError != null) {
             log.error(validationError);
@@ -157,11 +159,13 @@ public class BzmBuildProcess implements BuildProcess {
         if (buildInterruptReason != null) {
             log.warning("Build was aborted by user");
             boolean terminate=bzmServMan.stopMaster(masterId,log);
-            if(!terminate){
+            if (!terminate) {
                 if (junit) {
                     bzmServMan.junitXml(masterId, buildRunCtxt);
                 }
-                bzmServMan.jtlReports(masterId, buildRunCtxt);
+                if (jtl) {
+                    bzmServMan.jtlReports(masterId, buildRunCtxt);
+                }
             }
             return BuildFinishedStatus.INTERRUPTED;
         }
@@ -187,7 +191,9 @@ public class BzmBuildProcess implements BuildProcess {
                 if (junit) {
                     bzmServMan.junitXml(masterId, buildRunCtxt);
                 }
-                bzmServMan.jtlReports(masterId, buildRunCtxt);
+                if (jtl) {
+                    bzmServMan.jtlReports(masterId, buildRunCtxt);
+                }
             }
             return BuildFinishedStatus.INTERRUPTED;
         }
@@ -205,7 +211,9 @@ public class BzmBuildProcess implements BuildProcess {
         if (junit) {
             bzmServMan.junitXml(masterId, buildRunCtxt);
         }
-        bzmServMan.jtlReports(masterId, buildRunCtxt);
+        if (jtl) {
+            bzmServMan.jtlReports(masterId, buildRunCtxt);
+        }
         CIStatus ciStatus = bzmServMan.validateCIStatus(masterId, log);
         result = ciStatus.equals(CIStatus.failures) ? BuildFinishedStatus.FINISHED_FAILED : BuildFinishedStatus.FINISHED_SUCCESS;
         return result;
