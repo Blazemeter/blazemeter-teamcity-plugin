@@ -41,7 +41,7 @@
     </tr>
 
 <tr>
-    <th><label for="blazeMeterPlugin">Request junit:</label></th>
+    <th><label>Request junit:</label></th>
     <td>
         <props:checkboxProperty name="blazeMeterPlugin.request.junit" treatFalseValuesCorrectly="${true}"
                                 uncheckedValue="false"/>
@@ -49,10 +49,25 @@
 </tr>
 
 <tr>
-    <th><label for="blazeMeterPlugin">Request jtl:</label></th>
+    <th><label>Request jtl:</label></th>
     <td>
         <props:checkboxProperty name="blazeMeterPlugin.request.jtl" treatFalseValuesCorrectly="${true}"
                                 uncheckedValue="false"/>
     </td>
 </tr>
+
+
+<tr>
+    <th><label>Junit report path:</label></th>
+    <td>
+        <props:textProperty name="blazeMeterPlugin.request.junit.path"/>
+    </td>
+</tr>
+<tr>
+    <th><label>Jtl report path:</label></th>
+    <td>
+        <props:textProperty name="blazeMeterPlugin.request.jtl.path"/>
+    </td>
+</tr>
+
 </l:settingsGroup>

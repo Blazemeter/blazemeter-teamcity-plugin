@@ -15,6 +15,9 @@
 package com.blaze.utils;
 
 import jetbrains.buildServer.agent.BuildProgressLogger;
+import jetbrains.buildServer.agent.BuildRunnerContext;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -39,20 +42,34 @@ public class Utils {
         return props.getProperty("version");
     }
 
+    public static File reportDir(BuildRunnerContext context, String reportDir){
+        File reportFile=null;
+        if (reportDir.startsWith("/")|reportDir.matches("(^[a-zA-Z][:][\\\\].+)")) {
+            reportFile = new File(FilenameUtils.normalize(reportDir));
+        } else {
+            reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()+"/"+reportDir));
+        }
+        return reportFile;
 
-    public static void saveReport(String report,
-                                  String filePath,
-                                  BuildProgressLogger logger
+    }
+
+    public static void saveJunit(String report,
+                                 File junitDir,
+                                 String masterId,
+                                 BuildProgressLogger logger
     ) {
-        File reportFile = new File(filePath);
+
+        File junitFile = new File(junitDir, masterId + ".xml");
         try {
-            if (!reportFile.exists()) {
-                reportFile.createNewFile();
+            if (!junitFile.exists()) {
+                FileUtils.forceMkdir(junitFile.getParentFile());
+                junitFile.createNewFile();
             }
-            BufferedWriter out = new BufferedWriter(new FileWriter(reportFile));
+
+            BufferedWriter out = new BufferedWriter(new FileWriter(junitFile));
             out.write(report);
             out.close();
-        logger.message("Report was saved to "+reportFile.getAbsolutePath());
+            logger.message("Report was saved to " + junitFile.getAbsolutePath());
         } catch (FileNotFoundException fnfe) {
             logger.message("ERROR: Failed to save XML report to workspace " + fnfe.getMessage());
             logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");

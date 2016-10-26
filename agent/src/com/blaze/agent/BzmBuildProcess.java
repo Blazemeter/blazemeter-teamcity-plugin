@@ -14,6 +14,7 @@
 
 package com.blaze.agent;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
+import java.io.File.*;
 
 import com.blaze.runner.Constants;
 
@@ -44,6 +46,8 @@ public class BzmBuildProcess implements BuildProcess {
     private String testId;
     private boolean junit;
     private boolean jtl;
+    private String junitPath;
+    private String jtlPath;
     private BuildAgent agent;
 
     final BuildProgressLogger log;
@@ -112,6 +116,8 @@ public class BzmBuildProcess implements BuildProcess {
         Map<String, String> params = buildRunCtxt.getRunnerParameters();
         junit=Boolean.valueOf(params.get(Constants.SETTINGS_JUNIT));
         jtl=Boolean.valueOf(params.get(Constants.SETTINGS_JTL));
+        junitPath=params.get(Constants.SETTINGS_JUNIT_PATH);
+        jtlPath=params.get(Constants.SETTINGS_JTL_PATH);
         validationError = validateParams(params);
         if (validationError != null) {
             log.error(validationError);
@@ -142,7 +148,8 @@ public class BzmBuildProcess implements BuildProcess {
             }
         }
 
-
+        File  junitDir=Utils.reportDir(this.buildRunCtxt,this.junitPath);
+        File  jtlDir=Utils.reportDir(this.buildRunCtxt,this.jtlPath);
         log.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestStatus status;
         long testInitStart = System.currentTimeMillis();
@@ -161,10 +168,10 @@ public class BzmBuildProcess implements BuildProcess {
             boolean terminate=bzmServMan.stopMaster(masterId,log);
             if (!terminate) {
                 if (junit) {
-                    bzmServMan.junitXml(masterId, buildRunCtxt);
+                    bzmServMan.junitXml(masterId, junitDir);
                 }
                 if (jtl) {
-                    bzmServMan.jtlReports(masterId, buildRunCtxt);
+                    bzmServMan.jtlReports(masterId, jtlDir);
                 }
             }
             return BuildFinishedStatus.INTERRUPTED;
@@ -189,10 +196,10 @@ public class BzmBuildProcess implements BuildProcess {
             if (!terminate) {
                 bzmServMan.waitNotActive(this.testId);
                 if (junit) {
-                    bzmServMan.junitXml(masterId, buildRunCtxt);
+                    bzmServMan.junitXml(masterId, junitDir);
                 }
                 if (jtl) {
-                    bzmServMan.jtlReports(masterId, buildRunCtxt);
+                    bzmServMan.jtlReports(masterId, jtlDir);
                 }
             }
             return BuildFinishedStatus.INTERRUPTED;
@@ -209,10 +216,10 @@ public class BzmBuildProcess implements BuildProcess {
             log.message(testResult.toString());
         }
         if (junit) {
-            bzmServMan.junitXml(masterId, buildRunCtxt);
+            bzmServMan.junitXml(masterId, junitDir);
         }
         if (jtl) {
-            bzmServMan.jtlReports(masterId, buildRunCtxt);
+            bzmServMan.jtlReports(masterId, jtlDir);
         }
         CIStatus ciStatus = bzmServMan.validateCIStatus(masterId, log);
         result = ciStatus.equals(CIStatus.failures) ? BuildFinishedStatus.FINISHED_FAILED : BuildFinishedStatus.FINISHED_SUCCESS;

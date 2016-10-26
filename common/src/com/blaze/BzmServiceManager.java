@@ -34,7 +34,6 @@ import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 
-import jetbrains.buildServer.agent.BuildRunnerContext;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -138,15 +137,14 @@ public class BzmServiceManager {
         return masterId;
     }
 
-    public void junitXml(String masterId, BuildRunnerContext buildRunnerContext) {
+    public void junitXml(String masterId, File junitDir) {
         String junitReport = "";
         logger.message("Requesting JUNIT report from server, masterId=" + masterId);
         try {
             junitReport = this.api.retrieveJUNITXML(masterId);
             logger.message("Received Junit report from server");
-            String reportFilePath = buildRunnerContext.getWorkingDirectory() + "/" + masterId + ".xml";
-            logger.message("Saving junit report to " +reportFilePath);
-            Utils.saveReport(junitReport, reportFilePath, logger);
+            logger.message("Saving junit report to " + junitDir.getAbsolutePath());
+            Utils.saveJunit(junitReport, junitDir, masterId, logger);
         } catch (Exception e) {
             logger.message("Problems with receiving JUNIT report from server, masterId=" + masterId + ": " + e.getMessage());
         }
@@ -177,15 +175,15 @@ public class BzmServiceManager {
         }
     }
 
-    public void jtlReports(String masterId, BuildRunnerContext ctxt) {
+    public void jtlReports(String masterId, File jtlDir) {
         List<String> sessionsIds = this.api.getListOfSessionIds(masterId);
         for (String s : sessionsIds) {
-            this.retrieveJtlForSession(s,ctxt);
+            this.retrieveJtlForSession(s,jtlDir);
         }
     }
 
 
-    public void retrieveJtlForSession(String sessionId, BuildRunnerContext ctxt){
+    public void retrieveJtlForSession(String sessionId, File jtlDir){
             JSONObject jo = this.api.retrieveJTLZIP(sessionId);
             String dataUrl = null;
             try {
@@ -197,7 +195,7 @@ public class BzmServiceManager {
                         break;
                     }
                 }
-                String jtlFilePath = ctxt.getWorkingDirectory() + "/" + sessionId + ".zip";
+                String jtlFilePath = jtlDir.getAbsolutePath() + "/" + sessionId + ".zip";
 
                 File jtlZip = new File(jtlFilePath);
                 URL url = new URL(dataUrl);
