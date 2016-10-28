@@ -14,7 +14,7 @@
 
 package com.blaze.api;
 
-import com.blaze.api.urlmanager.BmUrlManagerV3Impl;
+import com.blaze.api.urlmanager.UrlManagerV3Impl;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
@@ -30,18 +30,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlazemeterApiV3Impl implements BlazemeterApi {
+public class ApiV3Impl implements Api {
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
 
     private String userKey;
 
     public static final String APP_KEY = "tmcbzms4sbnsgb1z0hry";
     BzmHttpWrapper bzHttp;
-    BmUrlManagerV3Impl urlManager;
+    UrlManagerV3Impl urlManager;
 
-    public BlazemeterApiV3Impl(String userKey, String bzmUrl) {
+    public ApiV3Impl(String userKey, String bzmUrl) {
         this.userKey = userKey;
-        urlManager = new BmUrlManagerV3Impl(bzmUrl);
+        urlManager = new UrlManagerV3Impl(bzmUrl);
         try {
             bzHttp = new BzmHttpWrapper();
         } catch (Exception ex) {

@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-public interface BlazemeterApi {
+public interface Api {
 
     TestStatus masterStatus(String testId) throws JSONException;
 

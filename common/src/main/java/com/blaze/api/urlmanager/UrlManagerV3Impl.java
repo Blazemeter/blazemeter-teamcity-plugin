@@ -17,10 +17,10 @@ package com.blaze.api.urlmanager;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class BmUrlManagerV3Impl implements BmUrlManager{
+public class UrlManagerV3Impl implements UrlManager {
 
     private String serverUrl = "";
-    public BmUrlManagerV3Impl(String blazeMeterUrl) {
+    public UrlManagerV3Impl(String blazeMeterUrl) {
         this.serverUrl = blazeMeterUrl;
     }
 

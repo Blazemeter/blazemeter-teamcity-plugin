@@ -15,7 +15,7 @@ package com.blaze.api.urlmanager;
 
 import com.blaze.utils.Utils;
 
-public interface BmUrlManager {
+public interface UrlManager {
     String CLIENT_IDENTIFICATION = "&_clientId=CI_TEAMCITY&_clientVersion="
             + Utils.getVersion();
 

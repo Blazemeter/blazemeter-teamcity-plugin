@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.blaze.api.BlazemeterApi;
-import com.blaze.api.BlazemeterApiV3Impl;
+import com.blaze.api.Api;
+import com.blaze.api.ApiV3Impl;
 import com.blaze.api.TestType;
 import com.blaze.runner.CIStatus;
 import com.blaze.runner.Constants;
@@ -47,7 +47,7 @@ public class BzmServiceManager {
     private String userKey;
     private String blazeMeterUrl;
     private BuildProgressLogger logger;
-    private BlazemeterApi api;
+    private Api api;
     private String masterId;
     private JSONObject aggregate;
 
@@ -58,7 +58,7 @@ public class BzmServiceManager {
 
         this.userKey = buildSharedMap.get(Constants.USER_KEY);
         this.blazeMeterUrl = buildSharedMap.get(Constants.BLAZEMETER_URL);
-        this.api = new BlazemeterApiV3Impl(userKey, blazeMeterUrl);
+        this.api = new ApiV3Impl(userKey, blazeMeterUrl);
         this.logger = logger;
     }
 
@@ -70,7 +70,7 @@ public class BzmServiceManager {
             bzmServiceManager.setBlazeMeterUrl(buildSharedMap.get(Constants.BLAZEMETER_URL));
             bzmServiceManager.setLogger(logger);
             if(bzmServiceManager.api ==null){
-                BlazemeterApi blazemeterAPI = new BlazemeterApiV3Impl(buildSharedMap.get(Constants.USER_KEY),
+                Api blazemeterAPI = new ApiV3Impl(buildSharedMap.get(Constants.USER_KEY),
                     buildSharedMap.get(Constants.BLAZEMETER_URL));
             bzmServiceManager.setApi(blazemeterAPI);
             }
@@ -84,7 +84,7 @@ public class BzmServiceManager {
     }
 
     public LinkedHashMultimap<String, String> getTests() {
-        api =new BlazemeterApiV3Impl(this.userKey,this.blazeMeterUrl);
+        api =new ApiV3Impl(this.userKey,this.blazeMeterUrl);
         // added on Jacob's request for issue investigation
         System.out.println("TeamCity plugin: Trying to get tests with userKey=" + this.userKey.substring(0,4) + " and server=" + this.blazeMeterUrl);
 
@@ -373,11 +373,11 @@ public class BzmServiceManager {
         this.logger = logger;
     }
 
-    public BlazemeterApi getApi() {
+    public Api getApi() {
         return api;
     }
 
-    public void setApi(BlazemeterApi api) {
+    public void setApi(Api api) {
         this.api = api;
     }
 }
