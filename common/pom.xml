@@ -9,7 +9,6 @@
     <artifactId>BlazeMeter-common</artifactId>
     <packaging>jar</packaging>
     <build>
-        <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -34,7 +33,7 @@
                             <outputDirectory>${basedir}/target/classes/com/blaze/utils/</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/com/blaze/utils</directory>
+                                    <directory>${basedir}/src/main/java/com/blaze/utils</directory>
                                     <filtering>true</filtering>
                                     <includes>
                                         <include>version.properties</include>
@@ -54,13 +53,13 @@
         </plugins>
         <resources>
             <resource>
-                <directory>src</directory>
+                <directory>src/main/resources/</directory>
                 <includes>
                     <include>META-INF/</include>
                 </includes>
             </resource>
             <resource>
-                <directory>resources</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>logback.xml</include>
                 </includes>

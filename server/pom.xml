@@ -20,18 +20,11 @@
                 </configuration>
             </plugin>
         </plugins>
-        <sourceDirectory>src</sourceDirectory>
         <resources>
             <resource>
-                <directory>resources</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/**</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src</directory>
-                <includes>
-                    <include>META-INF/</include>
                 </includes>
             </resource>
         </resources>
