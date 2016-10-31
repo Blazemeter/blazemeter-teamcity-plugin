@@ -11,11 +11,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package com.blaze.api.urlmanager;
 
+package com.blaze.api.urlmanager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
 
 public class UrlManagerV3Impl implements UrlManager {
 
@@ -39,8 +40,8 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStatus= serverUrl +"/api/latest/masters/"+masterId+"/status?events=false&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-        return testStatus;
+        testStatus= serverUrl +LATEST+UrlManager.MASTERS+"/"+masterId+"/status?events=false&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+         return testStatus;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStart= serverUrl +"/api/latest/tests/"
+        testStart= serverUrl +LATEST+"/tests/"
                 +testId+"/start?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testStart;
@@ -83,7 +84,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStart= serverUrl +"/api/latest/collections/"
+        testStart= serverUrl +LATEST+"/collections/"
                 +collectionId+"/start?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testStart;
@@ -91,7 +92,7 @@ public class UrlManagerV3Impl implements UrlManager {
 
     @Override
     public String testStop(String appKey, String userKey, String masterId) {
-        String testStop=null;
+         String testStop=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
             userKey = URLEncoder.encode(userKey, "UTF-8");
@@ -99,7 +100,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testStop= serverUrl +"/api/latest/masters/"
+        testStop= serverUrl +LATEST+UrlManager.MASTERS+"/"
                 +masterId+"/stop?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testStop;
@@ -115,7 +116,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testTerminate= serverUrl +"/api/latest/masters/"
+        testTerminate= serverUrl +LATEST+UrlManager.MASTERS+"/"
                 +masterId+"/terminate?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testTerminate;
@@ -131,7 +132,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        testAggregateReport= serverUrl +"/api/latest/masters/"
+        testAggregateReport= serverUrl +LATEST+UrlManager.MASTERS+"/"
                 +masterId+"/reports/main/summary?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return testAggregateReport;
@@ -146,7 +147,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getUser= serverUrl +"/api/latest/user?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getUser= serverUrl +LATEST+"/user?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getUser;
     }
@@ -160,7 +161,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getTestInfo= serverUrl +LATEST+"/tests/"+testId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTestInfo;
     }
@@ -174,14 +175,14 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        createTest= serverUrl +"/api/latest/tests/custom?custom_test_type=yahoo&api_key="
+        createTest= serverUrl +LATEST+TESTS+"/custom?custom_test_type=yahoo&api_key="
                 +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return createTest;
     }
 
     @Override
-    public String ciStatus(String appKey, String userKey, String masterId){
+    public String getCIStatus(String appKey, String userKey, String masterId){
         String getTresholds=null;
         try {
             appKey = URLEncoder.encode(appKey, "UTF-8");
@@ -189,7 +190,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTresholds= serverUrl +"/api/latest/masters/"+masterId+"/ci-status?api_key="
+        getTresholds= serverUrl +LATEST+MASTERS+"/"+masterId+UrlManager.CI_STATUS+"?api_key="
                 +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTresholds;
@@ -211,7 +212,7 @@ public class UrlManagerV3Impl implements UrlManager {
             e.printStackTrace();
         }
 
-        retrieveJUNITXML= serverUrl +"/api/latest/masters/"+masterId+
+        retrieveJUNITXML= serverUrl +LATEST+MASTERS+"/"+masterId+
                 "/reports/thresholds?format=junit&api_key="
                 +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
@@ -229,7 +230,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        getTestInfo= serverUrl +"/api/latest/tests/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        getTestInfo= serverUrl +LATEST+TESTS+"/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return getTestInfo;
     }
@@ -243,7 +244,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        retrieveJTLZIP= serverUrl +"/api/latest/sessions/"+sessionId+
+        retrieveJTLZIP= serverUrl +LATEST+"/sessions/"+sessionId+
                 "/reports/logs?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return retrieveJTLZIP;
@@ -258,7 +259,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        generatePublicToken= serverUrl +"/api/latest/masters/"+masterId+
+        generatePublicToken= serverUrl +LATEST+MASTERS+"/"+masterId+
                 "/publicToken?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return generatePublicToken;
@@ -274,7 +275,7 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        listOfSessionIds= serverUrl +"/api/latest/masters/"+masterId+
+        listOfSessionIds= serverUrl +LATEST+MASTERS+"/"+masterId+
                 "/sessions?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
         return listOfSessionIds;
@@ -289,10 +290,41 @@ public class UrlManagerV3Impl implements UrlManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return activeTests= serverUrl +"/api/latest/web/active?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+        return activeTests= serverUrl +LATEST+WEB+"/active?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
 
     }
 
+    @Override
+    public String version(String appKey) {
+        String version=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return version= serverUrl +LATEST+WEB+"/version?app_key="+appKey+ CLIENT_IDENTIFICATION;
+    }
 
+    @Override
+    public String masterId(String appKey,String userKey,String masterId) {
+        String masterIdUrl=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return masterIdUrl= serverUrl +LATEST+UrlManager.MASTERS+"/"+masterId+"?api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+    }
 
+    @Override
+    public String properties(String appKey, String userKey, String sessionId) {
+        String properties=null;
+        try {
+            appKey = URLEncoder.encode(appKey, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return properties= serverUrl +LATEST+"/sessions/"+sessionId+"/properties?target=all&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
+    }
 }
+

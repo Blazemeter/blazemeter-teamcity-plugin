@@ -15,10 +15,11 @@
 package com.blaze.agent;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import com.blaze.BzmServiceManager;
+import com.blaze.JobUtility;
 import com.blaze.runner.CIStatus;
 import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
@@ -29,15 +30,15 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
-import java.io.File.*;
 
 import com.blaze.runner.Constants;
+import org.json.JSONException;
 
 public class BzmBuildProcess implements BuildProcess {
     private static final int CHECK_INTERVAL = 60000;
     private static final int INIT_TEST_TIMEOUT = 900000;
     private static final String TC_AGENT_WORK_DIR = "teamcity.agent.work.dir";
-    private BzmServiceManager bzmServMan;
+    private JobUtility jobUtil;
     private AgentRunningBuild agentRunningBuild;
     private BuildRunnerContext buildRunCtxt;
     private ArtifactsWatcher artifactsWatcher;
@@ -64,7 +65,7 @@ public class BzmBuildProcess implements BuildProcess {
 
         log = agentRunningBuild.getBuildLogger();
         Map<String, String> buildSharedMap = agentRunningBuild.getSharedConfigParameters();
-        bzmServMan = BzmServiceManager.getBzmServiceManager(buildSharedMap, log);
+        jobUtil = JobUtility.getJobUtil(buildSharedMap, log);
     }
 
     private String validateParams(Map<String, String> params) {
@@ -75,7 +76,7 @@ public class BzmBuildProcess implements BuildProcess {
             return Constants.NO_TEST_WAS_DEFINED;
         } else {
             //verify if the test still exists on BlazeMeter server
-            LinkedHashMultimap<String, String> tests = bzmServMan.getTests();
+            LinkedHashMultimap<String, String> tests = jobUtil.getTests();
             Collection<String> values = tests.values();
             log.message("The following tests were found on server:");
             for (String s : values) {
@@ -84,8 +85,8 @@ public class BzmBuildProcess implements BuildProcess {
             if (tests != null) {
                 if (!values.contains(testId)) {
                     log.warning(Constants.PROBLEM_WITH_VALIDATING);
-                    log.warning("Server url="+bzmServMan.getBlazeMeterUrl());
-                    log.warning("UserKey="+bzmServMan.getUserKey().substring(0,4)+"...");
+                    log.warning("Server url="+ jobUtil.getBlazeMeterUrl());
+                    log.warning("UserKey="+ jobUtil.getUserKey().substring(0,4)+"...");
                     log.warning("Check the following settings: serverUrl, userKey, proxy settings at buildAgent");
                     return Constants.PROBLEM_WITH_VALIDATING;
                 }
@@ -110,7 +111,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void start() throws RunBuildException {
-        log.message("BlazeMeter agent started: version=" + Utils.getVersion());
+        log.message("BlazeMeter agent started: version=" + Utils.version());
 
         log.activityStarted("Parameter validation", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         Map<String, String> params = buildRunCtxt.getRunnerParameters();
@@ -135,13 +136,20 @@ public class BzmBuildProcess implements BuildProcess {
     @Override
     public BuildFinishedStatus waitFor() throws RunBuildException {
         log.message("Attempting to start test with id:" + testId);
-        String masterId = bzmServMan.startTest(testId, log);
+        String masterId = null;
+        try {
+            masterId = jobUtil.startTest(testId, log);
+        } catch (IOException e) {
+            log.error("Failed to start test: testId="+this.testId+"->"+e.getMessage());
+        } catch (JSONException e) {
+            log.error("Failed to start test: testId="+this.testId+"->"+e.getMessage());
+        }
         BuildFinishedStatus result = null;
         if (masterId.isEmpty()) {
             return BuildFinishedStatus.FINISHED_FAILED;
         } else {
             log.message("Test initialization is started... Waiting for DATA_RECEIVED status");
-            String reportUrl = bzmServMan.getReportUrl(masterId);
+            String reportUrl = jobUtil.getReportUrl(masterId);
             log.message("Test report will be available at " + reportUrl);
             if (StringUtil.isNotEmpty(reportUrl)) {
                 this.agent.getConfiguration().addEnvironmentVariable(Constants.REPORT_URL + this.agentRunningBuild.getBuildNumber(), reportUrl);
@@ -157,7 +165,7 @@ public class BzmBuildProcess implements BuildProcess {
         BuildInterruptReason buildInterruptReason;
         do {
             Utils.sleep(CHECK_INTERVAL, log);
-            status = bzmServMan.masterStatus(bzmServMan.masterId());
+            status = jobUtil.masterStatus(jobUtil.masterId());
             log.message("Check if the test is initialized...");
             initTimeOutPassed = System.currentTimeMillis() > testInitStart + INIT_TEST_TIMEOUT;
             buildInterruptReason = agentRunningBuild.getInterruptReason();
@@ -165,14 +173,19 @@ public class BzmBuildProcess implements BuildProcess {
         while (buildInterruptReason == null && (!(status.equals(TestStatus.Running) | initTimeOutPassed)));
         if (buildInterruptReason != null) {
             log.warning("Build was aborted by user");
-            boolean terminate=bzmServMan.stopMaster(masterId,log);
+            boolean terminate= jobUtil.stopMaster(masterId,log);
             if (!terminate) {
                 if (junit) {
-                    bzmServMan.junitXml(masterId, junitDir);
+                    jobUtil.junitXml(masterId, junitDir);
                 }
                 if (jtl) {
-                    bzmServMan.jtlReports(masterId, jtlDir);
-                }
+                    try{
+                        jobUtil.jtlReports(masterId, jtlDir);
+                    }catch (IOException io){
+                        log.error("Failed to download jtl-report: "+io.getMessage());
+                    }catch (JSONException je){
+                        log.error("Failed to download jtl-report: "+je.getMessage());
+                    }                }
             }
             return BuildFinishedStatus.INTERRUPTED;
         }
@@ -186,20 +199,26 @@ public class BzmBuildProcess implements BuildProcess {
         do {
             Utils.sleep(CHECK_INTERVAL, log);
             log.message("Check if the test is still running. Time passed since start: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
-            status = bzmServMan.masterStatus(bzmServMan.masterId());
+            status = jobUtil.masterStatus(jobUtil.masterId());
             log.message("TestInfo=" + status.toString());
             buildInterruptReason = agentRunningBuild.getInterruptReason();
         } while (buildInterruptReason == null && !status.equals(TestStatus.NotRunning));
         if (buildInterruptReason != null) {
             log.warning("Build was aborted by user");
-            boolean terminate=bzmServMan.stopMaster(masterId,log);
+            boolean terminate= jobUtil.stopMaster(masterId,log);
             if (!terminate) {
-                bzmServMan.waitNotActive(this.testId);
+                jobUtil.waitNotActive(this.testId);
                 if (junit) {
-                    bzmServMan.junitXml(masterId, junitDir);
+                    jobUtil.junitXml(masterId, junitDir);
                 }
                 if (jtl) {
-                    bzmServMan.jtlReports(masterId, jtlDir);
+                    try{
+                        jobUtil.jtlReports(masterId, jtlDir);
+                    }catch (IOException io){
+                         log.error("Failed to download jtl-report: "+io.getMessage());
+                    }catch (JSONException je){
+                        log.error("Failed to download jtl-report: "+je.getMessage());
+                    }
                 }
             }
             return BuildFinishedStatus.INTERRUPTED;
@@ -207,8 +226,8 @@ public class BzmBuildProcess implements BuildProcess {
         log.message("Test finished. Checking for test report...");
         log.message("Actual test duration was: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
         log.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
-        bzmServMan.waitNotActive(this.testId);
-        TestResult testResult = bzmServMan.getReport(log);
+        jobUtil.waitNotActive(this.testId);
+        TestResult testResult = jobUtil.getReport(log);
         if (testResult == null) {
             log.warning("Failed to get report from server...");
         } else {
@@ -216,12 +235,17 @@ public class BzmBuildProcess implements BuildProcess {
             log.message(testResult.toString());
         }
         if (junit) {
-            bzmServMan.junitXml(masterId, junitDir);
+            jobUtil.junitXml(masterId, junitDir);
         }
         if (jtl) {
-            bzmServMan.jtlReports(masterId, jtlDir);
-        }
-        CIStatus ciStatus = bzmServMan.validateCIStatus(masterId, log);
+            try{
+                jobUtil.jtlReports(masterId, jtlDir);
+            }catch (IOException io){
+                log.error("Failed to download jtl-report: "+io.getMessage());
+            }catch (JSONException je){
+                log.error("Failed to download jtl-report: "+je.getMessage());
+            }}
+        CIStatus ciStatus = jobUtil.validateCIStatus(masterId, log);
         result = ciStatus.equals(CIStatus.failures) ? BuildFinishedStatus.FINISHED_FAILED : BuildFinishedStatus.FINISHED_SUCCESS;
         return result;
     }

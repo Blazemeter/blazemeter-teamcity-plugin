@@ -11,14 +11,21 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
 package com.blaze.api.urlmanager;
 
 import com.blaze.utils.Utils;
 
 public interface UrlManager {
-    String CLIENT_IDENTIFICATION = "&_clientId=CI_TEAMCITY&_clientVersion="
-            + Utils.getVersion();
 
+    String CLIENT_IDENTIFICATION = "&_clientId=CI_JENKINS&_clientVersion="
+            + Utils.version();
+
+    String LATEST="/api/latest";
+    String TESTS="/tests";
+    String MASTERS="/masters";
+    String WEB="/web";
+    String CI_STATUS="/ci-status";
     String getServerUrl();
 
     void setServerUrl(String serverUrl);
@@ -28,6 +35,8 @@ public interface UrlManager {
     String tests(String appKey, String userKey);
 
     String activeTests(String appKey, String userKey);
+
+    String masterId(String appKey,String userKey, String masterId);
 
     String testStart(String appKey, String userKey, String testId);
 
@@ -41,7 +50,7 @@ public interface UrlManager {
 
     String getUser(String appKey, String userKey);
 
-    String ciStatus(String appKey, String userKey, String sessionId);
+    String getCIStatus(String appKey, String userKey, String sessionId);
 
     String testConfig(String appKey, String userKey, String testId);
 
@@ -57,4 +66,8 @@ public interface UrlManager {
 
     String listOfSessionIds(String appKey, String userKey, String masterId);
 
+    String version(String appKey);
+
+    String properties(String appKey, String userKey, String sessionId);
 }
+

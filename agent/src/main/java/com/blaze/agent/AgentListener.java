@@ -22,12 +22,11 @@ import jetbrains.buildServer.util.EventDispatcher;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.blaze.BzmServiceManager;
-import com.blaze.runner.Constants;
+import com.blaze.JobUtility;
 
 public class AgentListener extends AgentLifeCycleAdapter{
 	
-	private BzmServiceManager bzmServiceManager;
+	private JobUtility bzmServiceManager;
 	
 	public AgentListener(@NotNull final EventDispatcher<AgentLifeCycleListener> dispatcher){
 		dispatcher.addListener(this);

@@ -16,6 +16,8 @@ package com.blaze.runner;
 public interface JsonConstants {
     String TYPE="type";
     String ID="id";
+    String NOTE="note";
+    String CODE="code";
     String TEST_ID="test_id";
     String RESPONSE_CODE="response_code";
     String ERROR="error";
@@ -24,6 +26,7 @@ public interface JsonConstants {
     String PLUGINS="plugins";
     String OVERRIDE="override";
     String DATA="data";
+    String TEST_COLLECTION_ID="testCollectionId";
     String STATUS="status";
     String DATA_URL="dataUrl";
     String NAME="name";

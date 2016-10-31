@@ -32,7 +32,7 @@ public class Utils {
     private Utils(){}
 
 
-    public static String getVersion() {
+    public static String version() {
         Properties props = new Properties();
         try {
             props.load(Utils.class.getResourceAsStream("version.properties"));
@@ -41,6 +41,16 @@ public class Utils {
         }
         return props.getProperty("version");
     }
+
+
+    public static String getTestId(String testId){
+        try{
+            return testId.substring(testId.lastIndexOf("(")+1,testId.lastIndexOf("."));
+        }catch (Exception e){
+            return testId;
+        }
+    }
+
 
     public static File reportDir(BuildRunnerContext context, String reportDir){
         File reportFile=null;

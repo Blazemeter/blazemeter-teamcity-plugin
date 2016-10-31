@@ -18,13 +18,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.blaze.api.Api;
 import com.blaze.api.ApiV3Impl;
-import com.blaze.api.TestType;
 import com.blaze.runner.CIStatus;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
@@ -40,8 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class BzmServiceManager {
-    private static BzmServiceManager bzmServiceManager=null;
+public class JobUtility {
+    private static JobUtility jobUtility =null;
     private static final int CHECK_INTERVAL = 60000;
 
     private String userKey;
@@ -51,10 +48,10 @@ public class BzmServiceManager {
     private String masterId;
     private JSONObject aggregate;
 
-    public BzmServiceManager() {
+    public JobUtility() {
     }
 
-    private BzmServiceManager(Map<String, String> buildSharedMap,BuildProgressLogger logger) {
+    private JobUtility(Map<String, String> buildSharedMap, BuildProgressLogger logger) {
 
         this.userKey = buildSharedMap.get(Constants.USER_KEY);
         this.blazeMeterUrl = buildSharedMap.get(Constants.BLAZEMETER_URL);
@@ -62,20 +59,20 @@ public class BzmServiceManager {
         this.logger = logger;
     }
 
-    public static BzmServiceManager getBzmServiceManager(Map<String, String> buildSharedMap,BuildProgressLogger logger) {
-        if(bzmServiceManager==null){
-            bzmServiceManager=new BzmServiceManager(buildSharedMap,logger);
+    public static JobUtility getJobUtil(Map<String, String> buildSharedMap, BuildProgressLogger logger) {
+        if(jobUtility ==null){
+            jobUtility =new JobUtility(buildSharedMap,logger);
         }else{
-            bzmServiceManager.setUserKey(buildSharedMap.get(Constants.USER_KEY));
-            bzmServiceManager.setBlazeMeterUrl(buildSharedMap.get(Constants.BLAZEMETER_URL));
-            bzmServiceManager.setLogger(logger);
-            if(bzmServiceManager.api ==null){
+            jobUtility.setUserKey(buildSharedMap.get(Constants.USER_KEY));
+            jobUtility.setBlazeMeterUrl(buildSharedMap.get(Constants.BLAZEMETER_URL));
+            jobUtility.setLogger(logger);
+            if(jobUtility.api ==null){
                 Api blazemeterAPI = new ApiV3Impl(buildSharedMap.get(Constants.USER_KEY),
                     buildSharedMap.get(Constants.BLAZEMETER_URL));
-            bzmServiceManager.setApi(blazemeterAPI);
+            jobUtility.setApi(blazemeterAPI);
             }
         }
-        return bzmServiceManager;
+        return jobUtility;
     }
 
     @NotNull
@@ -92,7 +89,7 @@ public class BzmServiceManager {
         try {
             // added on Jacob's request for issue investigation
             System.out.println("TeamCity plugin: Requesting tests from server " + this.blazeMeterUrl);
-            tests.putAll(this.api.getTestList());
+            tests.putAll(this.api.testsMultiMap());
             // added on Jacob's request for issue investigation
             System.out.println("TeamCity plugin: Received " + tests.entries().size() + " tests");
             for(Object key : tests.keySet()){
@@ -103,11 +100,6 @@ public class BzmServiceManager {
             System.out.println(e);
             System.out.println("TeamCity plugin:IOException: Failed to get tests from server="
                     + this.blazeMeterUrl + " and userKey=" + this.userKey+": "+e.getMessage());
-        } catch (JSONException e) {
-            System.out.println(e);
-            System.out.println("TeamCity plugin:JSONException: Failed to get tests from server="
-                    + this.blazeMeterUrl + " and userKey=" + this.userKey+": "+e.getMessage());
-            // added on Jacob's request for issue investigation
         } catch (NullPointerException e){
             // added on Jacob's request for issue investigation
             System.out.println(e);
@@ -122,20 +114,44 @@ public class BzmServiceManager {
         return getTests().asMap();
     }
 
-    public String startTest(String testId, BuildProgressLogger logger) {
-        String masterId=null;
+    public String startTest(String testId, BuildProgressLogger logger) throws IOException, JSONException {
+        String masterId = null;
+        HashMap<String, String> startTestResp = new HashMap<String, String>();
         try {
-            TestType testType=this.getTestType(testId);
-            masterId = this.api.startTest(testId,testType);
-            this.masterId=masterId;
-        } catch (JSONException e) {
+            boolean collection = collection(testId, this.api);
+            String testId_num=Utils.getTestId(testId);
+            startTestResp = api.startTest(testId_num, collection);
+            this.masterId = startTestResp.get(JsonConstants.ID);
+        } catch (Exception e) {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
-            logger.exception(e);
-        } catch (NullPointerException e){
             logger.exception(e);
         }
         return masterId;
     }
+
+
+    public static boolean collection(String testId,Api api) throws Exception{
+        boolean exists=false;
+        boolean collection=false;
+
+        LinkedHashMultimap tests = api.testsMultiMap();
+        Set<Map.Entry> entries = tests.entries();
+        for (Map.Entry e : entries) {
+            int point = ((String) e.getValue()).indexOf(".");
+            if (testId.contains(((String) e.getValue()).substring(0,point))) {
+                collection = (((String) e.getValue()).substring(point+1)).contains("multi");
+                exists=true;
+            }
+            if (collection) {
+                break;
+            }
+        }
+        if(!exists){
+            throw new Exception("Test with test id = "+testId+" is not present on server");
+        }
+        return collection;
+    }
+
 
     public void junitXml(String masterId, File junitDir) {
         String junitReport = "";
@@ -175,7 +191,7 @@ public class BzmServiceManager {
         }
     }
 
-    public void jtlReports(String masterId, File jtlDir) {
+    public void jtlReports(String masterId, File jtlDir) throws IOException, JSONException {
         List<String> sessionsIds = this.api.getListOfSessionIds(masterId);
         for (String s : sessionsIds) {
             this.retrieveJtlForSession(s,jtlDir);
@@ -183,8 +199,8 @@ public class BzmServiceManager {
     }
 
 
-    public void retrieveJtlForSession(String sessionId, File jtlDir){
-            JSONObject jo = this.api.retrieveJTLZIP(sessionId);
+    public void retrieveJtlForSession(String sessionId, File jtlDir) throws IOException, JSONException {
+            JSONObject jo = this.api.retrieveJtlZip(sessionId);
             String dataUrl = null;
             try {
                 JSONArray data = jo.getJSONObject(JsonConstants.RESULT).getJSONArray(JsonConstants.DATA);
@@ -241,8 +257,6 @@ public class BzmServiceManager {
         TestStatus status=null;
         try {
             status=this.api.masterStatus(testId);
-        } catch (JSONException e) {
-            logger.exception(e);
         } catch (NullPointerException e){
             logger.exception(e);
         }
@@ -305,26 +319,6 @@ public class BzmServiceManager {
         }finally {
             return reportUrl;
         }}
-
-    private TestType getTestType(String testId){
-        TestType testType=TestType.http;
-        logger.message("Detecting testType....");
-        try{
-            JSONArray result=this.api.getTestsJSON().getJSONArray(JsonConstants.RESULT);
-            int resultLength=result.length();
-            for (int i=0;i<resultLength;i++){
-                JSONObject jo=result.getJSONObject(i);
-                if(String.valueOf(jo.getInt(JsonConstants.ID)).equals(testId)){
-                    testType= TestType.valueOf(jo.getString(JsonConstants.TYPE));
-                    logger.message("Received testType=" + testType.toString() + " for testId=" + testId);
-                }
-            }
-        } catch (Exception e) {
-            logger.message("Error while detecting type of test:" + e);
-        }finally {
-            return testType;
-        }
-    }
 
     public void waitNotActive(String testId){
 

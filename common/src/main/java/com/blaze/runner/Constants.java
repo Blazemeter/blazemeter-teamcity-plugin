@@ -23,6 +23,7 @@ public interface Constants {
 	String USER_KEY = "USER_KEY";
 	String BLAZEMETER_URL = "BLAZEMETER_URL";
     String DEFAULT_BZM_SERVER="https://a.blazemeter.com";
+	String UNKNOWN_TYPE="unknown_type";
 
 	//settings properties
 	String SETTINGS_ALL_TESTS_ID = "all_tests";
@@ -41,4 +42,7 @@ public interface Constants {
 	String PROXY_USER="http.proxyUser";
 	String PROXY_PASS="http.proxyPassword";
 	String USE_PROXY="http.useProxy";
+	String HTTP_LOG="http-log";
+	String THREE_DOTS ="...";
+
 }

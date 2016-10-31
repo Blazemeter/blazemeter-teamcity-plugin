@@ -14,52 +14,68 @@
 
 package com.blaze.api;
 
-import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
+import com.blaze.runner.TestStatus;
+import okhttp3.MediaType;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.mail.MessagingException;
+import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+
 
 public interface Api {
 
-    TestStatus masterStatus(String testId) throws JSONException;
+    MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    MediaType TEXT = MediaType.parse("text/plain; charset=ISO-8859-1");
+    String ACCEPT="Accept";
+    String CONTENT_TYPE="Content-type";
+    String APP_JSON="application/json";
+    String APP_JSON_UTF_8="application/json; charset=UTF-8";
 
-    String startTest(String testId,TestType testType) throws JSONException;
+    String APP_KEY = "jnk100x987c06f4e10c4";
 
-    boolean stopTest(String testId) throws Exception;
-
-    JSONObject testReport(String reportId) throws JSONException;
-
-    LinkedHashMultimap<String, String> getTestList() throws IOException, JSONException;
-
-    JSONObject getUser();
-
-    boolean active(String testId);
+    TestStatus masterStatus(String id);
 
     int getTestMasterStatusCode(String id);
 
-    JSONObject getCIStatus(String sessionId) throws JSONException;
+    HashMap<String,String> startTest(String testId, boolean collection) throws JSONException,IOException;
 
-    JSONObject postJsonConfig(String testId, JSONObject data);
+    int getTestCount() throws JSONException, IOException, ServletException;
 
-    JSONObject createTest(JSONObject data);
+    JSONObject stopTest(String testId) throws IOException, JSONException;
 
-    String retrieveJUNITXML(String sessionId);
+    void terminateTest(String testId) throws IOException;
 
-    JSONObject retrieveJTLZIP(String sessionId);
+    JSONObject testReport(String reportId);
 
-    JSONObject generatePublicToken(String sessionId);
+    LinkedHashMultimap<String, String> testsMultiMap() throws IOException, MessagingException;
 
-    JSONObject terminateTest(String testId);
+    JSONObject getUser() throws IOException,JSONException;
 
-    JSONObject getTestsJSON();
+    JSONObject getCIStatus(String sessionId) throws JSONException, IOException;
+
+    boolean active(String testId);
+
+    String retrieveJUNITXML(String sessionId) throws IOException;
+
+    JSONObject retrieveJtlZip(String sessionId) throws IOException, JSONException;
+
+    List<String> getListOfSessionIds(String masterId) throws IOException,JSONException;
+
+    JSONObject generatePublicToken(String sessionId)throws IOException,JSONException;
 
     String getBlazeMeterURL();
 
-    BzmHttpWrapper getBzmHttpWr();
-    void setBzmHttpWr(BzmHttpWrapper bzmHttpWr);
+    boolean ping() throws Exception;
 
-    List<String> getListOfSessionIds(String masterId);
+    boolean notes(String note,String masterId)throws Exception;
+
+    boolean properties(JSONArray properties, String sessionId) throws Exception;
+
+    public JSONObject testConfig(String testId) throws IOException, JSONException;
 }
