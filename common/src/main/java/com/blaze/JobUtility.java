@@ -126,7 +126,7 @@ public class JobUtility {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
             logger.exception(e);
         }
-        return masterId;
+        return this.masterId;
     }
 
 

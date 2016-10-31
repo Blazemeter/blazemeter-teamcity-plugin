@@ -18,7 +18,7 @@ public interface JsonConstants {
     String ID="id";
     String NOTE="note";
     String CODE="code";
-    String TEST_ID="test_id";
+    String TEST_ID="testId";
     String RESPONSE_CODE="response_code";
     String ERROR="error";
     String RESULT="result";

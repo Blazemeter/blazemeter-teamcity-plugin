@@ -191,7 +191,7 @@ public class ApiV3Impl implements Api {
             result = (JSONObject) jo.get(JsonConstants.RESULT);
             startResp.put(JsonConstants.ID, String.valueOf(result.get(JsonConstants.ID)));
             startResp.put(JsonConstants.TEST_ID, collection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)):
-                    result.getString(JsonConstants.TEST_ID));
+                    String.valueOf(result.get(JsonConstants.TEST_ID)));
             startResp.put(JsonConstants.NAME, result.getString(JsonConstants.NAME));
         } catch (Exception e) {
             startResp.put(JsonConstants.ERROR, jo.get(JsonConstants.ERROR).toString());
