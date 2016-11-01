@@ -44,7 +44,6 @@ public class ApiV3Impl implements Api {
 
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
 
-    private boolean useProxy=false;
     private String proxyHost=null;
     private int proxyPort=0;
     private String proxyUser=null;
@@ -68,9 +67,33 @@ public class ApiV3Impl implements Api {
             httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
             this.proxy = Proxy.NO_PROXY;
             this.auth = Authenticator.NONE;
+            proxyHost = System.getProperty(Constants.PROXY_HOST);
+            if (!StringUtils.isBlank(this.proxyHost)) {
+                try {
+                    this.proxyPort = Integer.parseInt(System.getProperty(Constants.PROXY_PORT));
+                } catch (NumberFormatException nfe) {
+                    logger.warn("Failed to read http.proxyPort: ", nfe);
+                }
 
+                this.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
+                this.proxyUser = System.getProperty(Constants.PROXY_USER);
+                logger.info("Using proxy.user=" + this.proxyUser);
+                this.proxyPass = System.getProperty(Constants.PROXY_PASS);
+                logger.info("Using proxy.pass=" + this.proxyPass);
+            }
+            if (!StringUtils.isBlank(this.proxyUser) && !StringUtils.isBlank(this.proxyPass)) {
+                this.auth = new Authenticator() {
+                    @Override
+                    public Request authenticate(Route route, Response response) throws IOException {
+                        String credential = Credentials.basic(proxyUser, proxyPass);
+                        return response.request().newBuilder()
+                                .header("Proxy-Authorization", credential)
+                                .build();
+                    }
+                };
+            }
             okhttp = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
+                    .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .addInterceptor(httpLog).proxy(this.proxy)
                     .addInterceptor(new RetryInterceptor(this.logger))
