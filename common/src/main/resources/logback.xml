@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="true">
-    <property name="log_file_name" value="tc-bzm.log" />
+    <property name="teamcity-bzm-log" value="teamcity-bzm.log" />
     <appender name="TC-BZM"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!--<file>${catalina.home}/logs/${log_file_name}</file>-->
-        <file>/tmp/logs/${log_file_name}</file>
+        <file>${catalina.home}/logs/${teamcity-bzm-log}</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 %d{yyyy-MM-dd HH:mm:ss} - %msg%n
             </Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>/tmp/logs/archived/${log_file_name}.%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>${catalina.home}/logs/archived/${teamcity-bzm-log}.%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
