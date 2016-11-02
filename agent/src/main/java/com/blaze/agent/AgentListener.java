@@ -22,16 +22,12 @@ import jetbrains.buildServer.util.EventDispatcher;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.blaze.JobUtility;
+public class AgentListener extends AgentLifeCycleAdapter {
 
-public class AgentListener extends AgentLifeCycleAdapter{
-	
-	private JobUtility bzmServiceManager;
-	
-	public AgentListener(@NotNull final EventDispatcher<AgentLifeCycleListener> dispatcher){
+	public AgentListener(@NotNull final EventDispatcher<AgentLifeCycleListener> dispatcher) {
 		dispatcher.addListener(this);
 	}
-	
+
 	@Override
 	public void beforeBuildInterrupted(@NotNull AgentRunningBuild runningBuild, @NotNull BuildInterruptReason reason) {
 		super.beforeBuildInterrupted(runningBuild, reason);

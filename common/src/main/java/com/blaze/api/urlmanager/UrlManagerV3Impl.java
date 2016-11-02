@@ -21,6 +21,8 @@ import java.net.URLEncoder;
 public class UrlManagerV3Impl implements UrlManager {
 
     private String serverUrl = "";
+
+    public UrlManagerV3Impl(){};
     public UrlManagerV3Impl(String blazeMeterUrl) {
         this.serverUrl = blazeMeterUrl;
     }
@@ -28,6 +30,11 @@ public class UrlManagerV3Impl implements UrlManager {
     @Override
     public String getServerUrl() {
         return serverUrl;
+    }
+
+    @Override
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl =serverUrl;
     }
 
     @Override
@@ -195,11 +202,6 @@ public class UrlManagerV3Impl implements UrlManager {
 
         return getTresholds;
 
-    }
-
-    @Override
-    public void setServerUrl(String serverUrl) {
-        this.serverUrl =serverUrl;
     }
 
     @Override

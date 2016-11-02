@@ -51,9 +51,14 @@ public class ApiV3Impl implements Api {
 
     private Proxy proxy = null;
     private Authenticator auth = null;
-    private final String apiKey;
+    private String apiKey;
+    private String serverUrl;
     UrlManager urlManager;
     private OkHttpClient okhttp = null;
+
+
+    public ApiV3Impl(){
+    }
 
     public ApiV3Impl(String apiKey, String blazeMeterUrl){
         this(apiKey, blazeMeterUrl,new HttpLoggingInterceptor());
@@ -62,7 +67,8 @@ public class ApiV3Impl implements Api {
     public ApiV3Impl(String apiKey, String blazeMeterUrl,
                      HttpLoggingInterceptor httpLog) {
         this.apiKey = apiKey;
-        urlManager = new UrlManagerV3Impl(blazeMeterUrl);
+        this.serverUrl=blazeMeterUrl;
+        urlManager = new UrlManagerV3Impl(this.serverUrl);
         try {
             httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
             this.proxy = Proxy.NO_PROXY;
@@ -296,6 +302,10 @@ public class ApiV3Impl implements Api {
         }
     }
 
+    public LinkedHashMultimap<String, String> getTestsMultiMap() throws IOException, MessagingException {
+      return  this.testsMultiMap();
+    }
+
     @Override
     public LinkedHashMultimap<String, String> testsMultiMap() throws IOException, MessagingException {
 
@@ -380,15 +390,6 @@ public class ApiV3Impl implements Api {
         return jo;
     }
 
-
-    void setBlazeMeterURL(String blazeMeterURL) {
-        this.urlManager.setServerUrl(blazeMeterURL);
-    }
-
-    @Override
-    public String getBlazeMeterURL() {
-        return this.urlManager.getServerUrl();
-    }
 
     @Override
     public String retrieveJUNITXML(String sessionId) throws IOException{
@@ -542,5 +543,30 @@ public class ApiV3Impl implements Api {
         Request r = new Request.Builder().url(url).get().build();
         JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         return jo;
+    }
+
+    @Override
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    @Override
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+
+    @Override
+    public String getServerUrl() {
+        return this.serverUrl;
+    }
+
+    @Override
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    public void setUrlManager(UrlManager urlManager) {
+        this.urlManager = urlManager;
     }
 }

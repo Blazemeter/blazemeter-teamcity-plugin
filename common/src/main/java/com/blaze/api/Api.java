@@ -69,7 +69,9 @@ public interface Api {
 
     JSONObject generatePublicToken(String sessionId)throws IOException,JSONException;
 
-    String getBlazeMeterURL();
+    String getServerUrl();
+
+    void setServerUrl(String serverUrl);
 
     boolean ping() throws Exception;
 
@@ -78,4 +80,8 @@ public interface Api {
     boolean properties(JSONArray properties, String sessionId) throws Exception;
 
     public JSONObject testConfig(String testId) throws IOException, JSONException;
+
+    public String getApiKey();
+    public void setApiKey(String apiKey);
 }
+
