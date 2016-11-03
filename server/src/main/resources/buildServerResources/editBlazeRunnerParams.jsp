@@ -19,7 +19,7 @@
                value="${propertiesBean.properties['BLAZEMETER_URL']}"/>
     </c:when>
     <c:otherwise>
-        <c:set target="${api}" property="serverUrl" value="${blazeMeterUrl}"/>
+        <c:set target="${url}" property="serverUrl" value="${blazeMeterUrl}"/>
     </c:otherwise>
 </c:choose>
 <c:set target="${api}" property="urlManager" value="${url}"/>

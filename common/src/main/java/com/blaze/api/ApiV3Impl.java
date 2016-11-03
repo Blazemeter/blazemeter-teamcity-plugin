@@ -34,9 +34,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -49,30 +47,18 @@ public class ApiV3Impl implements Api {
     private String proxyUser=null;
     private String proxyPass=null;
 
-    private Proxy proxy = null;
-    private Authenticator auth = null;
+    private Proxy proxy = Proxy.NO_PROXY;
+    private Authenticator auth = Authenticator.NONE;
     private String apiKey;
     private String serverUrl;
     UrlManager urlManager;
     private OkHttpClient okhttp = null;
+    private HttpLoggingInterceptor httpLog=new HttpLoggingInterceptor();
 
 
     public ApiV3Impl(){
-    }
-
-    public ApiV3Impl(String apiKey, String blazeMeterUrl){
-        this(apiKey, blazeMeterUrl,new HttpLoggingInterceptor());
-    }
-
-    public ApiV3Impl(String apiKey, String blazeMeterUrl,
-                     HttpLoggingInterceptor httpLog) {
-        this.apiKey = apiKey;
-        this.serverUrl=blazeMeterUrl;
-        urlManager = new UrlManagerV3Impl(this.serverUrl);
         try {
             httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
-            this.proxy = Proxy.NO_PROXY;
-            this.auth = Authenticator.NONE;
             proxyHost = System.getProperty(Constants.PROXY_HOST);
             if (!StringUtils.isBlank(this.proxyHost)) {
                 try {
@@ -107,6 +93,20 @@ public class ApiV3Impl implements Api {
         } catch (Exception ex) {
             this.logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
         }
+
+    }
+
+    public ApiV3Impl(String apiKey, String blazeMeterUrl){
+        this(apiKey, blazeMeterUrl,new HttpLoggingInterceptor());
+    }
+
+    public ApiV3Impl(String apiKey, String blazeMeterUrl,
+                     HttpLoggingInterceptor httpLog) {
+        this();
+        this.apiKey = apiKey;
+        this.serverUrl=blazeMeterUrl;
+        this.urlManager = new UrlManagerV3Impl(this.serverUrl);
+        this.httpLog = httpLog;
     }
 
 
@@ -302,8 +302,8 @@ public class ApiV3Impl implements Api {
         }
     }
 
-    public LinkedHashMultimap<String, String> getTestsMultiMap() throws IOException, MessagingException {
-      return  this.testsMultiMap();
+    public Map<String, Collection<String>> getTestsMultiMap() throws IOException, MessagingException {
+      return  this.testsMultiMap().asMap();
     }
 
     @Override
