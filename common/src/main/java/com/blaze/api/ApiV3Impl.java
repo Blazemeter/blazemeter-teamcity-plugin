@@ -1,15 +1,15 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2016 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze.api;
@@ -42,10 +42,10 @@ public class ApiV3Impl implements Api {
 
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
 
-    private String proxyHost=null;
-    private int proxyPort=0;
-    private String proxyUser=null;
-    private String proxyPass=null;
+    private String proxyHost = null;
+    private int proxyPort = 0;
+    private String proxyUser = null;
+    private String proxyPass = null;
 
     private Proxy proxy = Proxy.NO_PROXY;
     private Authenticator auth = Authenticator.NONE;
@@ -53,12 +53,11 @@ public class ApiV3Impl implements Api {
     private String serverUrl;
     UrlManager urlManager;
     private OkHttpClient okhttp = null;
-    private HttpLoggingInterceptor httpLog=new HttpLoggingInterceptor();
+    private String httpl = null;
 
 
-    public ApiV3Impl(){
+    public ApiV3Impl() {
         try {
-            httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
             proxyHost = System.getProperty(Constants.PROXY_HOST);
             if (!StringUtils.isBlank(this.proxyHost)) {
                 try {
@@ -85,10 +84,11 @@ public class ApiV3Impl implements Api {
                 };
             }
             okhttp = new OkHttpClient.Builder()
+                    .addInterceptor(new RetryInterceptor(this.logger))
+                    .addInterceptor(new HttpLoggingInterceptor())
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
-                    .addInterceptor(httpLog).proxy(this.proxy)
-                    .addInterceptor(new RetryInterceptor(this.logger))
+                    .proxy(this.proxy)
                     .proxyAuthenticator(this.auth).build();
         } catch (Exception ex) {
             this.logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
@@ -96,17 +96,30 @@ public class ApiV3Impl implements Api {
 
     }
 
-    public ApiV3Impl(String apiKey, String blazeMeterUrl){
-        this(apiKey, blazeMeterUrl,new HttpLoggingInterceptor());
-    }
-
-    public ApiV3Impl(String apiKey, String blazeMeterUrl,
-                     HttpLoggingInterceptor httpLog) {
+    public ApiV3Impl(String apiKey, String blazeMeterUrl) {
         this();
         this.apiKey = apiKey;
-        this.serverUrl=blazeMeterUrl;
+        this.serverUrl = blazeMeterUrl;
         this.urlManager = new UrlManagerV3Impl(this.serverUrl);
-        this.httpLog = httpLog;
+    }
+
+    public ApiV3Impl(String apiKey, String blazeMeterUrl, String httpl) {
+        this();
+        this.apiKey = apiKey;
+        this.serverUrl = blazeMeterUrl;
+        this.urlManager = new UrlManagerV3Impl(this.serverUrl);
+        this.httpl = httpl;
+        HttpLoggingInterceptor httpLog;
+        HttpLogger httpLogger = new HttpLogger(this.httpl);
+        httpLog = new HttpLoggingInterceptor(httpLogger);
+        httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
+        okhttp = new OkHttpClient.Builder()
+                .addInterceptor(new RetryInterceptor(this.logger))
+                .addInterceptor(httpLog)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .proxy(this.proxy)
+                .proxyAuthenticator(this.auth).build();
     }
 
 
@@ -144,8 +157,8 @@ public class ApiV3Impl implements Api {
         try {
             String url = this.urlManager.masterStatus(APP_KEY, apiKey, id);
             Request r = new Request.Builder().url(url).get()
-            .addHeader(ACCEPT, APP_JSON).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
+                    .addHeader(ACCEPT, APP_JSON).
+                            addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
             JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             if (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) {
@@ -159,7 +172,7 @@ public class ApiV3Impl implements Api {
                         testStatus = TestStatus.Error;
                     } else {
                         testStatus = TestStatus.NotRunning;
-                        this.logger.info("Master with id="+id+" has status = "+TestStatus.NotRunning.name());
+                        this.logger.info("Master with id=" + id + " has status = " + TestStatus.NotRunning.name());
                     }
                 }
             }
@@ -176,9 +189,9 @@ public class ApiV3Impl implements Api {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(testId)) return null;
         String url = "";
         HashMap<String, String> startResp = new HashMap<String, String>();
-        if(collection){
+        if (collection) {
             url = this.urlManager.collectionStart(APP_KEY, apiKey, testId);
-        }else {
+        } else {
             url = this.urlManager.testStart(APP_KEY, apiKey, testId);
         }
         RequestBody emptyBody = RequestBody.create(null, new byte[0]);
@@ -219,7 +232,7 @@ public class ApiV3Impl implements Api {
         try {
             result = (JSONObject) jo.get(JsonConstants.RESULT);
             startResp.put(JsonConstants.ID, String.valueOf(result.get(JsonConstants.ID)));
-            startResp.put(JsonConstants.TEST_ID, collection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)):
+            startResp.put(JsonConstants.TEST_ID, collection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
                     String.valueOf(result.get(JsonConstants.TEST_ID)));
             startResp.put(JsonConstants.NAME, result.getString(JsonConstants.NAME));
         } catch (Exception e) {
@@ -265,7 +278,7 @@ public class ApiV3Impl implements Api {
     }
 
     @Override
-    public void terminateTest(String testId) throws IOException{
+    public void terminateTest(String testId) throws IOException {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(testId)) return;
         String url = this.urlManager.testTerminate(APP_KEY, apiKey, testId);
         RequestBody emptyBody = RequestBody.create(null, new byte[0]);
@@ -276,7 +289,7 @@ public class ApiV3Impl implements Api {
     }
 
 
-   @Override
+    @Override
     public JSONObject testReport(String reportId) {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(reportId)) return null;
 
@@ -303,7 +316,7 @@ public class ApiV3Impl implements Api {
     }
 
     public Map<String, Collection<String>> getTestsMultiMap() throws IOException, MessagingException {
-      return  this.testsMultiMap().asMap();
+        return this.testsMultiMap().asMap();
     }
 
     @Override
@@ -371,7 +384,7 @@ public class ApiV3Impl implements Api {
     }
 
     @Override
-    public JSONObject getUser() throws IOException,JSONException {
+    public JSONObject getUser() throws IOException, JSONException {
         if (StringUtils.isBlank(apiKey)) return null;
         String url = this.urlManager.getUser(APP_KEY, apiKey);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).build();
@@ -392,7 +405,7 @@ public class ApiV3Impl implements Api {
 
 
     @Override
-    public String retrieveJUNITXML(String sessionId) throws IOException{
+    public String retrieveJUNITXML(String sessionId) throws IOException {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(sessionId)) return null;
         String url = this.urlManager.retrieveJUNITXML(APP_KEY, apiKey, sessionId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
@@ -414,19 +427,19 @@ public class ApiV3Impl implements Api {
     }
 
     @Override
-    public JSONObject generatePublicToken(String sessionId) throws IOException,JSONException{
+    public JSONObject generatePublicToken(String sessionId) throws IOException, JSONException {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(sessionId)) return null;
 
         String url = this.urlManager.generatePublicToken(APP_KEY, apiKey, sessionId);
         RequestBody emptyBody = RequestBody.create(null, new byte[0]);
         Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
                 addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-        JSONObject jo=new JSONObject(okhttp.newCall(r).execute().body().string());
+        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         return jo;
     }
 
     @Override
-    public List<String> getListOfSessionIds(String masterId) throws IOException,JSONException{
+    public List<String> getListOfSessionIds(String masterId) throws IOException, JSONException {
         List<String> sessionsIds = new ArrayList<String>();
         String url = this.urlManager.listOfSessionIds(APP_KEY, apiKey, masterId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
@@ -449,7 +462,7 @@ public class ApiV3Impl implements Api {
 
     @Override
     public boolean active(String testId) {
-        boolean isActive=false;
+        boolean isActive = false;
         String url = this.urlManager.activeTests(APP_KEY, apiKey);
         JSONObject jo = null;
         try {
@@ -460,16 +473,16 @@ public class ApiV3Impl implements Api {
             if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
                 result = (JSONObject) jo.get(JsonConstants.RESULT);
                 JSONArray tests = (JSONArray) result.get(JsonConstants.TESTS);
-                for(int i=0;i<tests.length();i++){
-                    if(String.valueOf(tests.getInt(i)).equals(testId)){
-                        isActive=true;
+                for (int i = 0; i < tests.length(); i++) {
+                    if (String.valueOf(tests.getInt(i)).equals(testId)) {
+                        isActive = true;
                         return isActive;
                     }
                 }
                 JSONArray collections = (JSONArray) result.get(JsonConstants.COLLECTIONS);
-                for(int i=0;i<collections.length();i++){
-                    if(String.valueOf(collections.getInt(i)).equals(testId)){
-                        isActive=true;
+                for (int i = 0; i < collections.length(); i++) {
+                    if (String.valueOf(collections.getInt(i)).equals(testId)) {
+                        isActive = true;
                         return isActive;
                     }
                 }
@@ -485,16 +498,16 @@ public class ApiV3Impl implements Api {
     }
 
     @Override
-    public boolean ping() throws Exception{
+    public boolean ping() throws Exception {
         String url = this.urlManager.version(APP_KEY);
-        JSONObject jo=null;
-        boolean ping=false;
-        try{
+        JSONObject jo = null;
+        boolean ping = false;
+        try {
             Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).build();
             jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            ping=jo.isNull(JsonConstants.ERROR);
-        }catch (Exception e){
-            this.logger.info("Failed to ping server: "+jo,e);
+            ping = jo.isNull(JsonConstants.ERROR);
+        } catch (Exception e) {
+            this.logger.info("Failed to ping server: " + jo, e);
             throw e;
         }
         return ping;
@@ -503,10 +516,10 @@ public class ApiV3Impl implements Api {
     @Override
     public boolean notes(String note, String masterId) throws Exception {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(masterId)) return false;
-        String noteEsc = StringEscapeUtils.escapeJson("{'"+ JsonConstants.NOTE+"':'"+note+"'}");
+        String noteEsc = StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}");
         String url = this.urlManager.masterId(APP_KEY, apiKey, masterId);
         JSONObject noteJson = new JSONObject(noteEsc);
-        RequestBody body = RequestBody.create(TEXT,noteJson.toString());
+        RequestBody body = RequestBody.create(TEXT, noteJson.toString());
         Request r = new Request.Builder().url(url).patch(body).build();
         JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         try {
@@ -523,7 +536,7 @@ public class ApiV3Impl implements Api {
     public boolean properties(JSONArray properties, String sessionId) throws Exception {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(sessionId)) return false;
         String url = this.urlManager.properties(APP_KEY, apiKey, sessionId);
-        RequestBody body = RequestBody.create(JSON,properties.toString());
+        RequestBody body = RequestBody.create(JSON, properties.toString());
         Request r = new Request.Builder().url(url).post(body).build();
         JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         try {

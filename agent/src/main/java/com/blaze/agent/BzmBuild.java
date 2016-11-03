@@ -44,9 +44,10 @@ public class BzmBuild {
     private String masterId;
     private String testId;
 
-    public BzmBuild(String userKey,String serverUrl,String testId){
-        this.api=new ApiV3Impl(userKey,serverUrl);
+    public BzmBuild(String userKey,String serverUrl,String testId,String httplf,BuildProgressLogger logger){
+        this.api=new ApiV3Impl(userKey,serverUrl,httplf);
         this.testId=testId;
+        this.logger=logger;
     };
 
     public boolean validateInput() throws IOException, MessagingException {

@@ -29,6 +29,7 @@ import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 
 import com.blaze.runner.Constants;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 
 import javax.mail.MessagingException;
@@ -88,8 +89,23 @@ public class BzmBuildProcess implements BuildProcess {
         jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
 
         Map<String, String> buildParams = agentRunningBuild.getSharedConfigParameters();
+        File ald=agent.getConfiguration().getAgentLogsDirectory();
+        String pn=agentRunningBuild.getProjectName();
+        String bn=agentRunningBuild.getBuildNumber();
+        File httpld;
+        File httplf;
+        try {
+            httpld = new File(ald, pn + "/" + bn);
+            FileUtils.forceMkdir(httpld);
+            httplf = new File(httpld, Constants.HTTP_LOG);
+            FileUtils.touch(httplf);
+            httplf.setWritable(true);
+        } catch (Exception e) {
+            throw new RunBuildException(e.getMessage());
+        }
+
         bzmBuild = new BzmBuild(((String) buildParams.get(Constants.USER_KEY)),
-                ((String) buildParams.get(Constants.BLAZEMETER_URL)), testId);
+                ((String) buildParams.get(Constants.BLAZEMETER_URL)), testId, httplf.getAbsolutePath(),logger);
 
         try {
             if (!this.bzmBuild.validateInput()) {
