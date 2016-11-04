@@ -18,7 +18,7 @@ import com.blaze.utils.Utils;
 
 public interface UrlManager {
 
-    String CLIENT_IDENTIFICATION = "&_clientId=CI_JENKINS&_clientVersion="
+    String CLIENT_IDENTIFICATION = "&_clientId=CI_TEAMCITY&_clientVersion="
             + Utils.version();
 
     String LATEST="/api/latest";
