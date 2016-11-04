@@ -140,7 +140,7 @@ public class ApiV3Impl implements Api {
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             statusCode = result.getInt("progress");
         } catch (Exception e) {
-            this.logger.warn("Error getting status ", e);
+            this.logger.warn("Error getting master status code: ", e);
         } finally {
             {
                 return statusCode;
@@ -171,16 +171,16 @@ public class ApiV3Impl implements Api {
                     testStatus = TestStatus.Running;
                 } else {
                     if (result.has(JsonConstants.ERRORS) && !result.get(JsonConstants.ERRORS).equals(JSONObject.NULL)) {
-                        this.logger.debug("Error received from server: " + result.get(JsonConstants.ERRORS).toString());
+                        this.logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
                         testStatus = TestStatus.Error;
                     } else {
                         testStatus = TestStatus.NotRunning;
-                        this.logger.info("Master with id=" + id + " has status = " + TestStatus.NotRunning.name());
+                        this.logger.info("Master with id = " + id + " has status = " + TestStatus.NotRunning.name());
                     }
                 }
             }
         } catch (Exception e) {
-            this.logger.warn("Error getting status ", e);
+            this.logger.warn("Error while getting master status ", e);
             testStatus = TestStatus.Error;
         }
         return testStatus;
@@ -203,7 +203,7 @@ public class ApiV3Impl implements Api {
         JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         if (jo == null) {
             if (this.logger.isDebugEnabled())
-                this.logger.debug("Received NULL from server while start operation: will do 5 retries");
+                this.logger.debug("Received null json object from server while start operation: will do 5 retries");
             boolean isActive = this.active(testId);
             if (!isActive) {
                 int retries = 1;
@@ -219,10 +219,10 @@ public class ApiV3Impl implements Api {
                         }
                     } catch (InterruptedException ie) {
                         if (this.logger.isDebugEnabled())
-                            this.logger.debug("Start operation was interrupted at pause during " + retries + " request retry.");
+                            this.logger.debug("Start operation was interrupted at pause during " + retries + " retry.");
                     } catch (Exception ex) {
                         if (this.logger.isDebugEnabled())
-                            this.logger.debug("Received bad response from server while starting test: " + retries + " retry.");
+                            this.logger.debug("Received error from server while starting test: " + retries + " retry.");
                     } finally {
                         retries++;
                     }
@@ -400,7 +400,7 @@ public class ApiV3Impl implements Api {
     @Override
     public JSONObject getCIStatus(String sessionId) throws JSONException, NullPointerException, IOException {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(sessionId)) return null;
-        this.logger.info("Trying to get JTLZIP url for the sessionId = " + sessionId);
+        this.logger.info("Trying to get jtl url for the sessionId = " + sessionId);
         String url = this.urlManager.getCIStatus(APP_KEY, apiKey, sessionId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                 addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
@@ -422,9 +422,9 @@ public class ApiV3Impl implements Api {
     @Override
     public JSONObject retrieveJtlZip(String sessionId) throws IOException, JSONException {
         if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(sessionId)) return null;
-        this.logger.info("Trying to get JTLZIP url for the sessionId=" + sessionId);
+        this.logger.info("Trying to get jtl url for the sessionId=" + sessionId);
         String url = this.urlManager.retrieveJTLZIP(APP_KEY, apiKey, sessionId);
-        this.logger.info("Trying to retrieve JTLZIP json for the sessionId = " + sessionId);
+        this.logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                 addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
         JSONObject jtlzip = new JSONObject(okhttp.newCall(r).execute().body().string());
@@ -532,7 +532,7 @@ public class ApiV3Impl implements Api {
                 return false;
             }
         } catch (Exception e) {
-            throw new Exception("Failed to submit report notest to masterId = " + masterId, e);
+            throw new Exception("Failed to submit report notes to masterId = " + masterId, e);
         }
         return true;
     }

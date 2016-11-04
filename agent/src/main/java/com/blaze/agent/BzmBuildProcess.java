@@ -80,7 +80,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void start() throws RunBuildException {
-        logger.message("BlazeMeter agent started: version=" + Utils.version());
+        logger.message("BlazeMeter agent started: version = " + Utils.version());
         Map<String, String> params = buildRunCtxt.getRunnerParameters();
         testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
         junit=Boolean.valueOf(params.get(Constants.SETTINGS_JUNIT));
@@ -121,20 +121,21 @@ public class BzmBuildProcess implements BuildProcess {
     @SuppressWarnings("static-access")
     @Override
     public BuildFinishedStatus waitFor() throws RunBuildException {
-        logger.message("Attempting to start test with id:" + testId);
+        logger.message("Attempting to start test with id: " + testId);
         String masterId = null;
         try {
             masterId = bzmBuild.startTest(testId, logger);
         } catch (IOException e) {
-            logger.error("Failed to start test: testId="+this.testId+"->"+e.getMessage());
+            logger.error("Failed to start test: testId = "+this.testId+"->"+e.getMessage());
         } catch (JSONException e) {
-            logger.error("Failed to start test: testId="+this.testId+"->"+e.getMessage());
+            logger.error("Failed to start test: testId = "+this.testId+"->"+e.getMessage());
         }
         BuildFinishedStatus result = null;
         if (masterId.isEmpty()) {
             return BuildFinishedStatus.FINISHED_FAILED;
         } else {
-            logger.message("Test initialization is started... Waiting for DATA_RECEIVED status");
+            logger.message("Test initialization is started");
+            logger.message("Waiting for [DATA_RECEIVED] status");
             String reportUrl = bzmBuild.getReportUrl(masterId);
             logger.message("Test report will be available at " + reportUrl);
             if (StringUtil.isNotEmpty(reportUrl)) {

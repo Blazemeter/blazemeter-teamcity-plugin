@@ -106,14 +106,14 @@ public class BzmBuild {
 
     public void junitXml(String masterId, File junitDir) {
         String junitReport = "";
-        logger.message("Requesting JUNIT report from server, masterId=" + masterId);
+        logger.message("Requesting junit report from server, masterId = " + masterId);
         try {
             junitReport = this.api.retrieveJUNITXML(masterId);
-            logger.message("Received Junit report from server");
+            logger.message("Received junit report from server");
             logger.message("Saving junit report to " + junitDir.getAbsolutePath());
             Utils.saveJunit(junitReport, junitDir, masterId, logger);
         } catch (Exception e) {
-            logger.message("Problems with receiving JUNIT report from server, masterId=" + masterId + ": " + e.getMessage());
+            logger.message("Problems with receiving junit report from server, masterId = " + masterId + ": " + e.getMessage());
         }
     }
 
@@ -136,7 +136,7 @@ public class BzmBuild {
                 terminate = false;
             }
         } catch (Exception e) {
-            logger.warning("Error while trying to stop test with testId=" + masterId + ", " + e.getMessage());
+            logger.warning("Error while trying to stop test with testId = " + masterId + ", " + e.getMessage());
         } finally {
             return terminate;
         }
@@ -159,7 +159,7 @@ public class BzmBuild {
             if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
                 publicToken = result.getString("publicToken");
-                reportUrl = this.api.getServerUrl() + "/app/?public-token=" + publicToken + "#masters/" + masterId + "/summary";
+                reportUrl = this.api.getServerUrl() + "/app/?public-token = " + publicToken + "#masters/" + masterId + "/summary";
             } else {
                 logger.warning("Problems with generating public-token for report URL: " + jo.get(JsonConstants.ERROR).toString());
                 reportUrl = this.api.getServerUrl() + "/app/#masters/" + masterId + "/summary";
@@ -190,16 +190,16 @@ public class BzmBuild {
             File jtlZip = new File(jtlFilePath);
             URL url = new URL(dataUrl);
             FileUtils.copyURLToFile(url, jtlZip);
-            logger.message("Downloading JTLZIP from " + url);
+            logger.message("Downloading jtl from " + url);
             logger.message("JTL zip location: " + jtlZip.getCanonicalPath());
         } catch (JSONException e) {
-            logger.warning("Unable to get  JTLZIP: "+e.getMessage());
+            logger.warning("Unable to get jtl: "+e.getMessage());
         } catch (MalformedURLException e) {
-            logger.warning("Unable to get  JTLZIP: "+e.getMessage());
+            logger.warning("Unable to get jtl: "+e.getMessage());
         } catch (IOException e) {
-            logger.warning("Unable to get  JTLZIP: "+e.getMessage());
+            logger.warning("Unable to get jtl: "+e.getMessage());
         } catch (NullPointerException e) {
-            logger.warning("Unable to get  JTLZIP: "+e.getMessage());
+            logger.warning("Unable to get jtl: "+e.getMessage());
         }
     }
 
@@ -233,14 +233,14 @@ public class BzmBuild {
                 logger.message("Having errors while test status validation...");
                 logger.message("Errors: " + errors.toString());
                 ciStatus=CIStatus.errors;
-                logger.message("Setting CIStatus="+CIStatus.errors.name());
+                logger.message("Setting CIStatus = "+CIStatus.errors.name());
                 return ciStatus;
             }
             if(failures.length()>0){
                 logger.message("Having failures while test status validation...");
                 logger.message("Failures: " + failures.toString());
                 ciStatus=CIStatus.failures;
-                logger.message("Setting CIStatus="+CIStatus.failures.name());
+                logger.message("Setting CIStatus = "+CIStatus.failures.name());
                 return ciStatus;
             }
             logger.message("No errors/failures while validating CIStatus: setting "+CIStatus.success.name());
@@ -260,7 +260,7 @@ public class BzmBuild {
                 logger.warning("Received interrupted Exception: " + e.getMessage());
                 break;
             }
-            logger.message("Checking, if test is active, testId="+testId+", retry # "+activeCheck);
+            logger.message("Checking, if test is active, testId = "+testId+", retry # "+activeCheck);
             active=this.api.active(testId);
             activeCheck++;
         }
