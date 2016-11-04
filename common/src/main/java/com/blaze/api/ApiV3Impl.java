@@ -85,7 +85,6 @@ public class ApiV3Impl implements Api {
             }
             okhttp = new OkHttpClient.Builder()
                     .addInterceptor(new RetryInterceptor(this.logger))
-                    .addInterceptor(new HttpLoggingInterceptor())
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .proxy(this.proxy)
