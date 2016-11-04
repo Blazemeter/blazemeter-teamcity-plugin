@@ -60,17 +60,21 @@ public class ApiV3Impl implements Api {
         try {
             proxyHost = System.getProperty(Constants.PROXY_HOST);
             if (!StringUtils.isBlank(this.proxyHost)) {
+                logger.info("Using http.proxyHost = " + this.proxyHost);
+
                 try {
                     this.proxyPort = Integer.parseInt(System.getProperty(Constants.PROXY_PORT));
+                    logger.info("Using http.proxyPort = " + this.proxyPort);
+
                 } catch (NumberFormatException nfe) {
                     logger.warn("Failed to read http.proxyPort: ", nfe);
                 }
 
                 this.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(this.proxyHost, this.proxyPort));
                 this.proxyUser = System.getProperty(Constants.PROXY_USER);
-                logger.info("Using proxy.user=" + this.proxyUser);
+                logger.info("Using http.proxyUser = " + this.proxyUser);
                 this.proxyPass = System.getProperty(Constants.PROXY_PASS);
-                logger.info("Using proxy.pass=" + this.proxyPass);
+                logger.info("Using http.proxyPass = " + StringUtils.left(this.proxyPass,4));
             }
             if (!StringUtils.isBlank(this.proxyUser) && !StringUtils.isBlank(this.proxyPass)) {
                 this.auth = new Authenticator() {
@@ -326,11 +330,13 @@ public class ApiV3Impl implements Api {
             return null;
         } else {
             String url = this.urlManager.tests(APP_KEY, apiKey);
-            this.logger.info("Getting testList with URL=" + url.substring(0, url.indexOf("?") + 14));
+            this.logger.info("Getting tests: " + url.substring(0, url.indexOf("?") + 14));
             try {
                 Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                         addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
                 JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+                this.logger.info("Received json: " + jo.toString());
+
                 JSONArray result = null;
 
                 if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
@@ -349,7 +355,7 @@ public class ApiV3Impl implements Api {
                             try {
                                 en = result.getJSONObject(i);
                             } catch (JSONException e) {
-                                this.logger.warn("Error with the JSON while populating test list, " + e);
+                                this.logger.warn("JSONException while getting tests: " + e);
                             }
                             String id;
                             String name;
@@ -363,7 +369,7 @@ public class ApiV3Impl implements Api {
 
                                 }
                             } catch (JSONException ie) {
-                                this.logger.warn("Error with the JSON while populating test list, ", ie);
+                                this.logger.warn("JSONException while getting tests: " + ie);
                             }
                         }
 
@@ -372,9 +378,9 @@ public class ApiV3Impl implements Api {
                     }
                 }
             } catch (NullPointerException npe) {
-                this.logger.warn("Error while receiving answer from server - check connection/proxy settings ", npe);
+                this.logger.warn("Exception while getting tests - check connection/proxy settings: ", npe);
             } catch (Exception e) {
-                this.logger.warn("Error while populating test list, ", e);
+                this.logger.warn("Exception while getting tests: ", e);
             } finally {
                 return testListOrdered;
             }
