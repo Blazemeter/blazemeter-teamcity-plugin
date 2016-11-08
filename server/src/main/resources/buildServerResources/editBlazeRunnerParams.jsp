@@ -41,7 +41,6 @@
             <span class="smallNote">Select the test to execute.</span>
         </td>
     </tr>
-
 <tr>
     <th><label>Request junit:</label></th>
     <td>
@@ -49,7 +48,6 @@
                                 uncheckedValue="false"/>
     </td>
 </tr>
-
 <tr>
     <th><label>Request jtl:</label></th>
     <td>
@@ -57,8 +55,6 @@
                                 uncheckedValue="false"/>
     </td>
 </tr>
-
-
 <tr>
     <th><label>Junit report path:</label></th>
     <td>
@@ -74,8 +70,7 @@
 <tr>
     <th><label>Notes:</label></th>
     <td>
-        <props:multilineProperty name="blazeMeterPlugin.notes" linkTitle="" cols="30" rows="4"/>
+        <props:multilineProperty name="blazeMeterPlugin.notes" linkTitle="" cols="30" rows="4" expanded="true"/>
     </td>
 </tr>
-
 </l:settingsGroup>
