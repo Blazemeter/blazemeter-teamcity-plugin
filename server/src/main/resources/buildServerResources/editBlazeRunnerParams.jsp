@@ -71,5 +71,11 @@
         <props:textProperty name="blazeMeterPlugin.request.jtl.path"/>
     </td>
 </tr>
+<tr>
+    <th><label>Notes:</label></th>
+    <td>
+        <props:multilineProperty name="blazeMeterPlugin.notes" linkTitle="" cols="30" rows="4"/>
+    </td>
+</tr>
 
 </l:settingsGroup>

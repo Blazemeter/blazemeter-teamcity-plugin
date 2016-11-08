@@ -47,6 +47,7 @@ public class BzmBuildProcess implements BuildProcess {
     private boolean jtl;
     private String junitPath;
     private String jtlPath;
+    private String notes;
     private BuildAgent agent;
 
     final BuildProgressLogger logger;
@@ -87,7 +88,7 @@ public class BzmBuildProcess implements BuildProcess {
         jtl=Boolean.valueOf(params.get(Constants.SETTINGS_JTL));
         junitPath=params.get(Constants.SETTINGS_JUNIT_PATH);
         jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
-
+        notes = params.get(Constants.SETTINGS_NOTES);
         Map<String, String> buildParams = agentRunningBuild.getSharedConfigParameters();
         File ald=agent.getConfiguration().getAgentLogsDirectory();
         String pn=agentRunningBuild.getProjectName();
@@ -140,6 +141,9 @@ public class BzmBuildProcess implements BuildProcess {
             logger.message("Test report will be available at " + reportUrl);
             if (StringUtil.isNotEmpty(reportUrl)) {
                 this.agent.getConfiguration().addEnvironmentVariable(Constants.REPORT_URL + this.agentRunningBuild.getBuildNumber(), reportUrl);
+            }
+            if(StringUtil.isNotEmpty(this.notes)){
+                bzmBuild.notes(masterId,notes);
             }
         }
 

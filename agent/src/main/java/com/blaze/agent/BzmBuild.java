@@ -39,6 +39,7 @@ import java.util.*;
 public class BzmBuild {
 
     private static final int CHECK_INTERVAL = 60000;
+    private final static int DELAY = 10000;
     private BuildProgressLogger logger;
     private Api api;
     private String masterId;
@@ -159,7 +160,7 @@ public class BzmBuild {
             if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
                 publicToken = result.getString("publicToken");
-                reportUrl = this.api.getServerUrl() + "/app/?public-token = " + publicToken + "#masters/" + masterId + "/summary";
+                reportUrl = this.api.getServerUrl() + "/app/?public-token=" + publicToken + "#masters/" + masterId + "/summary";
             } else {
                 logger.warning("Problems with generating public-token for report URL: " + jo.get(JsonConstants.ERROR).toString());
                 reportUrl = this.api.getServerUrl() + "/app/#masters/" + masterId + "/summary";
@@ -282,6 +283,28 @@ public class BzmBuild {
             return testResult;
         }
     }
+
+
+    public boolean notes(String masterId, String notes) {
+        boolean note = false;
+        int n = 1;
+        while (!note && n < 6) {
+            try {
+                Thread.sleep(DELAY);
+                int statusCode = api.getTestMasterStatusCode(masterId);
+                if (statusCode > 20) {
+                    note = api.notes(notes, masterId);
+                }
+            } catch (Exception e) {
+                logger.warning("Failed to PATCH notes to test report on server: masterId=" + masterId + " " + e.getMessage());
+            } finally {
+                n++;
+            }
+
+        }
+        return note;
+    }
+
 
     public String masterId() {
         return masterId;

@@ -14,6 +14,7 @@
 
 package com.blaze.utils;
 
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import org.apache.commons.io.FileUtils;
@@ -54,7 +55,7 @@ public class Utils {
 
     public static File reportDir(BuildRunnerContext context, String reportDir){
         File reportFile=null;
-        if (reportDir.startsWith("/")|reportDir.matches("(^[a-zA-Z][:][\\\\].+)")) {
+        if (StringUtil.isNotEmpty(reportDir)&&(reportDir.startsWith("/")|reportDir.matches("(^[a-zA-Z][:][\\\\].+)"))) {
             reportFile = new File(FilenameUtils.normalize(reportDir));
         } else {
             reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()+"/"+reportDir));
@@ -90,6 +91,7 @@ public class Utils {
             logger.exception(e);
         }
     }
+
 
 
     public static void sleep(int sleepPeriod,BuildProgressLogger logger){
