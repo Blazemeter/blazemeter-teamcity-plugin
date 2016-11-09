@@ -32,6 +32,7 @@ public interface Constants {
 	String SETTINGS_JTL = "blazeMeterPlugin.request.jtl";
 	String SETTINGS_JTL_PATH = "blazeMeterPlugin.request.jtl.path";
 	String SETTINGS_NOTES = "blazeMeterPlugin.notes";
+	String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
 	String BZM_PROPERTIES_FILE="/userKeyFile.properties";
     String NOT_IMPLEMENTED="This call is not implemented.";
 

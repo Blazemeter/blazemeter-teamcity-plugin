@@ -30,6 +30,7 @@ import jetbrains.buildServer.messages.DefaultMessagesInfo;
 
 import com.blaze.runner.Constants;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import javax.mail.MessagingException;
@@ -48,6 +49,7 @@ public class BzmBuildProcess implements BuildProcess {
     private String junitPath;
     private String jtlPath;
     private String notes;
+    private String jmProps;
     private BuildAgent agent;
 
     final BuildProgressLogger logger;
@@ -89,6 +91,7 @@ public class BzmBuildProcess implements BuildProcess {
         junitPath=params.get(Constants.SETTINGS_JUNIT_PATH);
         jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
         notes = params.get(Constants.SETTINGS_NOTES);
+        jmProps = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
         Map<String, String> buildParams = agentRunningBuild.getSharedConfigParameters();
         File ald=agent.getConfiguration().getAgentLogsDirectory();
         String pn=agentRunningBuild.getProjectName();
@@ -144,6 +147,16 @@ public class BzmBuildProcess implements BuildProcess {
             }
             if(StringUtil.isNotEmpty(this.notes)){
                 bzmBuild.notes(masterId,notes);
+            }
+
+            if (StringUtil.isNotEmpty(this.jmProps)) {
+                JSONArray pr = null;
+                try {
+                    pr = bzmBuild.prepareSessionProperties(this.jmProps);
+                    bzmBuild.properties(pr, masterId);
+                } catch (JSONException e) {
+                    logger.warning("Failed to submit session properties to test: " + e.getMessage());
+                }
             }
         }
 
@@ -233,12 +246,15 @@ public class BzmBuildProcess implements BuildProcess {
                 bzmBuild.jtlReports(masterId, jtlDir);
             }catch (IOException io){
                 logger.error("Failed to download jtl-report: "+io.getMessage());
-            }catch (JSONException je){
-                logger.error("Failed to download jtl-report: "+je.getMessage());
-            }}
+            } catch (JSONException je) {
+                logger.error("Failed to download jtl-report: " + je.getMessage());
+            }
+        }
         CIStatus ciStatus = bzmBuild.validateCIStatus(masterId, logger);
         result = ciStatus.equals(CIStatus.failures) ? BuildFinishedStatus.FINISHED_FAILED : BuildFinishedStatus.FINISHED_SUCCESS;
         return result;
     }
+
+
 
 }

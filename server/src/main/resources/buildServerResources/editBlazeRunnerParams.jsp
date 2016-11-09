@@ -70,7 +70,13 @@
 <tr>
     <th><label>Notes:</label></th>
     <td>
-        <props:multilineProperty name="blazeMeterPlugin.notes" linkTitle="" cols="30" rows="4" expanded="true"/>
+        <props:multilineProperty name="blazeMeterPlugin.notes" linkTitle="" cols="35" rows="4" expanded="true"/>
+    </td>
+</tr>
+<tr>
+    <th><label>JMeter propeties:</label></th>
+    <td>
+        <props:multilineProperty name="blazeMeterPlugin.jmeter.properties" linkTitle="" cols="35" rows="2" expanded="true"/>
     </td>
 </tr>
 </l:settingsGroup>

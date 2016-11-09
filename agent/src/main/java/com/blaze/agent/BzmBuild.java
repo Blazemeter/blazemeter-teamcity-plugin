@@ -309,4 +309,56 @@ public class BzmBuild {
     public String masterId() {
         return masterId;
     }
+
+
+
+    public JSONArray prepareSessionProperties(String sesssionProperties) throws JSONException {
+        List<String> propList = Arrays.asList(sesssionProperties.split(","));
+        JSONArray props = new JSONArray();
+        logger.message("Preparing jmeter properties for the test...");
+        for (String s : propList) {
+            try {
+                JSONObject prop = new JSONObject();
+                List<String> pr = Arrays.asList(s.split("="));
+                if (pr.size() > 1) {
+                    prop.put("key", pr.get(0).trim());
+                    prop.put("value", pr.get(1).trim());
+                }
+                props.put(prop);
+            } catch (Exception e) {
+                logger.message("Failed to prepare jmeter property " + s + " for the test: " + e.getMessage());
+            }
+        }
+        logger.message("Prepared JSONArray of jmeter properties: " + props.toString());
+        return props;
+    }
+
+
+    public void properties(JSONArray properties, String masterId) {
+        List<String> sessionsIds = null;
+        try {
+            sessionsIds = api.getListOfSessionIds(masterId);
+        } catch (Exception e) {
+            logger.warning("Failed to get list of sessions for masterId = " + masterId + " ->" + e.getMessage());
+        }
+        logger.message("Trying to submit jmeter properties: got " + sessionsIds.size() + " sessions");
+        for (String s : sessionsIds) {
+            logger.message("Submitting jmeter properties to sessionId=" + s);
+            int n = 1;
+            boolean submit = false;
+            while (!submit && n < 6) {
+                try {
+                    submit = api.properties(properties, s);
+                    if (!submit) {
+                        logger.message("Failed to submit jmeter properties to sessionId=" + s + " retry # " + n);
+                        Thread.sleep(DELAY);
+                    }
+                } catch (Exception e) {
+                    logger.warning("Failed to submit jmeter properties to sessionId=" + s + " -> " + e.getMessage());
+                } finally {
+                    n++;
+                }
+            }
+        }
+    }
 }
