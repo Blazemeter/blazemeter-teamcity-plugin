@@ -16,13 +16,13 @@ package com.blaze.agent;
 
 import com.blaze.api.Api;
 import com.blaze.api.ApiV3Impl;
-import com.blaze.runner.CIStatus;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -215,36 +215,37 @@ public class BzmBuild {
     }
 
 
-    public CIStatus validateCIStatus(String masterId, BuildProgressLogger logger){
-        CIStatus ciStatus= CIStatus.success;
+    public BuildFinishedStatus validateCIStatus(String masterId, BuildProgressLogger logger) {
+        BuildFinishedStatus ciStatus = BuildFinishedStatus.FINISHED_SUCCESS;
         JSONObject jo;
-        JSONArray failures=new JSONArray();
-        JSONArray errors=new JSONArray();
+        JSONArray failures = new JSONArray();
+        JSONArray errors = new JSONArray();
         try {
-            jo= api.getCIStatus(masterId);
+            jo = api.getCIStatus(masterId);
             logger.message("Test status object = " + jo.toString());
-            failures=jo.getJSONArray(JsonConstants.FAILURES);
-            errors=jo.getJSONArray(JsonConstants.ERRORS);
+            failures = jo.getJSONArray(JsonConstants.FAILURES);
+            errors = jo.getJSONArray(JsonConstants.ERRORS);
         } catch (JSONException je) {
             logger.message("No thresholds on server: setting 'success' for CIStatus ");
         } catch (Exception e) {
             logger.message("No thresholds on server: setting 'success' for CIStatus ");
-        }finally {
-            if(errors.length()>0){
+        } finally {
+            if (errors.length() > 0) {
                 logger.message("Having errors while test status validation...");
                 logger.message("Errors: " + errors.toString());
-                ciStatus=CIStatus.errors;
-                logger.message("Setting CIStatus = "+CIStatus.errors.name());
-                return ciStatus;
+                ciStatus = errorsFailed(errors) ? BuildFinishedStatus.FINISHED_FAILED : BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+                logger.message("Setting CIStatus = " + ciStatus.name());
             }
-            if(failures.length()>0){
+            if (failures.length() > 0) {
                 logger.message("Having failures while test status validation...");
                 logger.message("Failures: " + failures.toString());
-                ciStatus=CIStatus.failures;
-                logger.message("Setting CIStatus = "+CIStatus.failures.name());
+                ciStatus = BuildFinishedStatus.FINISHED_FAILED;
+                logger.message("Setting CIStatus = " + ciStatus.name());
                 return ciStatus;
             }
-            logger.message("No errors/failures while validating CIStatus: setting "+CIStatus.success.name());
+            if (ciStatus.equals(BuildFinishedStatus.FINISHED_SUCCESS)) {
+                logger.message("No errors/failures while validating CIStatus: setting " + BuildFinishedStatus.FINISHED_SUCCESS.name());
+            }
         }
         return ciStatus;
     }
@@ -361,4 +362,22 @@ public class BzmBuild {
             }
         }
     }
+
+
+    public static boolean errorsFailed(JSONArray errors) {
+        int l = errors.length();
+        for (int i = 0; i < l; i++) {
+            try {
+                if (errors.getJSONObject(i).getInt(JsonConstants.CODE) == 0 | errors.getJSONObject(i).getInt(JsonConstants.CODE) == 70404) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (JSONException je) {
+                return false;
+            }
+        }
+        return false;
+    }
+
 }

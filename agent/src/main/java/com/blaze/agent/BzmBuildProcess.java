@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import com.blaze.runner.CIStatus;
 import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
@@ -37,7 +36,7 @@ import javax.mail.MessagingException;
 
 public class BzmBuildProcess implements BuildProcess {
     private static final int CHECK_INTERVAL = 60000;
-    private static final int INIT_TEST_TIMEOUT = 900000;
+    private static final int INIT_TEST_TIMEOUT = 180000;
     private BzmBuild bzmBuild;
     private AgentRunningBuild agentRunningBuild;
     private BuildRunnerContext buildRunCtxt;
@@ -196,7 +195,7 @@ public class BzmBuildProcess implements BuildProcess {
         if (initTimeOutPassed & !status.equals(TestStatus.Running)) {
             logger.warning("Failed to initialize test " + testId);
             logger.warning("Build will be aborted");
-            return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
+            return bzmBuild.validateCIStatus(masterId,logger);
         }
         long testRunStart = System.currentTimeMillis();
 
@@ -250,9 +249,7 @@ public class BzmBuildProcess implements BuildProcess {
                 logger.error("Failed to download jtl-report: " + je.getMessage());
             }
         }
-        CIStatus ciStatus = bzmBuild.validateCIStatus(masterId, logger);
-        result = ciStatus.equals(CIStatus.failures) ? BuildFinishedStatus.FINISHED_FAILED : BuildFinishedStatus.FINISHED_SUCCESS;
-        return result;
+        return bzmBuild.validateCIStatus(masterId, logger);
     }
 
 
