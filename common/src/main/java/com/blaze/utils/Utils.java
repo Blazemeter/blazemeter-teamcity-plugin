@@ -53,12 +53,13 @@ public class Utils {
     }
 
 
-    public static File reportDir(BuildRunnerContext context, String reportDir){
-        File reportFile=null;
-        if (StringUtil.isNotEmpty(reportDir)&&(reportDir.startsWith("/")|reportDir.matches("(^[a-zA-Z][:][\\\\].+)"))) {
+    public static File reportDir(BuildRunnerContext context, String reportDir) {
+        File reportFile = null;
+        if (StringUtil.isNotEmpty(reportDir) && (reportDir.startsWith("/") | reportDir.matches("(^[a-zA-Z][:][\\\\].+)"))) {
             reportFile = new File(FilenameUtils.normalize(reportDir));
         } else {
-            reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()+"/"+reportDir));
+            reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()
+                    + "/" + (reportDir == null ? "" : reportDir)));
         }
         return reportFile;
 

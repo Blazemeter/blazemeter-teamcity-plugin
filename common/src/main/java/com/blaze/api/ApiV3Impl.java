@@ -528,7 +528,7 @@ public class ApiV3Impl implements Api {
         Request r = new Request.Builder().url(url).patch(body).build();
         JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         try {
-            if (!jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
+            if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 return false;
             }
         } catch (Exception e) {
