@@ -14,6 +14,7 @@
 
 package com.blaze.agent;
 
+import com.blaze.api.HttpLogger;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class BzmBuildProcess implements BuildProcess {
     final BuildProgressLogger logger;
     boolean finished;
     boolean interrupted;
-
+    private HttpLogger httpl;
 
     public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher) {
         this.agentRunningBuild = agentRunningBuild;
@@ -103,12 +104,13 @@ public class BzmBuildProcess implements BuildProcess {
             httplf = new File(httpld, Constants.HTTP_LOG);
             FileUtils.touch(httplf);
             httplf.setWritable(true);
+            httpl=new HttpLogger(httplf.getAbsolutePath());
         } catch (Exception e) {
             throw new RunBuildException(e.getMessage());
         }
 
         bzmBuild = new BzmBuild(((String) buildParams.get(Constants.USER_KEY)),
-                ((String) buildParams.get(Constants.BLAZEMETER_URL)), testId, httplf.getAbsolutePath(),logger);
+                ((String) buildParams.get(Constants.BLAZEMETER_URL)), testId, httpl,logger);
 
         try {
             if (!this.bzmBuild.validateInput()) {
@@ -135,6 +137,7 @@ public class BzmBuildProcess implements BuildProcess {
         }
         BuildFinishedStatus result = null;
         if (masterId.isEmpty()) {
+            ((HttpLogger)httpl).close();
             return BuildFinishedStatus.FINISHED_FAILED;
         } else {
             logger.message("Test initialization is started");
@@ -190,11 +193,13 @@ public class BzmBuildProcess implements BuildProcess {
                         logger.error("Failed to download jtl-report: "+je.getMessage());
                     }                }
             }
+            ((HttpLogger)httpl).close();
             return BuildFinishedStatus.INTERRUPTED;
         }
         if (initTimeOutPassed & !status.equals(TestStatus.Running)) {
             logger.warning("Failed to initialize test " + testId);
             logger.warning("Build will be aborted");
+            ((HttpLogger)httpl).close();
             return bzmBuild.validateCIStatus(masterId,logger);
         }
         long testRunStart = System.currentTimeMillis();
@@ -224,6 +229,7 @@ public class BzmBuildProcess implements BuildProcess {
                     }
                 }
             }
+            ((HttpLogger)httpl).close();
             return BuildFinishedStatus.INTERRUPTED;
         }
         logger.message("Test finished. Checking for test report...");
@@ -249,6 +255,7 @@ public class BzmBuildProcess implements BuildProcess {
                 logger.error("Failed to download jtl-report: " + je.getMessage());
             }
         }
+        ((HttpLogger)httpl).close();
         return bzmBuild.validateCIStatus(masterId, logger);
     }
 

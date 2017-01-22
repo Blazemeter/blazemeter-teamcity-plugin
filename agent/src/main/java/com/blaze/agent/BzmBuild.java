@@ -16,6 +16,7 @@ package com.blaze.agent;
 
 import com.blaze.api.Api;
 import com.blaze.api.ApiV3Impl;
+import com.blaze.api.HttpLogger;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
@@ -45,7 +46,7 @@ public class BzmBuild {
     private String masterId;
     private String testId;
 
-    public BzmBuild(String userKey,String serverUrl,String testId,String httplf,BuildProgressLogger logger){
+    public BzmBuild(String userKey,String serverUrl,String testId,HttpLogger httplf,BuildProgressLogger logger){
         this.api=new ApiV3Impl(userKey,serverUrl,httplf);
         this.testId=testId;
         this.logger=logger;
