@@ -54,9 +54,18 @@ public class BzmBuild {
 
     public boolean validateInput() throws IOException, MessagingException {
         LinkedHashMultimap<String, String> tests = api.testsMultiMap();
-        Collection<String> values = tests.values();
+        Iterator<String> values = tests.values().iterator();
         if (tests != null) {
-            if (!values.contains(testId)) {
+            StringBuilder s = new StringBuilder();
+            boolean testIdTrue = false;
+            while (values.hasNext()) {
+                s.append(values.next());
+                testIdTrue = s.toString().contains(testId);
+                if (testIdTrue) {
+                    break;
+                }
+            }
+            if (!testIdTrue) {
                 logger.warning(Constants.PROBLEM_WITH_VALIDATING);
                 logger.warning("Server url=" + this.api.getServerUrl());
                 logger.warning("UserKey=" + this.api.getApiKey().substring(0, 4) + "...");
