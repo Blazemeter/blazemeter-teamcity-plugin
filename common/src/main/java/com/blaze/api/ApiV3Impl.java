@@ -323,23 +323,24 @@ public class ApiV3Impl implements Api {
 
     @Override
     public LinkedHashMultimap<String, String> testsMultiMap() throws IOException, MessagingException {
-
         LinkedHashMultimap<String, String> testListOrdered = null;
         if (StringUtils.isBlank(apiKey)) {
-            return null;
+            testListOrdered = LinkedHashMultimap.create(1, 1);
+            testListOrdered.put(Constants.NO_TESTS, Constants.CHECK_ACCOUNT);
+            return testListOrdered;
         } else {
             String url = this.urlManager.tests(APP_KEY, apiKey);
             this.logger.info("Getting tests: " + url.substring(0, url.indexOf("?") + 14));
             try {
                 Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                        addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
+                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
                 JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
                 this.logger.info("Received json: " + jo.toString());
-
                 JSONArray result = null;
-
                 if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
-                        (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
+                    (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
+                    testListOrdered = LinkedHashMultimap.create(1, 1);
+                    testListOrdered.put(Constants.NO_TESTS, Constants.CHECK_ACCOUNT);
                     return testListOrdered;
                 }
                 if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
@@ -347,7 +348,6 @@ public class ApiV3Impl implements Api {
                 }
                 if (result != null) {
                     if (result.length() > 0) {
-
                         testListOrdered = LinkedHashMultimap.create(result.length(), result.length());
                         for (int i = 0; i < result.length(); i++) {
                             JSONObject en = null;
@@ -362,18 +362,16 @@ public class ApiV3Impl implements Api {
                                 if (en != null) {
                                     id = String.valueOf(en.get(JsonConstants.ID));
                                     name = en.has(JsonConstants.NAME) ? en.getString(JsonConstants.NAME).replaceAll("&", "&amp;") : "";
-
                                     String testType = en.has(JsonConstants.TYPE) ? en.getString(JsonConstants.TYPE) : Constants.UNKNOWN_TYPE;
                                     testListOrdered.put(name, id + "." + testType);
-
                                 }
                             } catch (JSONException ie) {
                                 this.logger.warn("JSONException while getting tests: " + ie);
                             }
                         }
-
                     } else {
-                        testListOrdered = LinkedHashMultimap.create(0, 0);
+                        testListOrdered = LinkedHashMultimap.create(1, 1);
+                        testListOrdered.put(Constants.NO_TESTS, Constants.CHECK_ACCOUNT);
                     }
                 }
             } catch (NullPointerException npe) {
@@ -383,7 +381,6 @@ public class ApiV3Impl implements Api {
             } finally {
                 return testListOrdered;
             }
-
         }
     }
 

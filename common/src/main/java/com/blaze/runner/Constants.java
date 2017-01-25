@@ -15,17 +15,13 @@
 package com.blaze.runner;
 
 public interface Constants {
-	
 
-    //runner properties
 	String RUNNER_DISPLAY_NAME = "BlazeMeter";
 	String RUNNER_TYPE = "BlazeMeter";
 	String USER_KEY = "USER_KEY";
 	String BLAZEMETER_URL = "BLAZEMETER_URL";
-    String DEFAULT_BZM_SERVER="https://a.blazemeter.com";
 	String UNKNOWN_TYPE="unknown_type";
 
-	//settings properties
 	String SETTINGS_ALL_TESTS_ID = "all_tests";
 	String SETTINGS_JUNIT = "blazeMeterPlugin.request.junit";
 	String SETTINGS_JUNIT_PATH = "blazeMeterPlugin.request.junit.path";
@@ -34,9 +30,7 @@ public interface Constants {
 	String SETTINGS_NOTES = "blazeMeterPlugin.notes";
 	String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
 	String BZM_PROPERTIES_FILE="/userKeyFile.properties";
-    String NOT_IMPLEMENTED="This call is not implemented.";
 
-	String NO_TEST_WAS_DEFINED="No test was defined in the configuration page.";
 	String REPORT_URL="reportUrl_";
     String PROBLEM_WITH_VALIDATING="Problem with validating testId, serverUrl, userKey";
 	String PROXY_HOST="http.proxyHost";
@@ -46,4 +40,6 @@ public interface Constants {
 	String HTTP_LOG="http-log";
 	String THREE_DOTS ="...";
 
+	String NO_TESTS="No tests for this api-key";
+	String CHECK_ACCOUNT="Please, check your account";
 }
