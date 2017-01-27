@@ -326,7 +326,7 @@ public class ApiV3Impl implements Api {
         LinkedHashMultimap<String, String> testListOrdered = null;
         if (StringUtils.isBlank(apiKey)) {
             testListOrdered = LinkedHashMultimap.create(1, 1);
-            testListOrdered.put(Constants.NO_TESTS, Constants.CHECK_ACCOUNT);
+            testListOrdered.put(Constants.FILL_API_KEY, Constants.EMPTY_API_KEY);
             return testListOrdered;
         } else {
             String url = this.urlManager.tests(APP_KEY, apiKey);
@@ -340,7 +340,7 @@ public class ApiV3Impl implements Api {
                 if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
                     (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                     testListOrdered = LinkedHashMultimap.create(1, 1);
-                    testListOrdered.put(Constants.NO_TESTS, Constants.CHECK_ACCOUNT);
+                    testListOrdered.put(Constants.INCORRECT_KEY, Constants.CHECK_ACCOUNT);
                     return testListOrdered;
                 }
                 if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
