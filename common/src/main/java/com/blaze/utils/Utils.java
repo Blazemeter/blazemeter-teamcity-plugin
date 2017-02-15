@@ -52,17 +52,25 @@ public class Utils {
         }
     }
 
-
-    public static File reportDir(BuildRunnerContext context, String reportDir) {
+    public static File mkReportDir(BuildRunnerContext context, String reportDir) {
         File reportFile = null;
         if (StringUtil.isNotEmpty(reportDir) && (reportDir.startsWith("/") | reportDir.matches("(^[a-zA-Z][:][\\\\].+)"))) {
             reportFile = new File(FilenameUtils.normalize(reportDir));
         } else {
             reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()
-                    + "/" + (reportDir == null ? "" : reportDir)));
+                + "/" + (reportDir == null ? "" : reportDir)));
         }
-        return reportFile;
-
+        try {
+            if (!reportFile.exists()) {
+                FileUtils.forceMkdir(reportFile);
+            }
+        } catch (FileNotFoundException fnfe) {
+            reportFile = new File(context.getWorkingDirectory(), reportDir);
+        } catch (IOException e) {
+            reportFile = new File(context.getWorkingDirectory(), reportDir);
+        } finally {
+            return reportFile;
+        }
     }
 
     public static void saveJunit(String report,

@@ -162,8 +162,8 @@ public class BzmBuildProcess implements BuildProcess {
             }
         }
 
-        File  junitDir=Utils.reportDir(this.buildRunCtxt,this.junitPath);
-        File  jtlDir=Utils.reportDir(this.buildRunCtxt,this.jtlPath);
+        File  junitDir=Utils.mkReportDir(this.buildRunCtxt,this.junitPath);
+        File  jtlDir=Utils.mkReportDir(this.buildRunCtxt,this.jtlPath);
         logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestStatus status;
         long testInitStart = System.currentTimeMillis();
