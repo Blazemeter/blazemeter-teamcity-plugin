@@ -14,12 +14,32 @@
 
 package com.blaze.api;
 
+import com.blaze.api.urlmanager.UrlManager;
+import com.blaze.api.urlmanager.UrlManagerV3Impl;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
-import com.blaze.api.urlmanager.*;
-import okhttp3.*;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.mail.MessagingException;
+import javax.servlet.ServletException;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,14 +48,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 
 public class ApiV3Impl implements Api {
@@ -81,6 +93,9 @@ public class ApiV3Impl implements Api {
                     @Override
                     public Request authenticate(Route route, Response response) throws IOException {
                         String credential = Credentials.basic(proxyUser, proxyPass);
+                        if (response.request().header("Proxy-Authorization") != null) {
+                            return null; // Give up, we've already attempted to authenticate.
+                        }
                         return response.request().newBuilder()
                                 .header("Proxy-Authorization", credential)
                                 .build();
@@ -376,8 +391,16 @@ public class ApiV3Impl implements Api {
                 }
             } catch (NullPointerException npe) {
                 this.logger.warn("Exception while getting tests - check connection/proxy settings: ", npe);
+                testListOrdered= LinkedHashMultimap.create(1, 1);
+            } catch (ConnectException e) {
+                this.logger.warn("Failed to connect while getting tests: " + e.getMessage());
+                testListOrdered= LinkedHashMultimap.create(1, 1);
+            } catch (UnknownHostException e) {
+                this.logger.warn("Failed to resolve host while getting tests: " + e.getMessage());
+                testListOrdered= LinkedHashMultimap.create(1, 1);
             } catch (Exception e) {
                 this.logger.warn("Exception while getting tests: ", e);
+                testListOrdered= LinkedHashMultimap.create(1, 1);
             } finally {
                 return testListOrdered;
             }

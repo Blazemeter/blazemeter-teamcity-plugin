@@ -15,25 +15,22 @@
 package com.blaze.agent;
 
 import com.blaze.api.HttpLogger;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
+import com.blaze.runner.Constants;
 import com.blaze.runner.TestStatus;
 import com.blaze.testresult.TestResult;
 import com.blaze.utils.Utils;
 import com.intellij.openapi.util.text.StringUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import javax.mail.MessagingException;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
-
-import com.blaze.runner.Constants;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import javax.mail.MessagingException;
 
 public class BzmBuildProcess implements BuildProcess {
     private static final int CHECK_INTERVAL = 60000;
@@ -114,6 +111,7 @@ public class BzmBuildProcess implements BuildProcess {
 
         try {
             if (!this.bzmBuild.validateInput()) {
+                httpl.close();
                 throw new RunBuildException("Failed to validate build parameters");
             }
         } catch (IOException e) {
