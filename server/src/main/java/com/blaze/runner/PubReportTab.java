@@ -14,22 +14,17 @@
 
 package com.blaze.runner;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
-
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.ViewLogTab;
-
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PubReportTab extends ViewLogTab {
@@ -39,7 +34,7 @@ public class PubReportTab extends ViewLogTab {
 	private String session_id = "";
 
 	SBuildServer server;
-	
+
 	public PubReportTab(final PagePlaces pagePlaces,
 						final SBuildServer server) {
 		super(TAB_TITLE, TAB_CODE, pagePlaces, server);
@@ -51,30 +46,18 @@ public class PubReportTab extends ViewLogTab {
 	protected void fillModel(@NotNull Map<String, Object> model,
 			@NotNull HttpServletRequest request, @NotNull SBuild response) {
 		SBuild sbuild = this.getBuild(request);
-		
-		session_id = "";
-		
-		BuildArtifacts arts = sbuild.getArtifacts(BuildArtifactsViewMode.VIEW_ALL);
-		BuildArtifact ba = arts.getArtifact("blaze_session.id")	;
-		if (ba!=null) {
-			//Founded artifact BlazeMeter session.
-			try {
-				InputStream fis = ba.getInputStream();
-				byte[] buffer = new byte[64];
-				int readLen = 0;
-				
-				while ((readLen = fis.read(buffer, 0, 64)) != -1){
-					session_id += new String(buffer, 0, readLen);
-				}
-				System.out.println("session_id:"+session_id);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("Artifact BlazeMeter session not Founded!");
-		}
-		String reportUrl=sbuild.getAgent().getAvailableParameters().get("env."+Constants.REPORT_URL+sbuild.getBuildNumber());
 
+		session_id = "";
+        String lf=sbuild.getAgent().getAvailableParameters().get("system.agent.home.dir")+"/logs";
+		String pn=sbuild.getBuildOwnParameters().get("system.teamcity.projectName");
+		String bn=sbuild.getBuildOwnParameters().get("build.number");
+		File ruf=new File(lf+"/"+pn+"/"+bn+"/"+Constants.REPORT_URL_F);
+		String reportUrl = null;
+		try {
+			reportUrl = FileUtils.readFileToString(ruf);
+		} catch (IOException ioe) {
+			System.out.println("Failed to read reportUrl from " + ruf.getAbsolutePath());
+		}
 		model.put("session_id", session_id);
 		request.setAttribute("reportUrl", reportUrl);
 	}

@@ -25,7 +25,13 @@ import java.io.IOException;
 import java.util.Map;
 import javax.mail.MessagingException;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.BuildAgent;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
+import jetbrains.buildServer.agent.BuildInterruptReason;
+import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.BuildProgressLogger;
+import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import org.apache.commons.io.FileUtils;
@@ -35,11 +41,11 @@ import org.json.JSONException;
 public class BzmBuildProcess implements BuildProcess {
     private static final int CHECK_INTERVAL = 60000;
     private static final int INIT_TEST_TIMEOUT = 180000;
-    private BzmBuild bzmBuild;
+    private com.blaze.agent.BzmBuild bzmBuild;
     private AgentRunningBuild agentRunningBuild;
     private BuildRunnerContext buildRunCtxt;
     private ArtifactsWatcher artifactsWatcher;
-
+    private File reportUrlf;
     private String testId;
     private boolean junit;
     private boolean jtl;
@@ -74,7 +80,7 @@ public class BzmBuildProcess implements BuildProcess {
     }
 
     @Override
-    public boolean isInterrupted() {
+        public boolean isInterrupted() {
         return interrupted;
     }
 
@@ -99,14 +105,17 @@ public class BzmBuildProcess implements BuildProcess {
             httpld = new File(ald, pn + "/" + bn);
             FileUtils.forceMkdir(httpld);
             httplf = new File(httpld, Constants.HTTP_LOG);
+            this.reportUrlf = new File(httpld, Constants.REPORT_URL_F);
             FileUtils.touch(httplf);
+            FileUtils.touch(this.reportUrlf);
             httplf.setWritable(true);
-            httpl=new HttpLogger(httplf.getAbsolutePath());
+            this.reportUrlf.setWritable(true);
+            httpl = new HttpLogger(httplf.getAbsolutePath());
         } catch (Exception e) {
             throw new RunBuildException(e.getMessage());
         }
 
-        bzmBuild = new BzmBuild(((String) buildParams.get(Constants.USER_KEY)),
+        bzmBuild = new com.blaze.agent.BzmBuild(((String) buildParams.get(Constants.USER_KEY)),
                 ((String) buildParams.get(Constants.BLAZEMETER_URL)), testId, httpl,logger);
 
         try {
@@ -143,7 +152,11 @@ public class BzmBuildProcess implements BuildProcess {
             String reportUrl = bzmBuild.getReportUrl(masterId);
             logger.message("Test report will be available at " + reportUrl);
             if (StringUtil.isNotEmpty(reportUrl)) {
-                this.agent.getConfiguration().addEnvironmentVariable(Constants.REPORT_URL + this.agentRunningBuild.getBuildNumber(), reportUrl);
+                try {
+                    FileUtils.writeStringToFile(reportUrlf, reportUrl);
+                } catch (IOException e) {
+                    logger.warning("Failed to write reportUrl to " + reportUrlf);
+                }
             }
             if(StringUtil.isNotEmpty(this.notes)){
                 bzmBuild.notes(masterId,notes);

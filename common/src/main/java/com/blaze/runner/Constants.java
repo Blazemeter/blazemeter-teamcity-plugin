@@ -32,7 +32,8 @@ public interface Constants {
 	String BZM_PROPERTIES_FILE="/userKeyFile.properties";
 
 	String REPORT_URL="reportUrl_";
-    String PROBLEM_WITH_VALIDATING="Problem with validating testId, serverUrl, userKey";
+	String REPORT_URL_F="reportUrl";
+	String PROBLEM_WITH_VALIDATING="Problem with validating testId, serverUrl, userKey";
 	String PROXY_HOST="http.proxyHost";
 	String PROXY_PORT="http.proxyPort";
 	String PROXY_USER="http.proxyUser";
