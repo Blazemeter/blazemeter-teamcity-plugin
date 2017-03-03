@@ -77,26 +77,14 @@ public class BlazeRunTypeController extends BaseController {
         }
     }
 
-    /**
-     * Getter for mainSettings
-     *
-     * @return
-     */
     public AdminSettings getMainSettings() {
         return mainSettings;
     }
 
-    /**
-     *
-     * @param mainSettings
-     */
     public void setMainSettings(AdminSettings mainSettings) {
         this.mainSettings = mainSettings;
     }
 
-    /**
-     * Register controller
-     */
     public void register() {
         myManager.registerController(actualUrl, this);
     }
@@ -121,26 +109,15 @@ public class BlazeRunTypeController extends BaseController {
         return null;
     }
 
-    /**
-     *
-     * @param request
-     * @throws Exception
-     */
     private void doAction(final HttpServletRequest request) throws Exception {
         String user_key = request.getParameter("user_key");
         String blazeMeterUrl = request.getParameter("blazeMeterUrl");
-        String blazeMeterApiVersion = request.getParameter("blazeMeterApiVersion");
         mainSettings.setUserKey(user_key);
         if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }
 }
 
-    /**
-     *
-     * @param e
-     * @return
-     */
     static private String getMessageWithNested(Throwable e) {
         String result = e.getMessage();
         Throwable cause = e.getCause();

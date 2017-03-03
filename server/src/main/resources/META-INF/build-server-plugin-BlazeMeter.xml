@@ -10,11 +10,11 @@
 
 	<!-- Bean to store BlazeMeter settings -->
 	<bean id="blazeServerSettings" class="com.blaze.runner.AdminSettings" init-method="init"/>
-	
+
 	<!-- Main runner-->
 	<bean id="BlazeRunType" class="com.blaze.runner.BlazeRunType" depends-on="blazeServerSettings" />
-	
-	<!-- Edit settings controller -->	
+
+	<!-- Edit settings controller -->
 	<bean id="blazeMeterSettingsController" class="com.blaze.runner.BlazeMeterSettingsController"
 		init-method="register" depends-on="blazeServerSettings" />
 
@@ -33,13 +33,5 @@
 		<constructor-arg index="2" value="adminPage.jsp" />
 		<constructor-arg index="3" value="BlazeMeter" />
 		<property name="mainSettings" ref="blazeServerSettings"/>
-	</bean>
-	
-	<!-- BlazeMeter report extension -->
-	<bean id="blazeReportTab" class="com.blaze.runner.PubReportTab"
-		init-method="register">
-		<property name="placeId" value="BUILD_RESULTS_TAB" />
-		<property name="pluginName" value="BlazeMeter" />
-		<property name="includeUrl" value="blazeMeterReportTab.jsp" />
 	</bean>
 </beans>

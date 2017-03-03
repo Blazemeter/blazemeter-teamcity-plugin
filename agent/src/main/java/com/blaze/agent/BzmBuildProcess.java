@@ -45,7 +45,6 @@ public class BzmBuildProcess implements BuildProcess {
     private AgentRunningBuild agentRunningBuild;
     private BuildRunnerContext buildRunCtxt;
     private ArtifactsWatcher artifactsWatcher;
-    private File reportUrlf;
     private String testId;
     private boolean junit;
     private boolean jtl;
@@ -105,11 +104,8 @@ public class BzmBuildProcess implements BuildProcess {
             httpld = new File(ald, pn + "/" + bn);
             FileUtils.forceMkdir(httpld);
             httplf = new File(httpld, Constants.HTTP_LOG);
-            this.reportUrlf = new File(httpld, Constants.REPORT_URL_F);
             FileUtils.touch(httplf);
-            FileUtils.touch(this.reportUrlf);
             httplf.setWritable(true);
-            this.reportUrlf.setWritable(true);
             httpl = new HttpLogger(httplf.getAbsolutePath());
         } catch (Exception e) {
             throw new RunBuildException(e.getMessage());
@@ -151,13 +147,7 @@ public class BzmBuildProcess implements BuildProcess {
             logger.message("Waiting for [DATA_RECEIVED] status");
             String reportUrl = bzmBuild.getReportUrl(masterId);
             logger.message("Test report will be available at " + reportUrl);
-            if (StringUtil.isNotEmpty(reportUrl)) {
-                try {
-                    FileUtils.writeStringToFile(reportUrlf, reportUrl);
-                } catch (IOException e) {
-                    logger.warning("Failed to write reportUrl to " + reportUrlf);
-                }
-            }
+
             if(StringUtil.isNotEmpty(this.notes)){
                 bzmBuild.notes(masterId,notes);
             }
@@ -269,7 +259,4 @@ public class BzmBuildProcess implements BuildProcess {
         ((HttpLogger)httpl).close();
         return bzmBuild.validateCIStatus(masterId, logger);
     }
-
-
-
 }

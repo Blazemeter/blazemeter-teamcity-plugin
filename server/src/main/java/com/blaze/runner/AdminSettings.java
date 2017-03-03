@@ -28,7 +28,7 @@ public class AdminSettings {
 	public AdminSettings(ServerPaths serverPaths){
 		this.serverPaths = serverPaths;
 	}
-	
+
 	public void init(){
 		loadProperties();
 	}
@@ -42,7 +42,6 @@ public class AdminSettings {
 			prop.put("user_key",this.userKey);
 			prop.put("blazeMeterUrl",this.blazeMeterUrl);
 		    prop.store(outFile,null);
-//			outFile.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Cannot save configuration: "+e.getMessage());
 		} catch (IOException e) {
