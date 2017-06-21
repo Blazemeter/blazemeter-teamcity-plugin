@@ -110,22 +110,6 @@ public class TestUrlManagerV3 {
     }
 
     @Test
-    public void postJsonConfig(){
-        String expPutTestInfo=bmUrlManager.getServerUrl()+UrlManager.LATEST+"/tests/"+testId+
-                "/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ UrlManager.CLIENT_IDENTIFICATION;
-        String actPutTestInfo=bmUrlManager.postJsonConfig(appKey, userKey, testId);
-        Assert.assertEquals(expPutTestInfo,actPutTestInfo);
-    }
-
-    @Test
-    public void createTest(){
-        String expCreateTest=bmUrlManager.getServerUrl()+UrlManager.LATEST+"/tests/custom?custom_test_type=yahoo&api_key="
-                +userKey+"&app_key="+appKey+ UrlManager.CLIENT_IDENTIFICATION;
-        String actCreateTest=bmUrlManager.createTest(appKey, userKey);
-        Assert.assertEquals(expCreateTest,actCreateTest);
-    }
-
-    @Test
     public void retrieveJUNITXML(){
         String expRetrieveJUNITXML=bmUrlManager.getServerUrl()+UrlManager.LATEST+UrlManager.MASTERS+"/"+ masterId +
                 "/reports/thresholds?format=junit&api_key="

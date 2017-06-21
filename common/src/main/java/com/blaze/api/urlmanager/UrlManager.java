@@ -54,10 +54,6 @@ public interface UrlManager {
 
     String testConfig(String appKey, String userKey, String testId);
 
-    String postJsonConfig(String appKey, String userKey, String testId);
-
-    String createTest(String appKey, String userKey);
-
     String retrieveJUNITXML(String appKey, String userKey, String sessionId);
 
     String retrieveJTLZIP(String appKey, String userKey, String sessionId);

@@ -174,21 +174,6 @@ public class UrlManagerV3Impl implements UrlManager {
     }
 
     @Override
-    public String createTest(String appKey, String userKey) {
-        String createTest=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        createTest= serverUrl +LATEST+TESTS+"/custom?custom_test_type=yahoo&api_key="
-                +userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return createTest;
-    }
-
-    @Override
     public String getCIStatus(String appKey, String userKey, String masterId){
         String getTresholds=null;
         try {
@@ -222,6 +207,7 @@ public class UrlManagerV3Impl implements UrlManager {
     }
 
 
+/*
 
     @Override
     public String postJsonConfig(String appKey, String userKey, String testId) {
@@ -236,6 +222,7 @@ public class UrlManagerV3Impl implements UrlManager {
 
         return getTestInfo;
     }
+*/
 
     @Override
     public String retrieveJTLZIP(String appKey, String userKey, String sessionId) {
