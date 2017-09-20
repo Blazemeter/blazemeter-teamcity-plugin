@@ -48,7 +48,7 @@ public class BlazeMeterSettingsController extends BaseController {
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.getSession().setAttribute("userKey", mySettings.getUserKey());
         request.getSession().setAttribute("blazeMeterUrl", mySettings.getBlazeMeterUrl());
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("viewBlazeRunnerParams.jsp"), params);
     }
 
