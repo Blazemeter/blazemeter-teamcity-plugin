@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import jetbrains.buildServer.controllers.admin.AdminPage;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 
+/**
+ * Presents the Admin Page
+ */
 public class ConfPage extends AdminPage {
 
     private AdminSettings mainSettings;
@@ -53,6 +56,7 @@ public class ConfPage extends AdminPage {
         if (mainSettings != null) {
             model.put("user_key", mainSettings.getUserKey());
             model.put("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
+            // TODO: why we write in file on each refresh of admin page??
             mainSettings.saveProperties();
         }
     }

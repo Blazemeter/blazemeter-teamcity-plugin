@@ -28,6 +28,10 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * Something BAD for import userKey and BlazeMeterURL in editBlazeRunnerParams
+ * TODO: remove it
+ */
 public class BlazeMeterSettingsController extends BaseController {
 
     private final WebControllerManager myWebManager;

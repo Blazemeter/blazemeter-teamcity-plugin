@@ -20,6 +20,10 @@ import jetbrains.buildServer.serverSide.BuildStartContextProcessor;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Class for update BuildStartContext before it is started on a build agent.
+ * Add some admin properties for send on Agent
+ */
 public class BlazeBuildStartContextProcessor implements BuildStartContextProcessor {
 
     private AdminSettings pluginSettings;

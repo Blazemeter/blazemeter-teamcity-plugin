@@ -23,6 +23,9 @@ import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.PropertiesUtil;
 
+/**
+ * Validator of Build Step params
+ */
 public class BlazeRunTypePropertiesProcessor implements PropertiesProcessor {
 
     @Override

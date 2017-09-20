@@ -25,7 +25,9 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
+/**
+ * Class for configure Build Step Params
+ */
 public class BlazeRunType extends RunType {
 
     @NotNull

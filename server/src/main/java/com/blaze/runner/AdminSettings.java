@@ -19,7 +19,11 @@ import java.util.Properties;
 
 import jetbrains.buildServer.serverSide.ServerPaths;
 
-
+/**
+ * Entity for store admin properties:
+ *  - userKey - BlazeMeter user API key
+ *  - blazeMeterUrl - BlazeMeter URL
+ */
 public class AdminSettings {
 
     public ServerPaths serverPaths;

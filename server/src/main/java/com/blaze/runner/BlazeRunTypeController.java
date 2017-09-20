@@ -28,6 +28,9 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
+/**
+ * Controller for configure admin properties
+ */
 public class BlazeRunTypeController extends BaseController {
 
     private final WebControllerManager myManager;
