@@ -21,6 +21,7 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 
 
 public class AdminSettings {
+    
     public ServerPaths serverPaths;
     private String userKey = "";
     private String blazeMeterUrl = "";
@@ -35,6 +36,10 @@ public class AdminSettings {
 
     public void saveProperties() {
         File keyFile = propFile();
+        if (keyFile == null) {
+            return;
+        }
+
         FileWriter outFile = null;
         try {
             Properties prop = new Properties();
@@ -42,44 +47,43 @@ public class AdminSettings {
             prop.put("user_key", this.userKey);
             prop.put("blazeMeterUrl", this.blazeMeterUrl);
             prop.store(outFile, null);
-        } catch (FileNotFoundException e) {
-            System.out.println("Cannot save configuration: " + e.getMessage());
         } catch (IOException e) {
-            System.out.println("Cannot save configuration: " + e.getMessage());
-        } catch (Exception e) {
             System.out.println("Cannot save configuration: " + e.getMessage());
         } finally {
             try {
-                outFile.close();
+                if (outFile != null) {
+                    outFile.close();
+                }
             } catch (IOException e) {
                 System.out.println("Cannot close " + keyFile.getAbsolutePath() + ": " + e.getMessage());
             }
-
         }
     }
 
     public void loadProperties() {
         File keyFile = propFile();
+        if (keyFile == null) {
+            return;
+        }
+
         FileReader inFile = null;
         try {
             inFile = new FileReader(keyFile);
-
             Properties prop = new Properties();
             prop.load(inFile);
             this.userKey = prop.getProperty("user_key");
             this.blazeMeterUrl = prop.getProperty("blazeMeterUrl");
             inFile.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Cannot load configuration: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("Cannot load configuration: " + e.getMessage());
         } finally {
             try {
-                inFile.close();
+                if (inFile != null) {
+                    inFile.close();
+                }
             } catch (IOException e) {
                 System.out.println("Cannot close " + keyFile.getAbsolutePath() + ": " + e.getMessage());
             }
-
         }
     }
 
