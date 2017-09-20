@@ -32,6 +32,7 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
+
 public class BlazeRunTypeController extends BaseController {
 
     private final WebControllerManager myManager;
@@ -48,7 +49,7 @@ public class BlazeRunTypeController extends BaseController {
      * @param serverPaths
      */
     public BlazeRunTypeController(@NotNull final String actualUrl, @NotNull final String actualJsp,
-            final WebControllerManager manager, final ServerPaths serverPaths) {
+                                  final WebControllerManager manager, final ServerPaths serverPaths) {
         this.actualJsp = actualJsp;
         this.actualUrl = actualUrl;
         this.myManager = manager;
@@ -72,7 +73,7 @@ public class BlazeRunTypeController extends BaseController {
         new AjaxRequestProcessor().processRequest(request, response, new AjaxRequestProcessor.RequestHandler() {
             @Override
             public void handleRequest(@NotNull final HttpServletRequest request, final @NotNull HttpServletResponse response,
-                    @NotNull final Element xmlResponse) {
+                                      @NotNull final Element xmlResponse) {
                 try {
                     doAction(request);
                 } catch (Exception e) {
@@ -94,7 +95,7 @@ public class BlazeRunTypeController extends BaseController {
         if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }
-}
+    }
 
     static private String getMessageWithNested(Throwable e) {
         String result = e.getMessage();

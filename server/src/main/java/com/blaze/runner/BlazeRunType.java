@@ -27,81 +27,81 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class BlazeRunType extends RunType {
-	@NotNull
-	private final PluginDescriptor pluginDescriptor;
-	@NotNull
-	private final String editParamsPageName = "editBlazeRunnerParams.jsp";
-	@NotNull
-	private final String viewParamsPageName = "viewBlazeRunnerParams.jsp";
+    @NotNull
+    private final PluginDescriptor pluginDescriptor;
+    @NotNull
+    private final String editParamsPageName = "editBlazeRunnerParams.jsp";
+    @NotNull
+    private final String viewParamsPageName = "viewBlazeRunnerParams.jsp";
 
-	Map<String, String> defaultProperties = null;
+    Map<String, String> defaultProperties = null;
 
-	private AdminSettings pluginSettings;
+    private AdminSettings pluginSettings;
 
-	public BlazeRunType(final RunTypeRegistry runTypeRegistry, 
-			@NotNull final PluginDescriptor pluginDescriptor,
-			@NotNull final AdminSettings pluginSettings) {
-		this.pluginDescriptor = pluginDescriptor;
-		this.pluginSettings = pluginSettings;
-		
-		runTypeRegistry.registerRunType(this);
-	}
+    public BlazeRunType(final RunTypeRegistry runTypeRegistry,
+                        @NotNull final PluginDescriptor pluginDescriptor,
+                        @NotNull final AdminSettings pluginSettings) {
+        this.pluginDescriptor = pluginDescriptor;
+        this.pluginSettings = pluginSettings;
 
-	@Override
-	public String getDescription() {
-		return Constants.RUNNER_DISPLAY_NAME;
-	}
+        runTypeRegistry.registerRunType(this);
+    }
 
-	@Override
-	public String getDisplayName() {
-		return Constants.RUNNER_DISPLAY_NAME;
-	}
+    @Override
+    public String getDescription() {
+        return Constants.RUNNER_DISPLAY_NAME;
+    }
 
-	@Override
-	public String getType() {
-		return Constants.RUNNER_TYPE;
-	}
+    @Override
+    public String getDisplayName() {
+        return Constants.RUNNER_DISPLAY_NAME;
+    }
 
-	@Nullable
-	public Map<String, String> getDefaultRunnerProperties() {
-		if (defaultProperties == null){
-			defaultProperties = new HashMap<String, String>();
-		}		
-		setupDefaultProperties(defaultProperties);
-		return defaultProperties;
-	}
+    @Override
+    public String getType() {
+        return Constants.RUNNER_TYPE;
+    }
 
-	private void setupDefaultProperties(Map<String, String> params) {
+    @Nullable
+    public Map<String, String> getDefaultRunnerProperties() {
+        if (defaultProperties == null) {
+            defaultProperties = new HashMap<String, String>();
+        }
+        setupDefaultProperties(defaultProperties);
+        return defaultProperties;
+    }
 
-		if (pluginSettings != null) {
-			params.remove(Constants.USER_KEY);
-			params.remove(Constants.BLAZEMETER_URL);
-			params.put(Constants.USER_KEY, pluginSettings.getUserKey());
-			params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
-		}
-	}
+    private void setupDefaultProperties(Map<String, String> params) {
 
-	@Nullable
-	public PropertiesProcessor getRunnerPropertiesProcessor() {
-		return new BlazeRunTypePropertiesProcessor();
-	}
+        if (pluginSettings != null) {
+            params.remove(Constants.USER_KEY);
+            params.remove(Constants.BLAZEMETER_URL);
+            params.put(Constants.USER_KEY, pluginSettings.getUserKey());
+            params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
+        }
+    }
 
-	@Nullable
-	public String getEditRunnerParamsJspFilePath() {
-		return pluginDescriptor.getPluginResourcesPath(editParamsPageName);
-	}
+    @Nullable
+    public PropertiesProcessor getRunnerPropertiesProcessor() {
+        return new BlazeRunTypePropertiesProcessor();
+    }
 
-	@Override
-	public String getViewRunnerParamsJspFilePath() {
-		return pluginDescriptor.getPluginResourcesPath(viewParamsPageName);
-	}
+    @Nullable
+    public String getEditRunnerParamsJspFilePath() {
+        return pluginDescriptor.getPluginResourcesPath(editParamsPageName);
+    }
 
-	public AdminSettings getPluginSettings() {
-		return pluginSettings;
-	}
+    @Override
+    public String getViewRunnerParamsJspFilePath() {
+        return pluginDescriptor.getPluginResourcesPath(viewParamsPageName);
+    }
 
-	public void setPluginSettings(AdminSettings pluginSettings) {
-		this.pluginSettings = pluginSettings;
-	}
+    public AdminSettings getPluginSettings() {
+        return pluginSettings;
+    }
+
+    public void setPluginSettings(AdminSettings pluginSettings) {
+        this.pluginSettings = pluginSettings;
+    }
 
 }

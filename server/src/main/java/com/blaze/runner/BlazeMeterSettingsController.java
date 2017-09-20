@@ -32,29 +32,29 @@ public class BlazeMeterSettingsController extends BaseController {
     private final WebControllerManager myWebManager;
     private final PluginDescriptor myPluginDescriptor;
     private final AdminSettings mySettings;
-    
-	public BlazeMeterSettingsController(final SBuildServer server,
-                                     final WebControllerManager webManager,
-                                     final PluginDescriptor pluginDescriptor,
-                                     @NotNull final AdminSettings pluginSettings){
-		super(server);
-		this.myWebManager = webManager;
-	    this.myPluginDescriptor = pluginDescriptor;
-		this.mySettings = pluginSettings;
-	}
-	
-	@Override
-	protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+    public BlazeMeterSettingsController(final SBuildServer server,
+                                        final WebControllerManager webManager,
+                                        final PluginDescriptor pluginDescriptor,
+                                        @NotNull final AdminSettings pluginSettings) {
+        super(server);
+        this.myWebManager = webManager;
+        this.myPluginDescriptor = pluginDescriptor;
+        this.mySettings = pluginSettings;
+    }
+
+    @Override
+    protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
         request.getSession().setAttribute("userKey", mySettings.getUserKey());
         request.getSession().setAttribute("blazeMeterUrl", mySettings.getBlazeMeterUrl());
-        Map<String,Object> params = new HashMap<String,Object>();
+        Map<String, Object> params = new HashMap<String, Object>();
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("viewBlazeRunnerParams.jsp"), params);
-	}
+    }
 
-	/**
-	 * Register controller
-	 */
-	public void register(){
+    /**
+     * Register controller
+     */
+    public void register() {
         myWebManager.registerController("/blazeRunnerController.html", this);
-      }
+    }
 }
