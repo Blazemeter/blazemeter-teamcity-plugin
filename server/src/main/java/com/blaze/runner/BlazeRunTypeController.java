@@ -55,28 +55,6 @@ public class BlazeRunTypeController extends BaseController {
         this.serverPaths = serverPaths;
     }
 
-    /**
-     * Save user key to local file
-     *
-     * @param keyFile
-     */
-    private void saveSettings(final File keyFile) {
-        try {
-            Properties prop = new Properties();
-            FileReader inFile = new FileReader(keyFile);
-            FileOutputStream fos = new FileOutputStream(keyFile);
-            prop.load(inFile);
-            prop.setProperty("user_key", mainSettings.getUserKey());
-            prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
-            prop.store(fos, "");
-
-            fos.close();
-            inFile.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public AdminSettings getMainSettings() {
         return mainSettings;
     }
