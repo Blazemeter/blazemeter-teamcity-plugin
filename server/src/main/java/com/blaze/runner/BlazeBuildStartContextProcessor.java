@@ -21,6 +21,7 @@ import jetbrains.buildServer.serverSide.BuildStartContextProcessor;
 import org.jetbrains.annotations.NotNull;
 
 public class BlazeBuildStartContextProcessor implements BuildStartContextProcessor {
+
     private AdminSettings pluginSettings;
     private ExtensionHolder extensionHolder;
 

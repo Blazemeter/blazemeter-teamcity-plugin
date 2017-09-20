@@ -21,7 +21,7 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 
 
 public class AdminSettings {
-    
+
     public ServerPaths serverPaths;
     private String userKey = "";
     private String blazeMeterUrl = "";

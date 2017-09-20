@@ -22,6 +22,7 @@ import jetbrains.buildServer.controllers.admin.AdminPage;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 
 public class ConfPage extends AdminPage {
+
     private AdminSettings mainSettings;
 
     public ConfPage(PagePlaces pagePlaces, String tabId, String includeUrl, String title) {

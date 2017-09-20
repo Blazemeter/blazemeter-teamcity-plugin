@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class BlazeRunType extends RunType {
+
     @NotNull
     private final PluginDescriptor pluginDescriptor;
     @NotNull
@@ -65,7 +66,7 @@ public class BlazeRunType extends RunType {
     @Nullable
     public Map<String, String> getDefaultRunnerProperties() {
         if (defaultProperties == null) {
-            defaultProperties = new HashMap<String, String>();
+            defaultProperties = new HashMap<>();
         }
         setupDefaultProperties(defaultProperties);
         return defaultProperties;

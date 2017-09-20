@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
 public class BlazeMeterSettingsController extends BaseController {
+
     private final WebControllerManager myWebManager;
     private final PluginDescriptor myPluginDescriptor;
     private final AdminSettings mySettings;
