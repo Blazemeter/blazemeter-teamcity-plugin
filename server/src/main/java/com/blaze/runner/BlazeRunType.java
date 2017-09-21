@@ -1,15 +1,15 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2017 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze.runner;
@@ -25,83 +25,86 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-
+/**
+ * Class for configure Build Step Params
+ */
 public class BlazeRunType extends RunType {
-	@NotNull
-	private final PluginDescriptor pluginDescriptor;
-	@NotNull
-	private final String editParamsPageName = "editBlazeRunnerParams.jsp";
-	@NotNull
-	private final String viewParamsPageName = "viewBlazeRunnerParams.jsp";
 
-	Map<String, String> defaultProperties = null;
+    @NotNull
+    private final PluginDescriptor pluginDescriptor;
+    @NotNull
+    private final String editParamsPageName = "editBlazeRunnerParams.jsp";
+    @NotNull
+    private final String viewParamsPageName = "viewBlazeRunnerParams.jsp";
 
-	private AdminSettings pluginSettings;
+    Map<String, String> defaultProperties = null;
 
-	public BlazeRunType(final RunTypeRegistry runTypeRegistry, 
-			@NotNull final PluginDescriptor pluginDescriptor,
-			@NotNull final AdminSettings pluginSettings) {
-		this.pluginDescriptor = pluginDescriptor;
-		this.pluginSettings = pluginSettings;
-		
-		runTypeRegistry.registerRunType(this);
-	}
+    private AdminSettings pluginSettings;
 
-	@Override
-	public String getDescription() {
-		return Constants.RUNNER_DISPLAY_NAME;
-	}
+    public BlazeRunType(final RunTypeRegistry runTypeRegistry,
+                        @NotNull final PluginDescriptor pluginDescriptor,
+                        @NotNull final AdminSettings pluginSettings) {
+        this.pluginDescriptor = pluginDescriptor;
+        this.pluginSettings = pluginSettings;
 
-	@Override
-	public String getDisplayName() {
-		return Constants.RUNNER_DISPLAY_NAME;
-	}
+        runTypeRegistry.registerRunType(this);
+    }
 
-	@Override
-	public String getType() {
-		return Constants.RUNNER_TYPE;
-	}
+    @Override
+    public String getDescription() {
+        return Constants.RUNNER_DISPLAY_NAME;
+    }
 
-	@Nullable
-	public Map<String, String> getDefaultRunnerProperties() {
-		if (defaultProperties == null){
-			defaultProperties = new HashMap<String, String>();
-		}		
-		setupDefaultProperties(defaultProperties);
-		return defaultProperties;
-	}
+    @Override
+    public String getDisplayName() {
+        return Constants.RUNNER_DISPLAY_NAME;
+    }
 
-	private void setupDefaultProperties(Map<String, String> params) {
+    @Override
+    public String getType() {
+        return Constants.RUNNER_TYPE;
+    }
 
-		if (pluginSettings != null) {
-			params.remove(Constants.USER_KEY);
-			params.remove(Constants.BLAZEMETER_URL);
-			params.put(Constants.USER_KEY, pluginSettings.getUserKey());
-			params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
-		}
-	}
+    @Nullable
+    public Map<String, String> getDefaultRunnerProperties() {
+        if (defaultProperties == null) {
+            defaultProperties = new HashMap<>();
+        }
+        setupDefaultProperties(defaultProperties);
+        return defaultProperties;
+    }
 
-	@Nullable
-	public PropertiesProcessor getRunnerPropertiesProcessor() {
-		return new BlazeRunTypePropertiesProcessor();
-	}
+    private void setupDefaultProperties(Map<String, String> params) {
 
-	@Nullable
-	public String getEditRunnerParamsJspFilePath() {
-		return pluginDescriptor.getPluginResourcesPath(editParamsPageName);
-	}
+        if (pluginSettings != null) {
+            params.remove(Constants.USER_KEY);
+            params.remove(Constants.BLAZEMETER_URL);
+            params.put(Constants.USER_KEY, pluginSettings.getUserKey());
+            params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
+        }
+    }
 
-	@Override
-	public String getViewRunnerParamsJspFilePath() {
-		return pluginDescriptor.getPluginResourcesPath(viewParamsPageName);
-	}
+    @Nullable
+    public PropertiesProcessor getRunnerPropertiesProcessor() {
+        return new BlazeRunTypePropertiesProcessor();
+    }
 
-	public AdminSettings getPluginSettings() {
-		return pluginSettings;
-	}
+    @Nullable
+    public String getEditRunnerParamsJspFilePath() {
+        return pluginDescriptor.getPluginResourcesPath(editParamsPageName);
+    }
 
-	public void setPluginSettings(AdminSettings pluginSettings) {
-		this.pluginSettings = pluginSettings;
-	}
+    @Override
+    public String getViewRunnerParamsJspFilePath() {
+        return pluginDescriptor.getPluginResourcesPath(viewParamsPageName);
+    }
+
+    public AdminSettings getPluginSettings() {
+        return pluginSettings;
+    }
+
+    public void setPluginSettings(AdminSettings pluginSettings) {
+        this.pluginSettings = pluginSettings;
+    }
 
 }

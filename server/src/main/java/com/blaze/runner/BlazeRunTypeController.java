@@ -1,23 +1,18 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2017 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze.runner;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +27,10 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
+
+/**
+ * Controller for configure admin properties
+ */
 public class BlazeRunTypeController extends BaseController {
 
     private final WebControllerManager myManager;
@@ -48,33 +47,11 @@ public class BlazeRunTypeController extends BaseController {
      * @param serverPaths
      */
     public BlazeRunTypeController(@NotNull final String actualUrl, @NotNull final String actualJsp,
-            final WebControllerManager manager, final ServerPaths serverPaths) {
+                                  final WebControllerManager manager, final ServerPaths serverPaths) {
         this.actualJsp = actualJsp;
         this.actualUrl = actualUrl;
         this.myManager = manager;
         this.serverPaths = serverPaths;
-    }
-
-    /**
-     * Save user key to local file
-     *
-     * @param keyFile
-     */
-    private void saveSettings(final File keyFile) {
-        try {
-            Properties prop = new Properties();
-            FileReader inFile = new FileReader(keyFile);
-            FileOutputStream fos = new FileOutputStream(keyFile);
-            prop.load(inFile);
-            prop.setProperty("user_key", mainSettings.getUserKey());
-            prop.setProperty("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
-            prop.store(fos, "");
-
-            fos.close();
-            inFile.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public AdminSettings getMainSettings() {
@@ -94,7 +71,7 @@ public class BlazeRunTypeController extends BaseController {
         new AjaxRequestProcessor().processRequest(request, response, new AjaxRequestProcessor.RequestHandler() {
             @Override
             public void handleRequest(@NotNull final HttpServletRequest request, final @NotNull HttpServletResponse response,
-                    @NotNull final Element xmlResponse) {
+                                      @NotNull final Element xmlResponse) {
                 try {
                     doAction(request);
                 } catch (Exception e) {
@@ -116,7 +93,7 @@ public class BlazeRunTypeController extends BaseController {
         if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }
-}
+    }
 
     static private String getMessageWithNested(Throwable e) {
         String result = e.getMessage();
