@@ -46,11 +46,12 @@ public class BzmBuild {
     private String masterId;
     private String testId;
 
-    public BzmBuild(String userKey,String serverUrl,String testId,HttpLogger httplf,BuildProgressLogger logger){
-        this.api=new ApiV3Impl(userKey,serverUrl,httplf);
-        this.testId=testId;
-        this.logger=logger;
-    };
+    public BzmBuild(String userKey, String serverUrl, String testId, HttpLogger httplf, BuildProgressLogger logger) {
+        this.api = new ApiV3Impl(userKey, serverUrl, httplf);
+        this.testId = testId;
+        this.logger = logger;
+    }
+
 
     public boolean validateInput() throws IOException, MessagingException {
         LinkedHashMultimap<String, String> tests = api.testsMultiMap();
@@ -81,7 +82,7 @@ public class BzmBuild {
         HashMap<String, String> startTestResp = new HashMap<String, String>();
         try {
             boolean collection = collection(testId, this.api);
-            String testId_num= Utils.getTestId(testId);
+            String testId_num = Utils.getTestId(testId);
             startTestResp = api.startTest(testId_num, collection);
             this.masterId = startTestResp.get(JsonConstants.ID);
         } catch (Exception e) {
@@ -92,24 +93,24 @@ public class BzmBuild {
     }
 
 
-    public static boolean collection(String testId,Api api) throws Exception{
-        boolean exists=false;
-        boolean collection=false;
+    public static boolean collection(String testId, Api api) throws Exception {
+        boolean exists = false;
+        boolean collection = false;
 
         LinkedHashMultimap tests = api.testsMultiMap();
         Set<Map.Entry> entries = tests.entries();
         for (Map.Entry e : entries) {
             int point = ((String) e.getValue()).indexOf(".");
-            if (testId.contains(((String) e.getValue()).substring(0,point))) {
-                collection = (((String) e.getValue()).substring(point+1)).contains("multi");
-                exists=true;
+            if (testId.contains(((String) e.getValue()).substring(0, point))) {
+                collection = (((String) e.getValue()).substring(point + 1)).contains("multi");
+                exists = true;
             }
             if (collection) {
                 break;
             }
         }
-        if(!exists){
-            throw new Exception("Test with test id = "+testId+" is not present on server");
+        if (!exists) {
+            throw new Exception("Test with test id = " + testId + " is not present on server");
         }
         return collection;
     }
@@ -129,8 +130,7 @@ public class BzmBuild {
     }
 
 
-
-    public boolean active(String testId, BuildProgressLogger logger){
+    public boolean active(String testId, BuildProgressLogger logger) {
         return api.active(testId);
     }
 
@@ -204,21 +204,21 @@ public class BzmBuild {
             logger.message("Downloading jtl from " + url);
             logger.message("JTL zip location: " + jtlZip.getCanonicalPath());
         } catch (JSONException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
+            logger.warning("Unable to get jtl: " + e.getMessage());
         } catch (MalformedURLException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
+            logger.warning("Unable to get jtl: " + e.getMessage());
         } catch (IOException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
+            logger.warning("Unable to get jtl: " + e.getMessage());
         } catch (NullPointerException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
+            logger.warning("Unable to get jtl: " + e.getMessage());
         }
     }
 
     public TestStatus masterStatus(String testId) {
-        TestStatus status=null;
+        TestStatus status = null;
         try {
-            status=this.api.masterStatus(testId);
-        } catch (NullPointerException e){
+            status = this.api.masterStatus(testId);
+        } catch (NullPointerException e) {
             logger.exception(e);
         }
         return status;
@@ -260,11 +260,11 @@ public class BzmBuild {
         return ciStatus;
     }
 
-    public void waitNotActive(String testId){
+    public void waitNotActive(String testId) {
 
-        boolean active=true;
-        int activeCheck=1;
-        while(active&&activeCheck<11){
+        boolean active = true;
+        int activeCheck = 1;
+        while (active && activeCheck < 11) {
             try {
                 Thread.currentThread().sleep(CHECK_INTERVAL);
             } catch (InterruptedException e) {
@@ -272,8 +272,8 @@ public class BzmBuild {
                 logger.warning("Received interrupted Exception: " + e.getMessage());
                 break;
             }
-            logger.message("Checking, if test is active, testId = "+testId+", retry # "+activeCheck);
-            active=this.api.active(testId);
+            logger.message("Checking, if test is active, testId = " + testId + ", retry # " + activeCheck);
+            active = this.api.active(testId);
             activeCheck++;
         }
     }
@@ -320,7 +320,6 @@ public class BzmBuild {
     public String masterId() {
         return masterId;
     }
-
 
 
     public JSONArray prepareSessionProperties(String sesssionProperties) throws JSONException {

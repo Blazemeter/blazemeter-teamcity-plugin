@@ -27,6 +27,7 @@ import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import com.blaze.runner.Constants;
 
 public class BlazeAgent implements AgentBuildRunner {
+
     private AgentBuildRunnerInfo runnerInfo;
     private BzmBuildProcess buildProcess;
     private BuildAgent buildAgent;
