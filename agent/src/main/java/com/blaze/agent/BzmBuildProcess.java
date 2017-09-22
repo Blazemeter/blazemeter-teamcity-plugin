@@ -111,17 +111,14 @@ public class BzmBuildProcess implements BuildProcess {
             throw new RunBuildException(e.getMessage());
         }
 
-        bzmBuild = new com.blaze.agent.BzmBuild(((String) buildParams.get(Constants.USER_KEY)),
-                ((String) buildParams.get(Constants.BLAZEMETER_URL)), testId, httpl, logger);
+        bzmBuild = new BzmBuild(buildParams.get(Constants.USER_KEY), buildParams.get(Constants.BLAZEMETER_URL), testId, httpl, logger);
 
         try {
             if (!this.bzmBuild.validateInput()) {
                 httpl.close();
                 throw new RunBuildException("Failed to validate build parameters");
             }
-        } catch (IOException e) {
-            throw new RunBuildException(e.getMessage());
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             throw new RunBuildException(e.getMessage());
         }
     }
@@ -130,17 +127,17 @@ public class BzmBuildProcess implements BuildProcess {
     @Override
     public BuildFinishedStatus waitFor() throws RunBuildException {
         logger.message("Attempting to start test with id: " + testId);
+
         String masterId = null;
         try {
             masterId = bzmBuild.startTest(testId, logger);
-        } catch (IOException e) {
-            logger.error("Failed to start test: testId = " + this.testId + "->" + e.getMessage());
-        } catch (JSONException e) {
+        } catch (Exception e) {
             logger.error("Failed to start test: testId = " + this.testId + "->" + e.getMessage());
         }
-        BuildFinishedStatus result = null;
-        if (masterId.isEmpty()) {
-            ((HttpLogger) httpl).close();
+
+
+        if (masterId == null || masterId.isEmpty()) {
+            httpl.close();
             return BuildFinishedStatus.FINISHED_FAILED;
         } else {
             logger.message("Test initialization is started");
@@ -153,9 +150,8 @@ public class BzmBuildProcess implements BuildProcess {
             }
 
             if (StringUtil.isNotEmpty(this.jmProps)) {
-                JSONArray pr = null;
                 try {
-                    pr = bzmBuild.prepareSessionProperties(this.jmProps);
+                    JSONArray pr = bzmBuild.prepareSessionProperties(this.jmProps);
                     bzmBuild.properties(pr, masterId);
                 } catch (JSONException e) {
                     logger.warning("Failed to submit session properties to test: " + e.getMessage());
@@ -168,8 +164,9 @@ public class BzmBuildProcess implements BuildProcess {
         logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestStatus status;
         long testInitStart = System.currentTimeMillis();
-        boolean initTimeOutPassed = false;
+        boolean initTimeOutPassed;
         BuildInterruptReason buildInterruptReason;
+
         do {
             Utils.sleep(CHECK_INTERVAL, logger);
             status = bzmBuild.masterStatus(bzmBuild.masterId());
@@ -178,6 +175,8 @@ public class BzmBuildProcess implements BuildProcess {
             buildInterruptReason = agentRunningBuild.getInterruptReason();
         }
         while (buildInterruptReason == null && (!(status.equals(TestStatus.Running) | initTimeOutPassed)));
+
+
         if (buildInterruptReason != null) {
             logger.warning("Build was aborted by user");
             boolean terminate = bzmBuild.stopMaster(masterId, logger);
@@ -188,24 +187,23 @@ public class BzmBuildProcess implements BuildProcess {
                 if (jtl) {
                     try {
                         bzmBuild.jtlReports(masterId, jtlDir);
-                    } catch (IOException io) {
-                        logger.error("Failed to download jtl-report: " + io.getMessage());
-                    } catch (JSONException je) {
+                    } catch (Exception je) {
                         logger.error("Failed to download jtl-report: " + je.getMessage());
                     }
                 }
             }
-            ((HttpLogger) httpl).close();
+            httpl.close();
             return BuildFinishedStatus.INTERRUPTED;
         }
+
         if (initTimeOutPassed & !status.equals(TestStatus.Running)) {
             logger.warning("Failed to initialize test " + testId);
             logger.warning("Build will be aborted");
-            ((HttpLogger) httpl).close();
+            httpl.close();
             return bzmBuild.validateCIStatus(masterId, logger);
         }
-        long testRunStart = System.currentTimeMillis();
 
+        long testRunStart = System.currentTimeMillis();
         do {
             Utils.sleep(CHECK_INTERVAL, logger);
             logger.message("Check if the test is still running. Time passed since start: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
@@ -213,6 +211,8 @@ public class BzmBuildProcess implements BuildProcess {
             logger.message("TestInfo=" + status.toString());
             buildInterruptReason = agentRunningBuild.getInterruptReason();
         } while (buildInterruptReason == null && !status.equals(TestStatus.NotRunning));
+
+
         if (buildInterruptReason != null) {
             logger.warning("Build was aborted by user");
             boolean terminate = bzmBuild.stopMaster(masterId, logger);
@@ -224,40 +224,41 @@ public class BzmBuildProcess implements BuildProcess {
                 if (jtl) {
                     try {
                         bzmBuild.jtlReports(masterId, jtlDir);
-                    } catch (IOException io) {
-                        logger.error("Failed to download jtl-report: " + io.getMessage());
-                    } catch (JSONException je) {
+                    } catch (Exception je) {
                         logger.error("Failed to download jtl-report: " + je.getMessage());
                     }
                 }
             }
-            ((HttpLogger) httpl).close();
+            httpl.close();
             return BuildFinishedStatus.INTERRUPTED;
         }
+
         logger.message("Test finished. Checking for test report...");
         logger.message("Actual test duration was: " + ((System.currentTimeMillis() - testRunStart) / 1000 / 60) + " minutes.");
         logger.activityFinished("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         bzmBuild.waitNotActive(this.testId);
         TestResult testResult = bzmBuild.getReport(logger);
+
         if (testResult == null) {
             logger.warning("Failed to get report from server...");
         } else {
             logger.message("Test report is received...");
             logger.message(testResult.toString());
         }
+
         if (junit) {
             bzmBuild.junitXml(masterId, junitDir);
         }
+
         if (jtl) {
             try {
                 bzmBuild.jtlReports(masterId, jtlDir);
-            } catch (IOException io) {
-                logger.error("Failed to download jtl-report: " + io.getMessage());
-            } catch (JSONException je) {
+            } catch (Exception je) {
                 logger.error("Failed to download jtl-report: " + je.getMessage());
             }
         }
-        ((HttpLogger) httpl).close();
+
+        httpl.close();
         return bzmBuild.validateCIStatus(masterId, logger);
     }
 }

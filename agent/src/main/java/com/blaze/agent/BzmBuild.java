@@ -78,12 +78,10 @@ public class BzmBuild {
     }
 
     public String startTest(String testId, BuildProgressLogger logger) throws IOException, JSONException {
-        String masterId = null;
-        HashMap<String, String> startTestResp = new HashMap<String, String>();
         try {
             boolean collection = collection(testId, this.api);
             String testId_num = Utils.getTestId(testId);
-            startTestResp = api.startTest(testId_num, collection);
+            HashMap<String, String> startTestResp = api.startTest(testId_num, collection);
             this.masterId = startTestResp.get(JsonConstants.ID);
         } catch (Exception e) {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
@@ -117,10 +115,9 @@ public class BzmBuild {
 
 
     public void junitXml(String masterId, File junitDir) {
-        String junitReport = "";
         logger.message("Requesting junit report from server, masterId = " + masterId);
         try {
-            junitReport = this.api.retrieveJUNITXML(masterId);
+            String junitReport = this.api.retrieveJUNITXML(masterId);
             logger.message("Received junit report from server");
             logger.message("Saving junit report to " + junitDir.getAbsolutePath());
             Utils.saveJunit(junitReport, junitDir, masterId, logger);
@@ -162,25 +159,19 @@ public class BzmBuild {
 
 
     public String getReportUrl(String masterId) {
-        JSONObject jo = null;
-        String publicToken = "";
-        String reportUrl = null;
         try {
-            jo = this.api.generatePublicToken(masterId);
+            JSONObject jo = this.api.generatePublicToken(masterId);
             if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
-                publicToken = result.getString("publicToken");
-                reportUrl = this.api.getServerUrl() + "/app/?public-token=" + publicToken + "#masters/" + masterId + "/summary";
+                String publicToken = result.getString("publicToken");
+                return this.api.getServerUrl() + "/app/?public-token=" + publicToken + "#masters/" + masterId + "/summary";
             } else {
                 logger.warning("Problems with generating public-token for report URL: " + jo.get(JsonConstants.ERROR).toString());
-                reportUrl = this.api.getServerUrl() + "/app/#masters/" + masterId + "/summary";
             }
-
         } catch (Exception e) {
             logger.warning("Problems with generating public-token for report URL");
-        } finally {
-            return reportUrl;
         }
+        return this.api.getServerUrl() + "/app/#masters/" + masterId + "/summary";
     }
 
 
@@ -203,13 +194,8 @@ public class BzmBuild {
             FileUtils.copyURLToFile(url, jtlZip);
             logger.message("Downloading jtl from " + url);
             logger.message("JTL zip location: " + jtlZip.getCanonicalPath());
-        } catch (JSONException e) {
-            logger.warning("Unable to get jtl: " + e.getMessage());
-        } catch (MalformedURLException e) {
-            logger.warning("Unable to get jtl: " + e.getMessage());
-        } catch (IOException e) {
-            logger.warning("Unable to get jtl: " + e.getMessage());
-        } catch (NullPointerException e) {
+
+        } catch (Throwable e) {
             logger.warning("Unable to get jtl: " + e.getMessage());
         }
     }
@@ -218,7 +204,7 @@ public class BzmBuild {
         TestStatus status = null;
         try {
             status = this.api.masterStatus(testId);
-        } catch (NullPointerException e) {
+        } catch (Throwable e) {
             logger.exception(e);
         }
         return status;
@@ -235,8 +221,6 @@ public class BzmBuild {
             logger.message("Test status object = " + jo.toString());
             failures = jo.getJSONArray(JsonConstants.FAILURES);
             errors = jo.getJSONArray(JsonConstants.ERRORS);
-        } catch (JSONException je) {
-            logger.message("No thresholds on server: setting 'success' for CIStatus ");
         } catch (Exception e) {
             logger.message("No thresholds on server: setting 'success' for CIStatus ");
         } finally {
@@ -284,15 +268,10 @@ public class BzmBuild {
         try {
             JSONObject aggregate = this.api.testReport(this.masterId);
             testResult = new TestResult(aggregate);
-        } catch (JSONException e) {
-            logger.warning("Failed to get aggregate report from server " + e);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             logger.warning("Failed to get aggregate report from server" + e);
-        } catch (NullPointerException e) {
-            logger.warning("Failed to get aggregate report from server" + e);
-        } finally {
-            return testResult;
         }
+        return testResult;
     }
 
 
