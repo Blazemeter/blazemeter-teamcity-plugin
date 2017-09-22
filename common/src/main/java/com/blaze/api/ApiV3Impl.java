@@ -349,8 +349,10 @@ public class ApiV3Impl implements Api {
             try {
                 Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                     addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-                JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-                this.logger.info("Received json: " + jo.toString());
+                String webContent = okhttp.newCall(r).execute().body().string();
+                this.logger.info("Received response (hopefully JSON): " + webContent);
+                JSONObject jo = new JSONObject(webContent);
+                this.logger.info("JSON parsed ok");
                 JSONArray result = null;
                 if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
                     (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
@@ -398,6 +400,8 @@ public class ApiV3Impl implements Api {
             } catch (UnknownHostException e) {
                 this.logger.warn("Failed to resolve host while getting tests: " + e.getMessage());
                 testListOrdered= LinkedHashMultimap.create(1, 1);
+            } catch (JSONException e) {
+                this.logger.warn("JSON error while getting tests: ", e);
             } catch (Exception e) {
                 this.logger.warn("Exception while getting tests: ", e);
                 testListOrdered= LinkedHashMultimap.create(1, 1);
