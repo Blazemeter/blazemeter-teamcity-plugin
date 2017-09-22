@@ -1,15 +1,15 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2017 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze.utils;
@@ -30,7 +30,8 @@ public class Utils {
 
     private static Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
-    private Utils(){}
+    private Utils() {
+    }
 
 
     public static String version() {
@@ -44,10 +45,10 @@ public class Utils {
     }
 
 
-    public static String getTestId(String testId){
-        try{
-            return testId.substring(testId.lastIndexOf("(")+1,testId.lastIndexOf("."));
-        }catch (Exception e){
+    public static String getTestId(String testId) {
+        try {
+            return testId.substring(testId.lastIndexOf("(") + 1, testId.lastIndexOf("."));
+        } catch (Exception e) {
             return testId;
         }
     }
@@ -58,7 +59,7 @@ public class Utils {
             reportFile = new File(FilenameUtils.normalize(reportDir));
         } else {
             reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()
-                + "/" + (reportDir == null ? "" : reportDir)));
+                    + "/" + (reportDir == null ? "" : reportDir)));
         }
         try {
             if (!reportFile.exists()) {
@@ -90,10 +91,6 @@ public class Utils {
             out.write(report);
             out.close();
             logger.message("Report was saved to " + junitFile.getAbsolutePath());
-        } catch (FileNotFoundException fnfe) {
-            logger.message("ERROR: Failed to save XML report to workspace " + fnfe.getMessage());
-            logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
-            logger.exception(fnfe);
         } catch (IOException e) {
             logger.message("ERROR: Failed to save XML report to workspace " + e.getMessage());
             logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
@@ -102,8 +99,7 @@ public class Utils {
     }
 
 
-
-    public static void sleep(int sleepPeriod,BuildProgressLogger logger){
+    public static void sleep(int sleepPeriod, BuildProgressLogger logger) {
         try {
             Thread.currentThread().sleep(sleepPeriod);
         } catch (InterruptedException e) {

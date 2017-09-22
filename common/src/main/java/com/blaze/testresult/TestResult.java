@@ -1,15 +1,15 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2017 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze.testresult;
@@ -20,17 +20,17 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class TestResult {
-    protected double std              ;
-    protected double average          ;
-    protected double min              ;
-    protected double max              ;
-    protected double samples          ;
-    protected double median           ;
-    protected double percentile99     ;
-    protected double errorPercentage  ;
-    protected double hits             ;
-    protected double kbs              ;
-    protected long   n                ;
+    protected double std;
+    protected double average;
+    protected double min;
+    protected double max;
+    protected double samples;
+    protected double median;
+    protected double percentile99;
+    protected double errorPercentage;
+    protected double hits;
+    protected double kbs;
+    protected long n;
 
     public TestResult(JSONObject json) throws IOException, JSONException {
         this.std = json.getDouble("std");
@@ -40,29 +40,29 @@ public class TestResult {
 
         // not implemented because such field is absent in JSON
 //        this.samples = json.getDouble("samples");
-        this.samples=-1;
+        this.samples = -1;
         // not implemented because such field is absent in JSON
 //        this.median = json.getDouble("median");
-        this.median=-1;
+        this.median = -1;
         // not implemented because such field is absent in JSON
 //        this.errorPercentage = json.getDouble("errorPercentage");
-        this.errorPercentage=(json.getDouble("failed")/json.getDouble("hits"))*100;
+        this.errorPercentage = (json.getDouble("failed") / json.getDouble("hits")) * 100;
         this.hits = json.getDouble("hits");
-        this.kbs = json.getDouble("bytes")/1024;
+        this.kbs = json.getDouble("bytes") / 1024;
 
         // not implemented because such field is absent in JSON
 //        this.n = json.getLong("n");
-          this.n=-1;
+        this.n = -1;
     }
 
     @Override
     public String toString() {
         return "Aggregate Test Result -> \n" +
                 "Samples=" + hits +
-               "\nErrors percentage=" + String.format("%.5g%n", errorPercentage)+
-               "Average=" + average +
-               "\nMin=" + min +
-               "\nMax=" + max;
+                "\nErrors percentage=" + String.format("%.5g%n", errorPercentage) +
+                "Average=" + average +
+                "\nMin=" + min +
+                "\nMax=" + max;
     }
 
     public double getStd() {
