@@ -47,7 +47,6 @@ public class BzmBuildProcess implements BuildProcess {
     private com.blaze.agent.BzmBuild bzmBuild;
     private AgentRunningBuild agentRunningBuild;
     private BuildRunnerContext buildRunCtxt;
-    private ArtifactsWatcher artifactsWatcher;
     private String testId;
     private boolean junit;
     private boolean jtl;
@@ -62,10 +61,9 @@ public class BzmBuildProcess implements BuildProcess {
     boolean interrupted;
     private HttpLogger httpl;
 
-    public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher) {
+    public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext) {
         this.agentRunningBuild = agentRunningBuild;
         this.buildRunCtxt = buildRunnerContext;
-        this.artifactsWatcher = artifactsWatcher;
         this.agent = buildAgent;
         this.finished = false;
         logger = agentRunningBuild.getBuildLogger();
