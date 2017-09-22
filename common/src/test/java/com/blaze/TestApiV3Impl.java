@@ -1,15 +1,15 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2017 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze;
@@ -52,7 +52,6 @@ public class TestApiV3Impl {
     }
 
 
-
     @Test
     public void getTestStatus_Running() {
         blazemeterApiV3 = new ApiV3Impl(TestConstants.MOCKED_USER_KEY_VALID,
@@ -80,7 +79,7 @@ public class TestApiV3Impl {
 
     @Test
     public void getTestInfo_NotFound() {
-        blazemeterApiV3 = new ApiV3Impl("",TestConstants.mockedApiUrl);
+        blazemeterApiV3 = new ApiV3Impl("", TestConstants.mockedApiUrl);
         TestStatus testStatus = blazemeterApiV3.masterStatus("");
         Assert.assertEquals(testStatus, TestStatus.NotFound);
     }
@@ -102,7 +101,7 @@ public class TestApiV3Impl {
 
 
     @Test
-    public void startTest_http() throws JSONException,IOException {
+    public void startTest_http() throws JSONException, IOException {
         blazemeterApiV3 = new ApiV3Impl(TestConstants.MOCKED_USER_KEY_VALID,
                 TestConstants.mockedApiUrl);
         Assert.assertEquals(blazemeterApiV3.startTest(TestConstants.TEST_MASTER_ID, false).get(JsonConstants.ID)
@@ -110,7 +109,7 @@ public class TestApiV3Impl {
     }
 
     @Test
-    public void startTest_jmeter() throws JSONException,IOException {
+    public void startTest_jmeter() throws JSONException, IOException {
         blazemeterApiV3 = new ApiV3Impl(TestConstants.MOCKED_USER_KEY_VALID,
                 TestConstants.mockedApiUrl);
         Assert.assertEquals(blazemeterApiV3.startTest(TestConstants.TEST_MASTER_ID, false).get(JsonConstants.ID),
@@ -118,7 +117,7 @@ public class TestApiV3Impl {
     }
 
     @Test
-    public void startTest_followme() throws JSONException,IOException {
+    public void startTest_followme() throws JSONException, IOException {
         blazemeterApiV3 = new ApiV3Impl(TestConstants.MOCKED_USER_KEY_VALID,
                 TestConstants.mockedApiUrl);
         Assert.assertEquals(blazemeterApiV3.startTest(TestConstants.TEST_MASTER_ID, false).get(JsonConstants.ID),
@@ -126,7 +125,7 @@ public class TestApiV3Impl {
     }
 
     @Test
-    public void startTest_multi() throws JSONException,IOException {
+    public void startTest_multi() throws JSONException, IOException {
         blazemeterApiV3 = new ApiV3Impl(TestConstants.MOCKED_USER_KEY_VALID,
                 TestConstants.mockedApiUrl);
         Assert.assertEquals(blazemeterApiV3.startTest(TestConstants.TEST_MASTER_ID, true).get(JsonConstants.ID),
