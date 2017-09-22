@@ -20,6 +20,7 @@ import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
+
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
@@ -86,7 +88,7 @@ public class ApiV3Impl implements Api {
                 this.proxyUser = System.getProperty(Constants.PROXY_USER);
                 logger.info("Using http.proxyUser = " + this.proxyUser);
                 this.proxyPass = System.getProperty(Constants.PROXY_PASS);
-                logger.info("Using http.proxyPass = " + StringUtils.left(this.proxyPass,4));
+                logger.info("Using http.proxyPass = " + StringUtils.left(this.proxyPass, 4));
             }
             if (!StringUtils.isBlank(this.proxyUser) && !StringUtils.isBlank(this.proxyPass)) {
                 this.auth = new Authenticator() {
@@ -348,12 +350,12 @@ public class ApiV3Impl implements Api {
             this.logger.info("Getting tests: " + url.substring(0, url.indexOf("?") + 14));
             try {
                 Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
+                        addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
                 JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
                 this.logger.info("Received json: " + jo.toString());
                 JSONArray result = null;
                 if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
-                    (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
+                        (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                     testListOrdered = LinkedHashMultimap.create(1, 1);
                     testListOrdered.put(Constants.INCORRECT_KEY, Constants.CHECK_ACCOUNT);
                     return testListOrdered;
@@ -391,16 +393,16 @@ public class ApiV3Impl implements Api {
                 }
             } catch (NullPointerException npe) {
                 this.logger.warn("Exception while getting tests - check connection/proxy settings: ", npe);
-                testListOrdered= LinkedHashMultimap.create(1, 1);
+                testListOrdered = LinkedHashMultimap.create(1, 1);
             } catch (ConnectException e) {
                 this.logger.warn("Failed to connect while getting tests: " + e.getMessage());
-                testListOrdered= LinkedHashMultimap.create(1, 1);
+                testListOrdered = LinkedHashMultimap.create(1, 1);
             } catch (UnknownHostException e) {
                 this.logger.warn("Failed to resolve host while getting tests: " + e.getMessage());
-                testListOrdered= LinkedHashMultimap.create(1, 1);
+                testListOrdered = LinkedHashMultimap.create(1, 1);
             } catch (Exception e) {
                 this.logger.warn("Exception while getting tests: ", e);
-                testListOrdered= LinkedHashMultimap.create(1, 1);
+                testListOrdered = LinkedHashMultimap.create(1, 1);
             } finally {
                 return testListOrdered;
             }

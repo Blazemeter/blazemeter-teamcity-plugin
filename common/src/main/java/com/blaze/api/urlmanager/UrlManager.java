@@ -21,11 +21,12 @@ public interface UrlManager {
     String CLIENT_IDENTIFICATION = "&_clientId=CI_TEAMCITY&_clientVersion="
             + Utils.version();
 
-    String LATEST="/api/latest";
-    String TESTS="/tests";
-    String MASTERS="/masters";
-    String WEB="/web";
-    String CI_STATUS="/ci-status";
+    String LATEST = "/api/latest";
+    String TESTS = "/tests";
+    String MASTERS = "/masters";
+    String WEB = "/web";
+    String CI_STATUS = "/ci-status";
+
     String getServerUrl();
 
     void setServerUrl(String serverUrl);
@@ -36,7 +37,7 @@ public interface UrlManager {
 
     String activeTests(String appKey, String userKey);
 
-    String masterId(String appKey,String userKey, String masterId);
+    String masterId(String appKey, String userKey, String masterId);
 
     String testStart(String appKey, String userKey, String testId);
 

@@ -14,25 +14,25 @@
 package com.blaze.runner;
 
 public interface JsonConstants {
-    String TYPE="type";
-    String ID="id";
-    String NOTE="note";
-    String CODE="code";
-    String TEST_ID="testId";
-    String RESPONSE_CODE="response_code";
-    String ERROR="error";
-    String RESULT="result";
-    String CONFIGURATION="configuration";
-    String PLUGINS="plugins";
-    String OVERRIDE="override";
-    String DATA="data";
-    String TEST_COLLECTION_ID="testCollectionId";
-    String STATUS="status";
-    String DATA_URL="dataUrl";
-    String NAME="name";
-    String TESTS="tests";
-    String COLLECTIONS="collections";
-    String SUCCESS="success";
-    String FAILURES="failures";
-    String ERRORS="errors";
+    String TYPE = "type";
+    String ID = "id";
+    String NOTE = "note";
+    String CODE = "code";
+    String TEST_ID = "testId";
+    String RESPONSE_CODE = "response_code";
+    String ERROR = "error";
+    String RESULT = "result";
+    String CONFIGURATION = "configuration";
+    String PLUGINS = "plugins";
+    String OVERRIDE = "override";
+    String DATA = "data";
+    String TEST_COLLECTION_ID = "testCollectionId";
+    String STATUS = "status";
+    String DATA_URL = "dataUrl";
+    String NAME = "name";
+    String TESTS = "tests";
+    String COLLECTIONS = "collections";
+    String SUCCESS = "success";
+    String FAILURES = "failures";
+    String ERRORS = "errors";
 }

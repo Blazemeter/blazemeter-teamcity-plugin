@@ -32,10 +32,10 @@ public interface Api {
 
     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     MediaType TEXT = MediaType.parse("text/plain; charset=ISO-8859-1");
-    String ACCEPT="Accept";
-    String CONTENT_TYPE="Content-type";
-    String APP_JSON="application/json";
-    String APP_JSON_UTF_8="application/json; charset=UTF-8";
+    String ACCEPT = "Accept";
+    String CONTENT_TYPE = "Content-type";
+    String APP_JSON = "application/json";
+    String APP_JSON_UTF_8 = "application/json; charset=UTF-8";
 
     String APP_KEY = "jnk100x987c06f4e10c4";
 
@@ -43,7 +43,7 @@ public interface Api {
 
     int getTestMasterStatusCode(String id);
 
-    HashMap<String,String> startTest(String testId, boolean collection) throws JSONException,IOException;
+    HashMap<String, String> startTest(String testId, boolean collection) throws JSONException, IOException;
 
     int getTestCount() throws JSONException, IOException, ServletException;
 
@@ -55,7 +55,7 @@ public interface Api {
 
     LinkedHashMultimap<String, String> testsMultiMap() throws IOException, MessagingException;
 
-    JSONObject getUser() throws IOException,JSONException;
+    JSONObject getUser() throws IOException, JSONException;
 
     JSONObject getCIStatus(String sessionId) throws JSONException, IOException;
 
@@ -65,9 +65,9 @@ public interface Api {
 
     JSONObject retrieveJtlZip(String sessionId) throws IOException, JSONException;
 
-    List<String> getListOfSessionIds(String masterId) throws IOException,JSONException;
+    List<String> getListOfSessionIds(String masterId) throws IOException, JSONException;
 
-    JSONObject generatePublicToken(String sessionId)throws IOException,JSONException;
+    JSONObject generatePublicToken(String sessionId) throws IOException, JSONException;
 
     String getServerUrl();
 
@@ -75,13 +75,14 @@ public interface Api {
 
     boolean ping() throws Exception;
 
-    boolean notes(String note,String masterId)throws Exception;
+    boolean notes(String note, String masterId) throws Exception;
 
     boolean properties(JSONArray properties, String sessionId) throws Exception;
 
     public JSONObject testConfig(String testId) throws IOException, JSONException;
 
     public String getApiKey();
+
     public void setApiKey(String apiKey);
 }
 

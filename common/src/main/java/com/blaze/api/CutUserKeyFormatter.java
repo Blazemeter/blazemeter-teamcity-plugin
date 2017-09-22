@@ -24,11 +24,11 @@ public class CutUserKeyFormatter extends SimpleFormatter {
 
     @Override
     public synchronized String format(LogRecord record) {
-        String logEntry=super.format(record);
-        int apiKey=logEntry.lastIndexOf("api_key");
-        if(apiKey>0){
-            String keyToReplace=logEntry.substring(apiKey+13,apiKey+28);
-            return StringUtils.replace(logEntry,keyToReplace, Constants.THREE_DOTS);
+        String logEntry = super.format(record);
+        int apiKey = logEntry.lastIndexOf("api_key");
+        if (apiKey > 0) {
+            String keyToReplace = logEntry.substring(apiKey + 13, apiKey + 28);
+            return StringUtils.replace(logEntry, keyToReplace, Constants.THREE_DOTS);
         }
         return logEntry;
     }

@@ -16,5 +16,5 @@ package com.blaze.runner;
 
 
 public enum TestStatus {
-    Running,NotRunning,NotFound,Error
+    Running, NotRunning, NotFound, Error
 }

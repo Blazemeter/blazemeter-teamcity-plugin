@@ -16,34 +16,34 @@ package com.blaze.runner;
 
 public interface Constants {
 
-	String RUNNER_DISPLAY_NAME = "BlazeMeter";
-	String RUNNER_TYPE = "BlazeMeter";
-	String USER_KEY = "USER_KEY";
-	String BLAZEMETER_URL = "BLAZEMETER_URL";
-	String UNKNOWN_TYPE="unknown_type";
+    String RUNNER_DISPLAY_NAME = "BlazeMeter";
+    String RUNNER_TYPE = "BlazeMeter";
+    String USER_KEY = "USER_KEY";
+    String BLAZEMETER_URL = "BLAZEMETER_URL";
+    String UNKNOWN_TYPE = "unknown_type";
 
-	String SETTINGS_ALL_TESTS_ID = "all_tests";
-	String SETTINGS_JUNIT = "blazeMeterPlugin.request.junit";
-	String SETTINGS_JUNIT_PATH = "blazeMeterPlugin.request.junit.path";
-	String SETTINGS_JTL = "blazeMeterPlugin.request.jtl";
-	String SETTINGS_JTL_PATH = "blazeMeterPlugin.request.jtl.path";
-	String SETTINGS_NOTES = "blazeMeterPlugin.notes";
-	String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
-	String BZM_PROPERTIES_FILE="/userKeyFile.properties";
+    String SETTINGS_ALL_TESTS_ID = "all_tests";
+    String SETTINGS_JUNIT = "blazeMeterPlugin.request.junit";
+    String SETTINGS_JUNIT_PATH = "blazeMeterPlugin.request.junit.path";
+    String SETTINGS_JTL = "blazeMeterPlugin.request.jtl";
+    String SETTINGS_JTL_PATH = "blazeMeterPlugin.request.jtl.path";
+    String SETTINGS_NOTES = "blazeMeterPlugin.notes";
+    String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
+    String BZM_PROPERTIES_FILE = "/userKeyFile.properties";
 
-	String REPORT_URL="reportUrl_";
-	String REPORT_URL_F="reportUrl";
-	String PROBLEM_WITH_VALIDATING="Problem with validating testId, serverUrl, userKey";
-	String PROXY_HOST="http.proxyHost";
-	String PROXY_PORT="http.proxyPort";
-	String PROXY_USER="http.proxyUser";
-	String PROXY_PASS="http.proxyPass";
-	String HTTP_LOG="http-log";
-	String THREE_DOTS ="...";
+    String REPORT_URL = "reportUrl_";
+    String REPORT_URL_F = "reportUrl";
+    String PROBLEM_WITH_VALIDATING = "Problem with validating testId, serverUrl, userKey";
+    String PROXY_HOST = "http.proxyHost";
+    String PROXY_PORT = "http.proxyPort";
+    String PROXY_USER = "http.proxyUser";
+    String PROXY_PASS = "http.proxyPass";
+    String HTTP_LOG = "http-log";
+    String THREE_DOTS = "...";
 
-	String NO_TESTS="No tests for this api-key";
-	String FILL_API_KEY="Please, enter api-key";
-	String INCORRECT_KEY="Incorrect key";
-	String CHECK_ACCOUNT="Please, check your account";
-	String EMPTY_API_KEY="Empty api-key";
+    String NO_TESTS = "No tests for this api-key";
+    String FILL_API_KEY = "Please, enter api-key";
+    String INCORRECT_KEY = "Incorrect key";
+    String CHECK_ACCOUNT = "Please, check your account";
+    String EMPTY_API_KEY = "Empty api-key";
 }

@@ -30,7 +30,8 @@ public class Utils {
 
     private static Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
-    private Utils(){}
+    private Utils() {
+    }
 
 
     public static String version() {
@@ -44,10 +45,10 @@ public class Utils {
     }
 
 
-    public static String getTestId(String testId){
-        try{
-            return testId.substring(testId.lastIndexOf("(")+1,testId.lastIndexOf("."));
-        }catch (Exception e){
+    public static String getTestId(String testId) {
+        try {
+            return testId.substring(testId.lastIndexOf("(") + 1, testId.lastIndexOf("."));
+        } catch (Exception e) {
             return testId;
         }
     }
@@ -58,7 +59,7 @@ public class Utils {
             reportFile = new File(FilenameUtils.normalize(reportDir));
         } else {
             reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()
-                + "/" + (reportDir == null ? "" : reportDir)));
+                    + "/" + (reportDir == null ? "" : reportDir)));
         }
         try {
             if (!reportFile.exists()) {
@@ -102,8 +103,7 @@ public class Utils {
     }
 
 
-
-    public static void sleep(int sleepPeriod,BuildProgressLogger logger){
+    public static void sleep(int sleepPeriod, BuildProgressLogger logger) {
         try {
             Thread.currentThread().sleep(sleepPeriod);
         } catch (InterruptedException e) {

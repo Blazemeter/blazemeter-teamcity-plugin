@@ -23,24 +23,26 @@ import java.io.IOException;
 
 public class RetryInterceptor implements Interceptor {
 
-    private Logger logger =null;
-    public RetryInterceptor(Logger logger){
+    private Logger logger = null;
+
+    public RetryInterceptor(Logger logger) {
         this.logger = logger;
     }
+
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Response response = chain.proceed(request);
         int retry = 1;
-        int maxRetries=3;
-        while (!respSuccess(response) && retry < maxRetries+1) {
-            try{
-                Thread.sleep(1000*retry);
-            }catch (InterruptedException e){
-                throw new IOException("Retry bzmLog was interrupted on sleep at retry # "+retry);
+        int maxRetries = 3;
+        while (!respSuccess(response) && retry < maxRetries + 1) {
+            try {
+                Thread.sleep(1000 * retry);
+            } catch (InterruptedException e) {
+                throw new IOException("Retry bzmLog was interrupted on sleep at retry # " + retry);
             }
             response = chain.proceed(request);
-            logger.info("Child request: code = "+response.code()+" -> "+retry+" retry");
+            logger.info("Child request: code = " + response.code() + " -> " + retry + " retry");
             retry++;
         }
         return response;
