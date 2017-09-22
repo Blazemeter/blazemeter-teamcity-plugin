@@ -334,6 +334,9 @@ public class ApiV3Impl implements Api {
         }
     }
 
+    /**
+     * Called from UI for display list of tests
+     */
     public Map<String, Collection<String>> getTestsMultiMap() throws IOException, MessagingException {
         return this.testsMultiMap().asMap();
     }
