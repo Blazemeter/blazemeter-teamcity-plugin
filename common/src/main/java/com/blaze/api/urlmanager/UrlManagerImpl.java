@@ -18,11 +18,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 
-public class UrlManagerV3Impl implements UrlManager {
+public class UrlManagerImpl implements UrlManager {
 
     private String serverUrl = "";
 
-    public UrlManagerV3Impl(String blazeMeterUrl) {
+    public UrlManagerImpl(String blazeMeterUrl) {
         this.serverUrl = blazeMeterUrl;
     }
 

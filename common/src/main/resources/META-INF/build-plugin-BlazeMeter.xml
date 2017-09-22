@@ -16,6 +16,6 @@ limitations under the License.
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans default-autowire="constructor">
-  <bean name="api" class="com.blaze.api.ApiV3Impl" />
-  <bean name="url" class="com.blaze.api.urlmanager.UrlManagerV3Impl" />
+  <bean name="api" class="com.blaze.api.ApiImpl" />
+  <bean name="url" class="com.blaze.api.urlmanager.UrlManagerImpl" />
 </beans>

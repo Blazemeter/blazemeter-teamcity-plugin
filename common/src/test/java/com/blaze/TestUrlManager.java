@@ -15,18 +15,18 @@
 package com.blaze;
 
 import com.blaze.api.urlmanager.UrlManager;
-import com.blaze.api.urlmanager.UrlManagerV3Impl;
+import com.blaze.api.urlmanager.UrlManagerImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestUrlManagerV3 {
+public class TestUrlManager {
     private String userKey = "881a84b35e97c4342bf11";
     private String appKey = "jnk100x987c06f4e10c4";
     private String testId = "123456789";
     private String masterId = "987654321";
     private String sessionId = "r-v3-57230c5251da9";
     private String fileName = "111111111";
-    private UrlManager bmUrlManager = new UrlManagerV3Impl(TestConstants.mockedApiUrl);
+    private UrlManager bmUrlManager = new UrlManagerImpl(TestConstants.mockedApiUrl);
 
     @Test
     public void getServerUrl() {

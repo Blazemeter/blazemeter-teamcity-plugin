@@ -3,8 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="/blazeRunnerController.html"/>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
-<jsp:useBean id="api" class="com.blaze.api.ApiV3Impl"/>
-<jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerV3Impl"/>
+<jsp:useBean id="api" class="com.blaze.api.ApiImpl"/>
+<jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerImpl"/>
 <c:choose>
     <c:when test="${not empty propertiesBean.properties['USER_KEY']}">
         <c:set target="${api}" property="apiKey" value="${propertiesBean.properties['USER_KEY']}"/>

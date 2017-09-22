@@ -15,7 +15,7 @@
 package com.blaze.api;
 
 import com.blaze.api.urlmanager.UrlManager;
-import com.blaze.api.urlmanager.UrlManagerV3Impl;
+import com.blaze.api.urlmanager.UrlManagerImpl;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ApiV3Impl implements Api {
+public class ApiImpl implements Api {
 
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
 
@@ -70,7 +70,7 @@ public class ApiV3Impl implements Api {
     private HttpLogger httpl = null;
 
 
-    public ApiV3Impl() {
+    public ApiImpl() {
         try {
             proxyHost = System.getProperty(Constants.PROXY_HOST);
             if (!StringUtils.isBlank(this.proxyHost)) {
@@ -116,18 +116,18 @@ public class ApiV3Impl implements Api {
 
     }
 
-    public ApiV3Impl(String apiKey, String blazeMeterUrl) {
+    public ApiImpl(String apiKey, String blazeMeterUrl) {
         this();
         this.apiKey = apiKey;
         this.serverUrl = blazeMeterUrl;
-        this.urlManager = new UrlManagerV3Impl(this.serverUrl);
+        this.urlManager = new UrlManagerImpl(this.serverUrl);
     }
 
-    public ApiV3Impl(String apiKey, String blazeMeterUrl, HttpLogger httpl) {
+    public ApiImpl(String apiKey, String blazeMeterUrl, HttpLogger httpl) {
         this();
         this.apiKey = apiKey;
         this.serverUrl = blazeMeterUrl;
-        this.urlManager = new UrlManagerV3Impl(this.serverUrl);
+        this.urlManager = new UrlManagerImpl(this.serverUrl);
         this.httpl = httpl;
         HttpLoggingInterceptor httpLog;
         httpLog = new HttpLoggingInterceptor(this.httpl);

@@ -15,7 +15,7 @@
 package com.blaze.agent;
 
 import com.blaze.api.Api;
-import com.blaze.api.ApiV3Impl;
+import com.blaze.api.ApiImpl;
 import com.blaze.api.HttpLogger;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
@@ -33,7 +33,6 @@ import org.json.JSONObject;
 import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -47,7 +46,7 @@ public class BzmBuild {
     private String testId;
 
     public BzmBuild(String userKey, String serverUrl, String testId, HttpLogger httplf, BuildProgressLogger logger) {
-        this.api = new ApiV3Impl(userKey, serverUrl, httplf);
+        this.api = new ApiImpl(userKey, serverUrl, httplf);
         this.testId = testId;
         this.logger = logger;
     }
