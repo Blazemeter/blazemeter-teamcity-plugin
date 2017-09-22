@@ -22,7 +22,6 @@ import jetbrains.buildServer.agent.BuildAgent;
 import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 
 import com.blaze.runner.Constants;
 

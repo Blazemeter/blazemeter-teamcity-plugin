@@ -34,7 +34,6 @@ import jetbrains.buildServer.agent.BuildInterruptReason;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.messages.DefaultMessagesInfo;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
