@@ -1,15 +1,15 @@
 /**
- Copyright 2016 BlazeMeter Inc.
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ * Copyright 2017 BlazeMeter Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.blaze.agent;
@@ -46,11 +46,12 @@ public class BzmBuild {
     private String masterId;
     private String testId;
 
-    public BzmBuild(String userKey,String serverUrl,String testId,HttpLogger httplf,BuildProgressLogger logger){
-        this.api=new ApiV3Impl(userKey,serverUrl,httplf);
-        this.testId=testId;
-        this.logger=logger;
-    };
+    public BzmBuild(String userKey, String serverUrl, String testId, HttpLogger httplf, BuildProgressLogger logger) {
+        this.api = new ApiV3Impl(userKey, serverUrl, httplf);
+        this.testId = testId;
+        this.logger = logger;
+    }
+
 
     public boolean validateInput() throws IOException, MessagingException {
         LinkedHashMultimap<String, String> tests = api.testsMultiMap();
@@ -77,12 +78,10 @@ public class BzmBuild {
     }
 
     public String startTest(String testId, BuildProgressLogger logger) throws IOException, JSONException {
-        String masterId = null;
-        HashMap<String, String> startTestResp = new HashMap<String, String>();
         try {
             boolean collection = collection(testId, this.api);
-            String testId_num= Utils.getTestId(testId);
-            startTestResp = api.startTest(testId_num, collection);
+            String testId_num = Utils.getTestId(testId);
+            HashMap<String, String> startTestResp = api.startTest(testId_num, collection);
             this.masterId = startTestResp.get(JsonConstants.ID);
         } catch (Exception e) {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
@@ -92,34 +91,33 @@ public class BzmBuild {
     }
 
 
-    public static boolean collection(String testId,Api api) throws Exception{
-        boolean exists=false;
-        boolean collection=false;
+    public static boolean collection(String testId, Api api) throws Exception {
+        boolean exists = false;
+        boolean collection = false;
 
         LinkedHashMultimap tests = api.testsMultiMap();
         Set<Map.Entry> entries = tests.entries();
         for (Map.Entry e : entries) {
             int point = ((String) e.getValue()).indexOf(".");
-            if (testId.contains(((String) e.getValue()).substring(0,point))) {
-                collection = (((String) e.getValue()).substring(point+1)).contains("multi");
-                exists=true;
+            if (testId.contains(((String) e.getValue()).substring(0, point))) {
+                collection = (((String) e.getValue()).substring(point + 1)).contains("multi");
+                exists = true;
             }
             if (collection) {
                 break;
             }
         }
-        if(!exists){
-            throw new Exception("Test with test id = "+testId+" is not present on server");
+        if (!exists) {
+            throw new Exception("Test with test id = " + testId + " is not present on server");
         }
         return collection;
     }
 
 
     public void junitXml(String masterId, File junitDir) {
-        String junitReport = "";
         logger.message("Requesting junit report from server, masterId = " + masterId);
         try {
-            junitReport = this.api.retrieveJUNITXML(masterId);
+            String junitReport = this.api.retrieveJUNITXML(masterId);
             logger.message("Received junit report from server");
             logger.message("Saving junit report to " + junitDir.getAbsolutePath());
             Utils.saveJunit(junitReport, junitDir, masterId, logger);
@@ -129,8 +127,7 @@ public class BzmBuild {
     }
 
 
-
-    public boolean active(String testId, BuildProgressLogger logger){
+    public boolean active(String testId, BuildProgressLogger logger) {
         return api.active(testId);
     }
 
@@ -162,25 +159,19 @@ public class BzmBuild {
 
 
     public String getReportUrl(String masterId) {
-        JSONObject jo = null;
-        String publicToken = "";
-        String reportUrl = null;
         try {
-            jo = this.api.generatePublicToken(masterId);
+            JSONObject jo = this.api.generatePublicToken(masterId);
             if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 JSONObject result = jo.getJSONObject(JsonConstants.RESULT);
-                publicToken = result.getString("publicToken");
-                reportUrl = this.api.getServerUrl() + "/app/?public-token=" + publicToken + "#masters/" + masterId + "/summary";
+                String publicToken = result.getString("publicToken");
+                return this.api.getServerUrl() + "/app/?public-token=" + publicToken + "#masters/" + masterId + "/summary";
             } else {
                 logger.warning("Problems with generating public-token for report URL: " + jo.get(JsonConstants.ERROR).toString());
-                reportUrl = this.api.getServerUrl() + "/app/#masters/" + masterId + "/summary";
             }
-
         } catch (Exception e) {
             logger.warning("Problems with generating public-token for report URL");
-        } finally {
-            return reportUrl;
         }
+        return this.api.getServerUrl() + "/app/#masters/" + masterId + "/summary";
     }
 
 
@@ -203,22 +194,17 @@ public class BzmBuild {
             FileUtils.copyURLToFile(url, jtlZip);
             logger.message("Downloading jtl from " + url);
             logger.message("JTL zip location: " + jtlZip.getCanonicalPath());
-        } catch (JSONException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
-        } catch (MalformedURLException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
-        } catch (IOException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
-        } catch (NullPointerException e) {
-            logger.warning("Unable to get jtl: "+e.getMessage());
+
+        } catch (Throwable e) {
+            logger.warning("Unable to get jtl: " + e.getMessage());
         }
     }
 
     public TestStatus masterStatus(String testId) {
-        TestStatus status=null;
+        TestStatus status = null;
         try {
-            status=this.api.masterStatus(testId);
-        } catch (NullPointerException e){
+            status = this.api.masterStatus(testId);
+        } catch (Throwable e) {
             logger.exception(e);
         }
         return status;
@@ -235,8 +221,6 @@ public class BzmBuild {
             logger.message("Test status object = " + jo.toString());
             failures = jo.getJSONArray(JsonConstants.FAILURES);
             errors = jo.getJSONArray(JsonConstants.ERRORS);
-        } catch (JSONException je) {
-            logger.message("No thresholds on server: setting 'success' for CIStatus ");
         } catch (Exception e) {
             logger.message("No thresholds on server: setting 'success' for CIStatus ");
         } finally {
@@ -260,11 +244,11 @@ public class BzmBuild {
         return ciStatus;
     }
 
-    public void waitNotActive(String testId){
+    public void waitNotActive(String testId) {
 
-        boolean active=true;
-        int activeCheck=1;
-        while(active&&activeCheck<11){
+        boolean active = true;
+        int activeCheck = 1;
+        while (active && activeCheck < 11) {
             try {
                 Thread.currentThread().sleep(CHECK_INTERVAL);
             } catch (InterruptedException e) {
@@ -272,8 +256,8 @@ public class BzmBuild {
                 logger.warning("Received interrupted Exception: " + e.getMessage());
                 break;
             }
-            logger.message("Checking, if test is active, testId = "+testId+", retry # "+activeCheck);
-            active=this.api.active(testId);
+            logger.message("Checking, if test is active, testId = " + testId + ", retry # " + activeCheck);
+            active = this.api.active(testId);
             activeCheck++;
         }
     }
@@ -284,15 +268,10 @@ public class BzmBuild {
         try {
             JSONObject aggregate = this.api.testReport(this.masterId);
             testResult = new TestResult(aggregate);
-        } catch (JSONException e) {
-            logger.warning("Failed to get aggregate report from server " + e);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             logger.warning("Failed to get aggregate report from server" + e);
-        } catch (NullPointerException e) {
-            logger.warning("Failed to get aggregate report from server" + e);
-        } finally {
-            return testResult;
         }
+        return testResult;
     }
 
 
@@ -320,7 +299,6 @@ public class BzmBuild {
     public String masterId() {
         return masterId;
     }
-
 
 
     public JSONArray prepareSessionProperties(String sesssionProperties) throws JSONException {

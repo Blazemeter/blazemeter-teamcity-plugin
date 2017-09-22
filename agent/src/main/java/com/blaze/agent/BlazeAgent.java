@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 BlazeMeter Inc.
+ * Copyright 2017 BlazeMeter Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,24 @@ import jetbrains.buildServer.agent.BuildAgent;
 import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 
 import com.blaze.runner.Constants;
 
 public class BlazeAgent implements AgentBuildRunner {
+
     private AgentBuildRunnerInfo runnerInfo;
     private BzmBuildProcess buildProcess;
     private BuildAgent buildAgent;
-    private ArtifactsWatcher artifactsWatcher;
 
-    public BlazeAgent(BuildAgent buildAgent, final ArtifactsWatcher artifactsWatcher) {
+    public BlazeAgent(BuildAgent buildAgent) {
         this.buildAgent = buildAgent;
-        this.artifactsWatcher = artifactsWatcher;
     }
 
     @Override
     public BuildProcess createBuildProcess(AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext)
             throws RunBuildException {
 
-        buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher);
+        buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext);
 
         return buildProcess;
     }
