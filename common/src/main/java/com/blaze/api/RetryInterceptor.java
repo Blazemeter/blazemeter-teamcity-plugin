@@ -49,7 +49,6 @@ public class RetryInterceptor implements Interceptor {
     }
 
     private boolean respSuccess(Response response) {
-        boolean respSuccess = response.isSuccessful() || response.code() <= 406;
-        return respSuccess;
+        return response.isSuccessful() || response.code() <= 406;
     }
 }

@@ -91,10 +91,6 @@ public class Utils {
             out.write(report);
             out.close();
             logger.message("Report was saved to " + junitFile.getAbsolutePath());
-        } catch (FileNotFoundException fnfe) {
-            logger.message("ERROR: Failed to save XML report to workspace " + fnfe.getMessage());
-            logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
-            logger.exception(fnfe);
         } catch (IOException e) {
             logger.message("ERROR: Failed to save XML report to workspace " + e.getMessage());
             logger.message("Unable to save XML report to workspace - check that test is finished on server or turn to support ");
