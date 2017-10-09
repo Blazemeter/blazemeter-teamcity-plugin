@@ -53,8 +53,6 @@ public interface UrlManager {
 
     String getCIStatus(String appKey, String sessionId);
 
-//    String testConfig(String appKey, String testId);
-
     String retrieveJUNITXML(String appKey, String sessionId);
 
     String retrieveJTLZIP(String appKey, String sessionId);
@@ -62,8 +60,6 @@ public interface UrlManager {
     String generatePublicToken(String appKey, String sessionId);
 
     String listOfSessionIds(String appKey, String masterId);
-
-//    String version(String appKey);
 
     String properties(String appKey, String sessionId);
 

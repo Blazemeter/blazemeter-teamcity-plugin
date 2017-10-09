@@ -144,18 +144,6 @@ public class UrlManagerImpl implements UrlManager {
         return serverUrl + V4 + "/user?app_key=" + appKey + CLIENT_IDENTIFICATION;
     }
 
-//    @Override
-//    public String testConfig(String appKey, String userKey, String testId) {
-//        try {
-//            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-//            userKey = URLEncoder.encode(userKey, UrlManager.UTF_8);
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return serverUrl + V4 + "/tests/" + testId + "?api_key=" + userKey + "&app_key=" + appKey + CLIENT_IDENTIFICATION;
-//    }
-
     @Override
     public String getCIStatus(String appKey, String masterId) {
         try {
@@ -178,24 +166,6 @@ public class UrlManagerImpl implements UrlManager {
         return serverUrl + V4 + MASTERS + "/" + masterId +
                 "/reports/thresholds?format=junit&app_key=" + appKey + CLIENT_IDENTIFICATION;
     }
-
-
-/*
-
-    @Override
-    public String postJsonConfig(String appKey, String userKey, String testId) {
-        String getTestInfo=null;
-        try {
-            appKey = URLEncoder.encode(appKey, "UTF-8");
-            userKey = URLEncoder.encode(userKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        getTestInfo= serverUrl +V4+TESTS+"/"+testId+"/custom?custom_test_type=yahoo&api_key="+userKey+"&app_key="+appKey+ CLIENT_IDENTIFICATION;
-
-        return getTestInfo;
-    }
-*/
 
     @Override
     public String retrieveJTLZIP(String appKey, String sessionId) {
@@ -242,17 +212,6 @@ public class UrlManagerImpl implements UrlManager {
         }
         return serverUrl + V4 + UrlManager.MASTERS + "?workspaceId=" + workspaceId + "&active=true&app_key=" + appKey + CLIENT_IDENTIFICATION;
     }
-
-    // TODO: remove
-//    @Override
-//    public String version(String appKey) {
-//        try {
-//            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        return serverUrl + V4 + WEB + "/version?app_key=" + appKey + CLIENT_IDENTIFICATION;
-//    }
 
     @Override
     public String masterId(String appKey, String masterId) {
