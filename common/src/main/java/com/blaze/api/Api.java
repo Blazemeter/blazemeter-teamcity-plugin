@@ -24,14 +24,17 @@ import org.json.JSONObject;
 import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public interface Api {
 
     MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     MediaType TEXT = MediaType.parse("text/plain; charset=ISO-8859-1");
+    String AUTHORIZATION = "Authorization";
     String ACCEPT = "Accept";
     String CONTENT_TYPE = "Content-type";
     String APP_JSON = "application/json";
@@ -45,7 +48,7 @@ public interface Api {
 
     HashMap<String, String> startTest(String testId, boolean collection) throws JSONException, IOException;
 
-    int getTestCount() throws JSONException, IOException, ServletException;
+//    int getTestCount() throws JSONException, IOException, ServletException;
 
     JSONObject stopTest(String testId) throws IOException, JSONException;
 
@@ -54,6 +57,8 @@ public interface Api {
     JSONObject testReport(String reportId);
 
     LinkedHashMultimap<String, String> testsMultiMap() throws IOException, MessagingException;
+
+    LinkedHashMultimap<String, String> collectionsMultiMap(int workspaceId) throws IOException, MessagingException;
 
     JSONObject getUser() throws IOException, JSONException;
 
@@ -71,18 +76,26 @@ public interface Api {
 
     String getServerUrl();
 
-    void setServerUrl(String serverUrl);
+//    void setServerUrl(String serverUrl);
 
-    boolean ping() throws Exception;
+//    boolean ping() throws Exception;
 
     boolean notes(String note, String masterId) throws Exception;
 
     boolean properties(JSONArray properties, String sessionId) throws Exception;
 
-    public JSONObject testConfig(String testId) throws IOException, JSONException;
+//    public JSONObject testConfig(String testId) throws IOException, JSONException;
 
-    public String getApiKey();
+//    public String getApiKey();
+//
+//    public void setApiKey(String apiKey);
 
-    public void setApiKey(String apiKey);
+    HashMap<Integer, String> accounts();
+
+    HashMap<Integer, String> workspaces();
+
+    Map<String, Collection<String>> getTestsMultiMap();
+
+    boolean collection(String testId) throws Exception;
 }
 
