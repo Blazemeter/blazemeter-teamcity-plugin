@@ -80,7 +80,7 @@ public class BzmBuild {
 
     public String startTest(String testId, BuildProgressLogger logger) throws IOException, JSONException {
         try {
-            boolean collection = collection(testId, this.api);
+            boolean collection = api.collection(testId);
             String testId_num = Utils.getTestId(testId);
             HashMap<String, String> startTestResp = api.startTest(testId_num, collection);
             this.masterId = startTestResp.get(JsonConstants.ID);
@@ -89,29 +89,6 @@ public class BzmBuild {
             logger.exception(e);
         }
         return this.masterId;
-    }
-
-
-    public static boolean collection(String testId, Api api) throws Exception {
-        boolean exists = false;
-        boolean collection = false;
-
-        LinkedHashMultimap tests = api.testsMultiMap();
-        Set<Map.Entry> entries = tests.entries();
-        for (Map.Entry e : entries) {
-            int point = ((String) e.getValue()).indexOf(".");
-            if (testId.contains(((String) e.getValue()).substring(0, point))) {
-                collection = (((String) e.getValue()).substring(point + 1)).contains("multi");
-                exists = true;
-            }
-            if (collection) {
-                break;
-            }
-        }
-        if (!exists) {
-            throw new Exception("Test with test id = " + testId + " is not present on server");
-        }
-        return collection;
     }
 
 
