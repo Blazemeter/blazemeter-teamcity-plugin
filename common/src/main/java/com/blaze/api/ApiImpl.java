@@ -450,7 +450,6 @@ public class ApiImpl implements Api {
         HashMap<Integer, String> acs = new HashMap<>();
         try {
             jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            logger.error(jo.toString());
         } catch (Exception ioe) {
             logger.error("Failed to get accounts: ", ioe);
             return acs;
