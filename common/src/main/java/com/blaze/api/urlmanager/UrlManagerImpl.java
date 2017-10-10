@@ -22,6 +22,12 @@ public class UrlManagerImpl implements UrlManager {
 
     private String serverUrl = "";
 
+    /**
+     * Use this constructor from 'editBlazeRunnerParams.jsp`
+     */
+    public UrlManagerImpl() {
+    }
+
     public UrlManagerImpl(String blazeMeterUrl) {
         this.serverUrl = blazeMeterUrl;
     }
