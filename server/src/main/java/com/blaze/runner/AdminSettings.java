@@ -21,13 +21,14 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 
 /**
  * Entity for store admin properties:
- *  - userKey - BlazeMeter user API key
+ *  - apiKeyID and apiKeySecret  - BlazeMeter user API key and API secret
  *  - blazeMeterUrl - BlazeMeter URL
  */
 public class AdminSettings {
 
     public ServerPaths serverPaths;
-    private String userKey = "";
+    private String apiKeyID = "";
+    private String apiKeySecret = "";
     private String blazeMeterUrl = "";
 
     public AdminSettings(ServerPaths serverPaths) {
@@ -48,7 +49,8 @@ public class AdminSettings {
         try {
             Properties prop = new Properties();
             outFile = new FileWriter(keyFile);
-            prop.put("user_key", this.userKey);
+            prop.put("apiKeyID", this.apiKeyID);
+            prop.put("apiKeySecret", this.apiKeySecret);
             prop.put("blazeMeterUrl", this.blazeMeterUrl);
             prop.store(outFile, null);
         } catch (IOException e) {
@@ -75,7 +77,8 @@ public class AdminSettings {
             inFile = new FileReader(keyFile);
             Properties prop = new Properties();
             prop.load(inFile);
-            this.userKey = prop.getProperty("user_key");
+            this.apiKeyID = prop.getProperty("apiKeyID");
+            this.apiKeySecret = prop.getProperty("apiKeySecret");
             this.blazeMeterUrl = prop.getProperty("blazeMeterUrl");
             inFile.close();
         } catch (IOException e) {
@@ -108,14 +111,21 @@ public class AdminSettings {
     }
 
 
-    public String getUserKey() {
-        return userKey;
+    public String getApiKeyID() {
+        return apiKeyID;
     }
 
-    public void setUserKey(String userKey) {
-        this.userKey = userKey;
+    public void setApiKeyID(String apiKeyID) {
+        this.apiKeyID = apiKeyID;
     }
 
+    public String getApiKeySecret() {
+        return apiKeySecret;
+    }
+
+    public void setApiKeySecret(String apiKeySecret) {
+        this.apiKeySecret = apiKeySecret;
+    }
 
     public String getBlazeMeterUrl() {
         return blazeMeterUrl;

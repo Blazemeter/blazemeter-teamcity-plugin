@@ -54,7 +54,8 @@ public class ConfPage extends AdminPage {
     public void fillModel(Map<String, Object> model, HttpServletRequest request) {
         super.fillModel(model, request);
         if (mainSettings != null) {
-            model.put("user_key", mainSettings.getUserKey());
+            model.put("apiKeyID", mainSettings.getApiKeyID());
+            model.put("apiKeySecret", mainSettings.getApiKeySecret());
             model.put("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
             // TODO: why we write in file on each refresh of admin page??
             mainSettings.saveProperties();
