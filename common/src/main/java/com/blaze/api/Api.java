@@ -76,7 +76,7 @@ public interface Api {
 
     String getServerUrl();
 
-//    void setServerUrl(String serverUrl);
+    void setServerUrl(String serverUrl);
 
 //    boolean ping() throws Exception;
 
@@ -86,9 +86,11 @@ public interface Api {
 
 //    public JSONObject testConfig(String testId) throws IOException, JSONException;
 
-//    public String getApiKey();
-//
-//    public void setApiKey(String apiKey);
+    String getApiKeyID();
+
+    void setApiKeyID(String apiKeyID);
+
+    void setApiKeySecret(String apiKeySecret);
 
     HashMap<Integer, String> accounts();
 
