@@ -6,11 +6,19 @@
 <jsp:useBean id="api" class="com.blaze.api.ApiImpl"/>
 <jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerImpl"/>
 <c:choose>
-    <c:when test="${not empty propertiesBean.properties['USER_KEY']}">
-        <c:set target="${api}" property="apiKey" value="${propertiesBean.properties['USER_KEY']}"/>
+    <c:when test="${not empty propertiesBean.properties['API_KEY_ID']}">
+        <c:set target="${api}" property="apiKeyID" value="${propertiesBean.properties['API_KEY_ID']}"/>
     </c:when>
     <c:otherwise>
-        <c:set target="${api}" property="apiKey" value="${userKey}"/>
+        <c:set target="${api}" property="apiKeyID" value="${apiKeyID}"/>
+    </c:otherwise>
+</c:choose>
+<c:choose>
+    <c:when test="${not empty propertiesBean.properties['API_KEY_SECRET']}">
+        <c:set target="${api}" property="apiKeySecret" value="${propertiesBean.properties['API_KEY_SECRET']}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set target="${api}" property="apiKeySecret" value="${apiKeySecret}"/>
     </c:otherwise>
 </c:choose>
 <c:choose>

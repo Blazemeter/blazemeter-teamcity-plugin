@@ -50,7 +50,8 @@ public class BlazeMeterSettingsController extends BaseController {
 
     @Override
     protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        request.getSession().setAttribute("userKey", mySettings.getUserKey());
+        request.getSession().setAttribute("apiKeyID", mySettings.getApiKeyID());
+        request.getSession().setAttribute("apiKeySecret", mySettings.getApiKeySecret());
         request.getSession().setAttribute("blazeMeterUrl", mySettings.getBlazeMeterUrl());
         Map<String, Object> params = new HashMap<>();
         return new ModelAndView(myPluginDescriptor.getPluginResourcesPath("viewBlazeRunnerParams.jsp"), params);

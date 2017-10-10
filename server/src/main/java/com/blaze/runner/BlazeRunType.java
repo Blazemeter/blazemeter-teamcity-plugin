@@ -77,9 +77,11 @@ public class BlazeRunType extends RunType {
     private void setupDefaultProperties(Map<String, String> params) {
 
         if (pluginSettings != null) {
-            params.remove(Constants.USER_KEY);
+            params.remove(Constants.API_KEY_ID);
+            params.remove(Constants.API_KEY_SECRET);
             params.remove(Constants.BLAZEMETER_URL);
-            params.put(Constants.USER_KEY, pluginSettings.getUserKey());
+            params.put(Constants.API_KEY_ID, pluginSettings.getApiKeyID());
+            params.put(Constants.API_KEY_SECRET, pluginSettings.getApiKeySecret());
             params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
         }
     }

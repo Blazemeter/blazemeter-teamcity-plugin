@@ -36,7 +36,8 @@ public class BlazeBuildStartContextProcessor implements BuildStartContextProcess
 
     @Override
     public void updateParameters(@NotNull BuildStartContext buildStartContext) {
-        buildStartContext.addSharedParameter(Constants.USER_KEY, pluginSettings.getUserKey());
+        buildStartContext.addSharedParameter(Constants.API_KEY_ID, pluginSettings.getApiKeyID());
+        buildStartContext.addSharedParameter(Constants.API_KEY_SECRET, pluginSettings.getApiKeySecret());
         buildStartContext.addSharedParameter(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
     }
 
