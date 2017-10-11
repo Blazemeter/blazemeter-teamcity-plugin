@@ -48,8 +48,6 @@ public interface Api {
 
     HashMap<String, String> startTest(String testId, boolean collection) throws JSONException, IOException;
 
-//    int getTestCount() throws JSONException, IOException, ServletException;
-
     JSONObject stopTest(String testId) throws IOException, JSONException;
 
     void terminateTest(String testId) throws IOException;
@@ -78,13 +76,9 @@ public interface Api {
 
     void setServerUrl(String serverUrl);
 
-//    boolean ping() throws Exception;
-
     boolean notes(String note, String masterId) throws Exception;
 
     boolean properties(JSONArray properties, String sessionId) throws Exception;
-
-//    public JSONObject testConfig(String testId) throws IOException, JSONException;
 
     String getApiKeyID();
 

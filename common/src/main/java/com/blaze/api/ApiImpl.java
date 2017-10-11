@@ -237,27 +237,6 @@ public class ApiImpl implements Api {
         return startResp;
     }
 
-    // TODO: remove it
-//    @Override
-//    public int getTestCount() throws JSONException, IOException, ServletException {
-//        if (StringUtils.isBlank(apiKey)) {
-//            return 0;
-//        }
-//
-//        String url = this.urlManager.tests(APP_KEY);
-//
-//        try {
-//            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-//                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-//            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-//            JSONArray result = (JSONArray) jo.get(JsonConstants.RESULT);
-//            return result.length();
-//        } catch (RuntimeException e) {
-//            this.logger.warn("Error getting response from server: ", e);
-//            return -1;
-//        }
-//    }
-
     @Override
     public JSONObject stopTest(String testId) throws IOException, JSONException {
         String url = this.urlManager.testStop(APP_KEY, testId);
@@ -623,20 +602,6 @@ public class ApiImpl implements Api {
     }
 
 
-//    @Override
-//    public boolean ping() throws Exception {
-//        String url = this.urlManager.version(APP_KEY);
-//        JSONObject jo = null;
-//        try {
-//            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).build();
-//            jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-//            return jo.isNull(JsonConstants.ERROR);
-//        } catch (Exception e) {
-//            this.logger.info("Failed to ping server: " + jo, e);
-//            throw e;
-//        }
-//    }
-
     @Override
     public boolean notes(String note, String masterId) throws Exception {
         String noteEsc = StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}");
@@ -696,24 +661,6 @@ public class ApiImpl implements Api {
         }
         return collection;
     }
-
-    // TODO: remove it
-//    @Override
-//    public JSONObject testConfig(String testId) throws IOException, JSONException {
-//        if (StringUtils.isBlank(apiKey) & StringUtils.isBlank(testId)) {
-//            return null;
-//        }
-//
-//        String url = this.urlManager.testConfig(APP_KEY, apiKey, testId);
-//        Request r = new Request.Builder().url(url).get().build();
-//        return new JSONObject(okhttp.newCall(r).execute().body().string());
-//    }
-
-//    @Override
-//    public String getApiKey() {
-//        return apiKey;
-//    }
-//
 
     private String getCredentials() {
         if (credentials == null || credentials.isEmpty()) {
