@@ -16,7 +16,6 @@ package com.blaze;
 
 import com.blaze.api.urlmanager.UrlManager;
 import com.blaze.api.urlmanager.UrlManagerImpl;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -25,6 +24,7 @@ public class TestUrlManager {
 
     private String appKey = "jnk100x987c06f4e10c4";
     private String testId = "123456789";
+    private String collectionId = "1234567890";
     private String masterId = "987654321";
     private int workspaceId = 777888999;
     private String sessionId = "r-v3-57230c5251da9";
@@ -159,4 +159,64 @@ public class TestUrlManager {
         assertEquals(expProperties, actProperties);
     }
 
+    @Test
+    public void testMasterStatus() throws Exception {
+        String expProperties = bmUrlManager.getServerUrl() + UrlManager.V4 + "/masters/" + masterId + "/status?events=false&app_key=" + appKey +
+                UrlManager.CLIENT_IDENTIFICATION;
+
+        String actProperties = bmUrlManager.masterStatus(appKey, masterId);
+        assertEquals(expProperties, actProperties);
+    }
+
+    @Test
+    public void testMultiTests() throws Exception {
+        String expProperties = bmUrlManager.getServerUrl() + UrlManager.V4 + "/multi-tests?limit=10000&workspaceId=" + workspaceId + "&app_key=" + appKey +
+                UrlManager.CLIENT_IDENTIFICATION;
+
+        String actProperties = bmUrlManager.multiTests(appKey, workspaceId);
+        assertEquals(expProperties, actProperties);
+    }
+
+    @Test
+    public void testTestStart() throws Exception {
+        String expProperties = bmUrlManager.getServerUrl() + UrlManager.V4 + "/tests/" + testId + "/start?app_key=" + appKey +
+                UrlManager.CLIENT_IDENTIFICATION;
+
+        String actProperties = bmUrlManager.testStart(appKey, testId);
+        assertEquals(expProperties, actProperties);
+    }
+
+    @Test
+    public void testCollectionStart() throws Exception {
+        String expProperties = bmUrlManager.getServerUrl() + UrlManager.V4 + "/collections/" + collectionId + "/start?app_key=" + appKey +
+                UrlManager.CLIENT_IDENTIFICATION;
+
+        String actProperties = bmUrlManager.collectionStart(appKey, collectionId);
+        assertEquals(expProperties, actProperties);
+    }
+
+
+    @Test
+    public void testRetrieveJTLZIP() throws Exception {
+        String expProperties = bmUrlManager.getServerUrl() + UrlManager.V4 + "/sessions/" + sessionId + "/reports/logs?app_key=" + appKey +
+                UrlManager.CLIENT_IDENTIFICATION;
+
+        String actProperties = bmUrlManager.retrieveJTLZIP(appKey, sessionId);
+        assertEquals(expProperties, actProperties);
+    }
+
+    @Test
+    public void workspaces() {
+        String exp = bmUrlManager.getServerUrl() + UrlManager.V4 + "/workspaces?limit=1000&enabled=true&app_key=" + appKey + "&" + "accountId="
+                + 1 + UrlManager.CLIENT_IDENTIFICATION;
+        String act = bmUrlManager.workspaces(appKey, 1);
+        assertEquals(exp, act);
+    }
+
+    @Test
+    public void accounts() {
+        String exp = bmUrlManager.getServerUrl() + UrlManager.V4 + "/accounts?app_key=" + appKey + "&" + UrlManager.CLIENT_IDENTIFICATION;
+        String act = bmUrlManager.accounts(appKey);
+        assertEquals(exp, act);
+    }
 }
