@@ -41,7 +41,7 @@ public class TestUrlManager {
 
     @Test
     public void testStatus() {
-        String expTestGetStatus = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/"
+        String expTestGetStatus = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/"
                 + masterId + "/status?events=false&api_key=" + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actTestGetStatus = bmUrlManager.masterStatus(appKey, userKey, masterId);
         Assert.assertEquals(expTestGetStatus, actTestGetStatus);
@@ -58,7 +58,7 @@ public class TestUrlManager {
 
     @Test
     public void testStop_masters() {
-        String expTestStop = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/"
+        String expTestStop = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/"
                 + testId + "/stop?api_key=" + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
 
         String actTestStop = bmUrlManager.testStop(appKey, userKey, testId);
@@ -67,7 +67,7 @@ public class TestUrlManager {
 
     @Test
     public void testTerminate_masters() {
-        String expTestTerminate = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/"
+        String expTestTerminate = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/"
                 + testId + "/terminate?api_key=" + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
 
         String actTestTerminate = bmUrlManager.testTerminate(appKey, userKey, testId);
@@ -76,7 +76,7 @@ public class TestUrlManager {
 
     @Test
     public void testReport() {
-        String expTestReport = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/"
+        String expTestReport = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/"
                 + masterId + "/reports/main/summary?api_key=" + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actTestReport = bmUrlManager.testReport(appKey, userKey, masterId);
         Assert.assertEquals(expTestReport, actTestReport);
@@ -85,7 +85,7 @@ public class TestUrlManager {
 
     @Test
     public void getUser() {
-        String expGetUser = bmUrlManager.getServerUrl() + UrlManager.LATEST + "/user?api_key=" + userKey +
+        String expGetUser = bmUrlManager.getServerUrl() + UrlManager.V4 + "/user?api_key=" + userKey +
                 "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actGetUser = bmUrlManager.getUser(appKey, userKey);
         Assert.assertEquals(expGetUser, actGetUser);
@@ -94,7 +94,7 @@ public class TestUrlManager {
 
     @Test
     public void getCIStatus() {
-        String expCIStatus = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/" + masterId + UrlManager.CI_STATUS
+        String expCIStatus = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/" + masterId + UrlManager.CI_STATUS
                 + "?api_key="
                 + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actCIStatus = bmUrlManager.getCIStatus(appKey, userKey, masterId);
@@ -102,16 +102,8 @@ public class TestUrlManager {
     }
 
     @Test
-    public void getTestInfo() {
-        String expGetTestInfo = bmUrlManager.getServerUrl() + UrlManager.LATEST + "/tests/" + testId + "?api_key=" + userKey + "&app_key=" + appKey
-                + UrlManager.CLIENT_IDENTIFICATION;
-        String actGetTestInfo = bmUrlManager.testConfig(appKey, userKey, testId);
-        Assert.assertEquals(expGetTestInfo, actGetTestInfo);
-    }
-
-    @Test
     public void retrieveJUNITXML() {
-        String expRetrieveJUNITXML = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/" + masterId +
+        String expRetrieveJUNITXML = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/" + masterId +
                 "/reports/thresholds?format=junit&api_key="
                 + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actRetrieveJUNITXML = bmUrlManager.retrieveJUNITXML(appKey, userKey, masterId);
@@ -120,7 +112,7 @@ public class TestUrlManager {
 
     @Test
     public void generatePublicToken_masters() {
-        String expGenPublicToken = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/" + masterId +
+        String expGenPublicToken = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/" + masterId +
                 "/publicToken?api_key="
                 + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actGenPublicToken = bmUrlManager.generatePublicToken(appKey, userKey, masterId);
@@ -129,7 +121,7 @@ public class TestUrlManager {
 
     @Test
     public void listOfSessions() {
-        String expListOfSessionIds = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/" + masterId +
+        String expListOfSessionIds = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/" + masterId +
                 "/sessions?api_key=" + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actListOfSessionsIds = bmUrlManager.listOfSessionIds(appKey, userKey, masterId);
         Assert.assertEquals(expListOfSessionIds, actListOfSessionsIds);
@@ -137,23 +129,15 @@ public class TestUrlManager {
 
     @Test
     public void activeTests() {
-        String expActiveTests = bmUrlManager.getServerUrl() + UrlManager.LATEST + "/web/active?api_key="
+        String expActiveTests = bmUrlManager.getServerUrl() + UrlManager.V4 + "/web/active?api_key="
                 + userKey + "&app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actActiveTests = bmUrlManager.activeTests(appKey, userKey);
         Assert.assertEquals(expActiveTests, actActiveTests);
     }
 
     @Test
-    public void version() {
-        String expVersion = bmUrlManager.getServerUrl() + UrlManager.LATEST +
-                UrlManager.WEB + "/version?app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
-        String actVersion = bmUrlManager.version(appKey);
-        Assert.assertEquals(expVersion, actVersion);
-    }
-
-    @Test
     public void masterId() {
-        String expMasterId = bmUrlManager.getServerUrl() + UrlManager.LATEST + UrlManager.MASTERS + "/" + masterId + "?api_key=" + userKey + "&app_key=" + appKey +
+        String expMasterId = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/" + masterId + "?api_key=" + userKey + "&app_key=" + appKey +
                 UrlManager.CLIENT_IDENTIFICATION;
         ;
         String actMasterId = bmUrlManager.masterId(appKey, userKey, masterId);
@@ -162,7 +146,7 @@ public class TestUrlManager {
 
     @Test
     public void properties() {
-        String expProperties = bmUrlManager.getServerUrl() + UrlManager.LATEST + "/sessions/" + sessionId + "/properties?target=all&api_key=" + userKey + "&app_key=" + appKey +
+        String expProperties = bmUrlManager.getServerUrl() + UrlManager.V4 + "/sessions/" + sessionId + "/properties?target=all&api_key=" + userKey + "&app_key=" + appKey +
                 UrlManager.CLIENT_IDENTIFICATION;
         ;
         String actProperties = bmUrlManager.properties(appKey, userKey, sessionId);

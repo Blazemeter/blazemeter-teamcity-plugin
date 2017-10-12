@@ -19,7 +19,8 @@ public interface TestConstants {
 
 
     // Mocked API constants
-    String MOCKED_USER_KEY_VALID = "mockedAPIKeyValid";
+    String MOCKED_USER_KEY_ID_VALID = "mockedAPIKeyIDValid";
+    String MOCKED_USER_KEY__SECRET_VALID = "mockedAPIKeySecretValid";
     String MOCKED_USER_KEY_RETRIES = "mockedAPIKeyRetries";
     String MOCKED_USER_KEY_TEST_TYPE = "mockedAPIKeyTestType";
     String MOCKED_USER_KEY_V2 = "mockedAPIKeyV2";
