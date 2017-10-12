@@ -69,7 +69,6 @@ public class BzmBuild {
         if (!testIdTrue) {
             logger.warning(Constants.PROBLEM_WITH_VALIDATING);
             logger.warning("Server url=" + this.api.getServerUrl());
-            logger.warning(s.toString());
             logger.warning("Api Key ID=" + this.api.getApiKeyID().substring(0, 4) + "...");
             logger.warning("Check the following settings: serverUrl, userKey, proxy settings at buildAgent");
             return false;

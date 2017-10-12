@@ -39,26 +39,27 @@
 
             <props:selectProperty name="all_tests">
                 <c:forEach var="test" items="${api.testsMultiMap}">
+                    <c:forEach var="value" items="${test.value}">
 
-                     <c:choose>
-                        <c:when test="${test.key.contains('.workspace')}">
-                           <c:choose>
-                               <c:when test="${isFirstOptionItem}">
-                                   <c:set var="isFirstOptionItem" value="false"/>
-                               </c:when>
-                               <c:otherwise>
-                                   </optgroup>
-                               </c:otherwise>
-                           </c:choose>
-                           <optgroup label="${test.value}">
-                        </c:when>
-                        <c:otherwise>
-                            <props:option value="${test.value}" selected="false" title="${test.key}" id="${test.value}">
-                                ${test.value}
-                            </props:option>
-                        </c:otherwise>
-
-                    </c:choose>
+                        <c:choose>
+                            <c:when test="${test.key.contains('.workspace')}">
+                                <c:choose>
+                                    <c:when test="${isFirstOptionItem}">
+                                        <c:set var="isFirstOptionItem" value="false"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        </optgroup>
+                                    </c:otherwise>
+                                </c:choose>
+                                <optgroup label="${value}">
+                            </c:when>
+                            <c:otherwise>
+                                <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
+                                    ${value}
+                                </props:option>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
                 </c:forEach>
                 </optgroup>
 
