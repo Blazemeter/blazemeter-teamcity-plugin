@@ -22,9 +22,7 @@ import com.blaze.utils.Utils;
 import com.intellij.openapi.util.text.StringUtil;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
-import javax.mail.MessagingException;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
@@ -111,9 +109,13 @@ public class BzmBuildProcess implements BuildProcess {
             throw new RunBuildException(e.getMessage());
         }
 
-        bzmBuild = new BzmBuild(buildParams.get(Constants.USER_KEY), buildParams.get(Constants.BLAZEMETER_URL), testId, httpl, logger);
+        bzmBuild = new BzmBuild(
+                buildParams.get(Constants.API_KEY_ID),
+                buildParams.get(Constants.API_KEY_SECRET),
+                buildParams.get(Constants.BLAZEMETER_URL),
+                testId, httpl, logger);
 
-        try {
+        try { // TODO: refactor !!!!!
             if (!this.bzmBuild.validateInput()) {
                 httpl.close();
                 throw new RunBuildException("Failed to validate build parameters");

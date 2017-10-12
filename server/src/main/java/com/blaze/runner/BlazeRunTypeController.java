@@ -87,9 +87,11 @@ public class BlazeRunTypeController extends BaseController {
     }
 
     private void doAction(final HttpServletRequest request) throws Exception {
-        String user_key = request.getParameter("user_key");
+        String apiKeyID = request.getParameter("apiKeyID");
+        String apiKeySecret = request.getParameter("apiKeySecret");
         String blazeMeterUrl = request.getParameter("blazeMeterUrl");
-        mainSettings.setUserKey(user_key);
+        mainSettings.setApiKeyID(apiKeyID);
+        mainSettings.setApiKeySecret(apiKeySecret);
         if (blazeMeterUrl != null) {
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
         }

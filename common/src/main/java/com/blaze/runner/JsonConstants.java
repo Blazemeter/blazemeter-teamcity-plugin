@@ -21,6 +21,7 @@ public interface JsonConstants {
     String TEST_ID = "testId";
     String RESPONSE_CODE = "response_code";
     String ERROR = "error";
+    String COLLECTION_TYPE = "collectionType";
     String RESULT = "result";
     String CONFIGURATION = "configuration";
     String PLUGINS = "plugins";

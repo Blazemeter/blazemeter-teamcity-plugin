@@ -21,50 +21,52 @@ public interface UrlManager {
     String CLIENT_IDENTIFICATION = "&_clientId=CI_TEAMCITY&_clientVersion="
             + Utils.version();
 
-    String LATEST = "/api/latest";
+    String V4 = "/api/v4";
     String TESTS = "/tests";
     String MASTERS = "/masters";
-    String WEB = "/web";
     String CI_STATUS = "/ci-status";
+    String UTF_8="UTF-8";
 
     String getServerUrl();
 
     void setServerUrl(String serverUrl);
 
-    String masterStatus(String appKey, String userKey, String testId);
+    String masterStatus(String appKey, String testId);
 
-    String tests(String appKey, String userKey);
+    String tests(String appKey, int workspaceId);
 
-    String activeTests(String appKey, String userKey);
+    String multiTests(String appKey, int workspaceId);
 
-    String masterId(String appKey, String userKey, String masterId);
+    String activeTests(String appKey, int workspaceId);
 
-    String testStart(String appKey, String userKey, String testId);
+    String testStart(String appKey, String testId);
 
-    String collectionStart(String appKey, String userKey, String collectionId);
+    String collectionStart(String appKey, String collectionId);
 
-    String testStop(String appKey, String userKey, String testId);
+    String testStop(String appKey, String testId);
 
-    String testTerminate(String appKey, String userKey, String testId);
+    String testTerminate(String appKey, String testId);
 
-    String testReport(String appKey, String userKey, String reportId);
+    String testReport(String appKey, String reportId);
 
-    String getUser(String appKey, String userKey);
+    String getUser(String appKey);
 
-    String getCIStatus(String appKey, String userKey, String sessionId);
+    String getCIStatus(String appKey, String sessionId);
 
-    String testConfig(String appKey, String userKey, String testId);
+    String retrieveJUNITXML(String appKey, String sessionId);
 
-    String retrieveJUNITXML(String appKey, String userKey, String sessionId);
+    String retrieveJTLZIP(String appKey, String sessionId);
 
-    String retrieveJTLZIP(String appKey, String userKey, String sessionId);
+    String generatePublicToken(String appKey, String sessionId);
 
-    String generatePublicToken(String appKey, String userKey, String sessionId);
+    String listOfSessionIds(String appKey, String masterId);
 
-    String listOfSessionIds(String appKey, String userKey, String masterId);
+    String properties(String appKey, String sessionId);
 
-    String version(String appKey);
+    String masterId(String appKey, String masterId);
 
-    String properties(String appKey, String userKey, String sessionId);
+    String workspaces(String appKey, int accountId);
+
+    String accounts(String appKey);
 }
 

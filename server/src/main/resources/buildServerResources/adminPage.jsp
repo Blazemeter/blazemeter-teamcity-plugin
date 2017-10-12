@@ -4,17 +4,20 @@
 <%@ include file="/include.jsp" %>
 <script type="text/javascript">
     function sendReqSave() {
-        var usrKey = $('user_key').value;
+        var apiKeyID = $('apiKeyID').value;
+        var apiKeySecret = $('apiKeySecret').value;
         var blazeMeterUrl = $('blazeMeterUrl').value;
-        usrKey = usrKey.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-        if (!usrKey || usrKey.length == 0) {
+        apiKeyID = apiKeyID.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        apiKeySecret = apiKeySecret.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        if (!apiKeyID || apiKeyID.length == 0 || !apiKeySecret || apiKeySecret.length == 0) {
             alert("User key is empty!");
             return;
         }
         
 
         BS.ajaxRequest($('BlazeMeterAdminPageForm').action, {
-            parameters: 'user_key=' + usrKey
+            parameters: 'apiKeyID=' + apiKeyID
+                    + '&apiKeySecret=' + apiKeySecret
                     + '&blazeMeterUrl=' + blazeMeterUrl,
             onComplete: function (transport) {
                 if (transport.responseXML) {
@@ -35,18 +38,21 @@
         <div>
             <table class="runnerFormTable">
                 <tr>
-                    <td><label>BlazeMeter User Key:</label></td>
-                    <td><input type="text" id="user_key" name="user_key" value="<c:out value="${user_key}"/>"/>
-                        <span class="error_user_key"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter User Key</span>
+                    <td><label>API key ID:</label></td>
+                    <td><input type="text" id="apiKeyID" name="apiKeyID" value="<c:out value="${apiKeyID}"/>"/>
+                        <span class="errorApiKey"><bs:messages key="blazeMessage"/></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label>API key secret:</label></td>
+                    <td><input type="password" id="apiKeySecret" name="apiKeySecret" value="<c:out value="${apiKeySecret}"/>"/>
+                        <span class="errorApiSecret"><bs:messages key="blazeMessage"/></span>
                     </td>
                 </tr>
                 <tr>
                     <td><label>BlazeMeter URL:</label></td>
-                    <td><input type="text" id="blazeMeterUrl" name="blazeMeterUrl"
-                               value="<c:out value="${blazeMeterUrl}"/>"/>
+                    <td><input type="text" id="blazeMeterUrl" name="blazeMeterUrl" value="<c:out value="${blazeMeterUrl}"/>"/>
                         <span class="error_blazeMeterUrl"><bs:messages key="blazeMessage"/></span>
-                        <span class="smallNote">BlazeMeter URL</span>
                     </td>
                 </tr>
             </table>

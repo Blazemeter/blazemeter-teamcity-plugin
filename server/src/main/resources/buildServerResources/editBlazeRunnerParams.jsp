@@ -6,11 +6,19 @@
 <jsp:useBean id="api" class="com.blaze.api.ApiImpl"/>
 <jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerImpl"/>
 <c:choose>
-    <c:when test="${not empty propertiesBean.properties['USER_KEY']}">
-        <c:set target="${api}" property="apiKey" value="${propertiesBean.properties['USER_KEY']}"/>
+    <c:when test="${not empty propertiesBean.properties['API_KEY_ID']}">
+        <c:set target="${api}" property="apiKeyID" value="${propertiesBean.properties['API_KEY_ID']}"/>
     </c:when>
     <c:otherwise>
-        <c:set target="${api}" property="apiKey" value="${userKey}"/>
+        <c:set target="${api}" property="apiKeyID" value="${apiKeyID}"/>
+    </c:otherwise>
+</c:choose>
+<c:choose>
+    <c:when test="${not empty propertiesBean.properties['API_KEY_SECRET']}">
+        <c:set target="${api}" property="apiKeySecret" value="${propertiesBean.properties['API_KEY_SECRET']}"/>
+    </c:when>
+    <c:otherwise>
+        <c:set target="${api}" property="apiKeySecret" value="${apiKeySecret}"/>
     </c:otherwise>
 </c:choose>
 <c:choose>
@@ -23,19 +31,38 @@
     </c:otherwise>
 </c:choose>
 <c:set target="${api}" property="urlManager" value="${url}"/>
-
+<c:set var="isFirstOptionItem" value="true"/>
 <l:settingsGroup title="BlazeMeter">
     <tr>
         <th><label>BlazeMeter tests:</label></th>
         <td>
+
             <props:selectProperty name="all_tests">
                 <c:forEach var="test" items="${api.testsMultiMap}">
                     <c:forEach var="value" items="${test.value}">
-                    <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
-                        ${value} -> ${test.key}
-                    </props:option>
+
+                        <c:choose>
+                            <c:when test="${test.key.contains('.workspace')}">
+                                <c:choose>
+                                    <c:when test="${isFirstOptionItem}">
+                                        <c:set var="isFirstOptionItem" value="false"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        </optgroup>
+                                    </c:otherwise>
+                                </c:choose>
+                                <optgroup label="${value}">
+                            </c:when>
+                            <c:otherwise>
+                                <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
+                                    ${value}
+                                </props:option>
+                            </c:otherwise>
+                        </c:choose>
                     </c:forEach>
                 </c:forEach>
+                </optgroup>
+
             </props:selectProperty>
             <span class="error" id="error_all_tests"></span>
             <span class="smallNote">Select the test to execute.</span>

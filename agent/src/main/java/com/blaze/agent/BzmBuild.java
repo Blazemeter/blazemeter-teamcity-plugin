@@ -45,8 +45,8 @@ public class BzmBuild {
     private String masterId;
     private String testId;
 
-    public BzmBuild(String userKey, String serverUrl, String testId, HttpLogger httplf, BuildProgressLogger logger) {
-        this.api = new ApiImpl(userKey, serverUrl, httplf);
+    public BzmBuild(String apiKeyID, String apiKeySecret, String serverUrl, String testId, HttpLogger httplf, BuildProgressLogger logger) {
+        this.api = new ApiImpl(apiKeyID, apiKeySecret, serverUrl, httplf);
         this.testId = testId;
         this.logger = logger;
     }
@@ -55,30 +55,31 @@ public class BzmBuild {
     public boolean validateInput() throws IOException, MessagingException {
         LinkedHashMultimap<String, String> tests = api.testsMultiMap();
         Iterator<String> values = tests.values().iterator();
-        if (tests != null) {
-            StringBuilder s = new StringBuilder();
-            boolean testIdTrue = false;
-            while (values.hasNext()) {
-                s.append(values.next());
-                testIdTrue = s.toString().contains(testId);
-                if (testIdTrue) {
-                    break;
-                }
-            }
-            if (!testIdTrue) {
-                logger.warning(Constants.PROBLEM_WITH_VALIDATING);
-                logger.warning("Server url=" + this.api.getServerUrl());
-                logger.warning("UserKey=" + this.api.getApiKey().substring(0, 4) + "...");
-                logger.warning("Check the following settings: serverUrl, userKey, proxy settings at buildAgent");
-                return false;
+
+        StringBuilder s = new StringBuilder();
+        boolean testIdTrue = false;
+        while (values.hasNext()) {
+            s.append(values.next()).append(' ');
+            testIdTrue = s.toString().contains(testId);
+            if (testIdTrue) {
+                break;
             }
         }
+
+        if (!testIdTrue) {
+            logger.warning(Constants.PROBLEM_WITH_VALIDATING);
+            logger.warning("Server url=" + this.api.getServerUrl());
+            logger.warning("Api Key ID=" + this.api.getApiKeyID().substring(0, 4) + "...");
+            logger.warning("Check the following settings: serverUrl, userKey, proxy settings at buildAgent");
+            return false;
+        }
+
         return true;
     }
 
     public String startTest(String testId, BuildProgressLogger logger) throws IOException, JSONException {
         try {
-            boolean collection = collection(testId, this.api);
+            boolean collection = api.collection(testId);
             String testId_num = Utils.getTestId(testId);
             HashMap<String, String> startTestResp = api.startTest(testId_num, collection);
             this.masterId = startTestResp.get(JsonConstants.ID);
@@ -87,29 +88,6 @@ public class BzmBuild {
             logger.exception(e);
         }
         return this.masterId;
-    }
-
-
-    public static boolean collection(String testId, Api api) throws Exception {
-        boolean exists = false;
-        boolean collection = false;
-
-        LinkedHashMultimap tests = api.testsMultiMap();
-        Set<Map.Entry> entries = tests.entries();
-        for (Map.Entry e : entries) {
-            int point = ((String) e.getValue()).indexOf(".");
-            if (testId.contains(((String) e.getValue()).substring(0, point))) {
-                collection = (((String) e.getValue()).substring(point + 1)).contains("multi");
-                exists = true;
-            }
-            if (collection) {
-                break;
-            }
-        }
-        if (!exists) {
-            throw new Exception("Test with test id = " + testId + " is not present on server");
-        }
-        return collection;
     }
 
 

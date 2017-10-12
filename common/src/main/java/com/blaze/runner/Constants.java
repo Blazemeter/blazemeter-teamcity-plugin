@@ -18,7 +18,8 @@ public interface Constants {
 
     String RUNNER_DISPLAY_NAME = "BlazeMeter";
     String RUNNER_TYPE = "BlazeMeter";
-    String USER_KEY = "USER_KEY";
+    String API_KEY_ID = "API_KEY_ID";
+    String API_KEY_SECRET = "API_KEY_SECRET";
     String BLAZEMETER_URL = "BLAZEMETER_URL";
     String UNKNOWN_TYPE = "unknown_type";
 
@@ -45,5 +46,6 @@ public interface Constants {
     String FILL_API_KEY = "Please, enter api-key";
     String INCORRECT_KEY = "Incorrect key";
     String CHECK_ACCOUNT = "Please, check your account";
+    String CHECK_SETTINGS="Check blazemeter & proxy-settings";
     String EMPTY_API_KEY = "Empty api-key";
 }
