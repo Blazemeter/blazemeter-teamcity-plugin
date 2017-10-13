@@ -200,8 +200,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public synchronized HashMap<String, String> startTest(String testId, boolean collection) throws JSONException,
-            IOException {
+    public synchronized HashMap<String, String> startTest(String testId, boolean collection) throws IOException {
 
         String url = "";
         HashMap<String, String> startResp = new HashMap<>();
@@ -231,7 +230,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public JSONObject stopTest(String testId) throws IOException, JSONException {
+    public JSONObject stopTest(String testId) throws IOException {
         String url = this.urlManager.testStop(APP_KEY, testId);
         RequestBody emptyBody = RequestBody.create(null, new byte[0]);
         Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
@@ -483,7 +482,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public JSONObject getUser() throws IOException, JSONException {
+    public JSONObject getUser() throws IOException {
         String url = this.urlManager.getUser(APP_KEY);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                 addHeader(AUTHORIZATION, getCredentials()).build();
@@ -492,7 +491,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public JSONObject getCIStatus(String sessionId) throws JSONException, NullPointerException, IOException {
+    public JSONObject getCIStatus(String sessionId) throws IOException {
         this.logger.info("Trying to get jtl url for the sessionId = " + sessionId);
         String url = this.urlManager.getCIStatus(APP_KEY, sessionId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
@@ -514,7 +513,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public JSONObject retrieveJtlZip(String sessionId) throws IOException, JSONException {
+    public JSONObject retrieveJtlZip(String sessionId) throws IOException {
         this.logger.info("Trying to get jtl url for the sessionId=" + sessionId);
         String url = this.urlManager.retrieveJTLZIP(APP_KEY, sessionId);
         this.logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
@@ -526,7 +525,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public JSONObject generatePublicToken(String sessionId) throws IOException, JSONException {
+    public JSONObject generatePublicToken(String sessionId) throws IOException {
         String url = this.urlManager.generatePublicToken(APP_KEY, sessionId);
         RequestBody emptyBody = RequestBody.create(null, new byte[0]);
         Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
@@ -537,7 +536,7 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public List<String> getListOfSessionIds(String masterId) throws IOException, JSONException {
+    public List<String> getListOfSessionIds(String masterId) throws IOException {
         List<String> sessionsIds = new ArrayList<>();
         String url = this.urlManager.listOfSessionIds(APP_KEY, masterId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
@@ -596,41 +595,41 @@ public class ApiImpl implements Api {
 
 
     @Override
-    public boolean notes(String note, String masterId) throws Exception {
+    public boolean notes(String note, String masterId) {
         String noteEsc = StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}");
         String url = this.urlManager.masterId(APP_KEY, masterId);
         JSONObject noteJson = new JSONObject(noteEsc);
         RequestBody body = RequestBody.create(TEXT, noteJson.toString());
         Request r = new Request.Builder().url(url).patch(body).addHeader(AUTHORIZATION, getCredentials()).build();
-        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         try {
+            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
             if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 return false;
             }
         } catch (Exception e) {
-            throw new Exception("Failed to submit report notes to masterId = " + masterId, e);
+            throw new RuntimeException("Failed to submit report notes to masterId = " + masterId, e);
         }
         return true;
     }
 
     @Override
-    public boolean properties(JSONArray properties, String sessionId) throws Exception {
+    public boolean properties(JSONArray properties, String sessionId) {
         String url = this.urlManager.properties(APP_KEY, sessionId);
         RequestBody body = RequestBody.create(JSON, properties.toString());
         Request r = new Request.Builder().url(url).post(body).addHeader(AUTHORIZATION, getCredentials()).build();
-        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         try {
+            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
             if (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) {
                 return false;
             }
         } catch (Exception e) {
-            throw new Exception("Failed to submit report properties to sessionId = " + sessionId, e);
+            throw new RuntimeException("Failed to submit report properties to sessionId = " + sessionId, e);
         }
         return true;
     }
 
     @Override
-    public boolean collection(String testId) throws Exception {
+    public boolean collection(String testId) {
         boolean exists = false;
         boolean collection = false;
 
@@ -641,7 +640,7 @@ public class ApiImpl implements Api {
             if (point > 0 && testId.contains(((String) e.getKey()).substring(0, point))) {
                 collection = (((String) e.getKey()).substring(point + 1)).contains("multi");
                 if (((String) e.getKey()).substring(point + 1).contains("workspace")) {
-                    throw new Exception("Please, select valid testId instead of workspace header");
+                    throw new RuntimeException("Please, select valid testId instead of workspace header");
                 }
                 exists = true;
             }
@@ -650,7 +649,7 @@ public class ApiImpl implements Api {
             }
         }
         if (!exists) {
-            throw new Exception("Test with test id = " + testId + " is not present on server");
+            throw new RuntimeException("Test with test id = " + testId + " is not present on server");
         }
         return collection;
     }
