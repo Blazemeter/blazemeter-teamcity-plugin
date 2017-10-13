@@ -14,15 +14,14 @@
 
 package com.blaze.api;
 
-import com.google.common.collect.LinkedHashMultimap;
 import com.blaze.runner.TestStatus;
+import com.google.common.collect.LinkedHashMultimap;
 import okhttp3.MediaType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.mail.MessagingException;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;

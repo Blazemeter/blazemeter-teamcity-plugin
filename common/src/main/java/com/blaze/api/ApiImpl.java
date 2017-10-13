@@ -20,26 +20,6 @@ import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
-
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
-
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
@@ -55,6 +35,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 public class ApiImpl implements Api {
