@@ -204,15 +204,13 @@ public class ApiImpl implements Api {
 
 
     @Override
-    public synchronized HashMap<String, String> startTest(String testId, boolean collection) throws IOException {
-
-        String url = "";
+    public synchronized HashMap<String, String> startTest(String testId, boolean isCollection) throws IOException {
         HashMap<String, String> startResp = new HashMap<>();
-        if (collection) {
-            url = this.urlManager.collectionStart(APP_KEY, testId);
-        } else {
-            url = this.urlManager.testStart(APP_KEY, testId);
-        }
+
+        String url = isCollection ?
+                urlManager.collectionStart(APP_KEY, testId) :
+                urlManager.testStart(APP_KEY, testId);
+
 
         RequestBody emptyBody = RequestBody.create(null, new byte[0]);
         Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
@@ -223,7 +221,7 @@ public class ApiImpl implements Api {
         try {
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             startResp.put(JsonConstants.ID, String.valueOf(result.get(JsonConstants.ID)));
-            startResp.put(JsonConstants.TEST_ID, collection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
+            startResp.put(JsonConstants.TEST_ID, isCollection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
                     String.valueOf(result.get(JsonConstants.TEST_ID)));
             startResp.put(JsonConstants.NAME, result.getString(JsonConstants.NAME));
         } catch (Exception e) {
