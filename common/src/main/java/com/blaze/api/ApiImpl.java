@@ -366,9 +366,11 @@ public class ApiImpl implements Api {
                     (((JSONObject) response.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                 return collectionsListOrdered;
             }
+
             if (response.has(JsonConstants.RESULT) && (!response.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
                 result = (JSONArray) response.get(JsonConstants.RESULT);
             }
+
             if (result != null && result.length() > 0) {
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject entry = null;
