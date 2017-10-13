@@ -440,22 +440,9 @@ public class ApiImpl implements Api {
             String url = this.urlManager.workspaces(APP_KEY, key);
             Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
                     .addHeader(AUTHORIZATION, getCredentials()).build();
-            JSONObject jo = null;
-            JSONArray result = null;
             try {
-                jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            } catch (Exception ioe) {
-                logger.error("Failed to get workspaces: " + ioe);
-                return ws;
-            }
-            try {
-                result = jo.getJSONArray(JsonConstants.RESULT);
-            } catch (Exception e) {
-                logger.error("Failed to get workspaces: " + e);
-                return ws;
-            }
-            try {
-
+                JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+                JSONArray result = jo.getJSONArray(JsonConstants.RESULT);
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject s = result.getJSONObject(i);
                     ws.put(s.getInt(JsonConstants.ID), s.getString(JsonConstants.NAME));
