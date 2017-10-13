@@ -20,26 +20,6 @@ import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
 import com.google.common.collect.LinkedHashMultimap;
-
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
-
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
@@ -56,10 +36,30 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 
 public class ApiImpl implements Api {
 
     private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
+
+    private static final Comparator<Map.Entry<String, String>> comparator = new Comparator<Map.Entry<String, String>>() {
+        @Override
+        public int compare(Map.Entry<String, String> e1, Map.Entry<String, String> e2) {
+            return e1.getValue().compareToIgnoreCase(e2.getValue());
+        }
+    };
 
     private String proxyHost = null;
     private int proxyPort = 0;
@@ -72,7 +72,7 @@ public class ApiImpl implements Api {
     private String apiKeySecret;
     private String credentials;
     private String serverUrl;
-    UrlManager urlManager;
+    private UrlManager urlManager;
     private OkHttpClient okhttp = null;
     private HttpLogger httpl = null;
 
@@ -116,13 +116,13 @@ public class ApiImpl implements Api {
             }
 
             okhttp = new OkHttpClient.Builder()
-                    .addInterceptor(new RetryInterceptor(this.logger))
+                    .addInterceptor(new RetryInterceptor(logger))
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .proxy(this.proxy)
                     .proxyAuthenticator(this.auth).build();
         } catch (Exception ex) {
-            this.logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
+            logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
         }
 
     }
@@ -146,7 +146,7 @@ public class ApiImpl implements Api {
         httpLog = new HttpLoggingInterceptor(this.httpl);
         httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
         okhttp = new OkHttpClient.Builder()
-                .addInterceptor(new RetryInterceptor(this.logger))
+                .addInterceptor(new RetryInterceptor(logger))
                 .addInterceptor(httpLog)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
@@ -154,126 +154,120 @@ public class ApiImpl implements Api {
                 .proxyAuthenticator(this.auth).build();
     }
 
+    private JSONObject executeGetRequest(String url) throws IOException {
+        return execute(createRequestBuilder(url).get().build());
+    }
+
+    private JSONObject executePostRequest(String url, RequestBody requestBody) throws IOException {
+        return execute(createRequestBuilder(url).post(requestBody).build());
+    }
+
+    private JSONObject execute (Request request) throws IOException {
+        JSONObject response = new JSONObject(okhttp.newCall(request).execute().body().string());
+        logger.info("Received json: " + response.toString());
+        return response;
+    }
+
+    private Request.Builder createRequestBuilder(String url) {
+        return new Request.Builder().url(url).
+                addHeader(ACCEPT, APP_JSON).
+                addHeader(AUTHORIZATION, getCredentials()).
+                addHeader(CONTENT_TYPE, APP_JSON_UTF_8);
+    }
 
     @Override
     public int getTestMasterStatusCode(String id) {
-        int statusCode = 0;
         try {
-            String url = this.urlManager.masterStatus(APP_KEY, id);
-            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                    addHeader(AUTHORIZATION, getCredentials()).
-                        addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
-            statusCode = result.getInt("progress");
+            String url = urlManager.masterStatus(APP_KEY, id);
+            JSONObject result = (JSONObject) executeGetRequest(url).get(JsonConstants.RESULT);
+            return result.getInt("progress");
         } catch (Exception e) {
-            this.logger.warn("Error getting master status code: ", e);
+            logger.warn("Error getting master status code: ", e);
         }
 
-        return statusCode;
+        return 0;
     }
 
     @Override
-    public TestStatus masterStatus(String id) {
-        TestStatus testStatus;
+    public TestStatus masterStatus(String masterId) {
         try {
-            String url = this.urlManager.masterStatus(APP_KEY, id);
-            Request r = new Request.Builder().url(url).get()
-                    .addHeader(ACCEPT, APP_JSON).addHeader(AUTHORIZATION, getCredentials()).
-                            addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
-            if (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) {
-                testStatus = TestStatus.NotFound;
-            } else {
-                if (result.has(JsonConstants.STATUS) && !result.getString(JsonConstants.STATUS).equals("ENDED")) {
-                    testStatus = TestStatus.Running;
-                } else {
-                    if (result.has(JsonConstants.ERRORS) && !result.get(JsonConstants.ERRORS).equals(JSONObject.NULL)) {
-                        this.logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
-                        testStatus = TestStatus.Error;
-                    } else {
-                        testStatus = TestStatus.NotRunning;
-                        this.logger.info("Master with id = " + id + " has status = " + TestStatus.NotRunning.name());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            this.logger.warn("Error while getting master status ", e);
-            testStatus = TestStatus.Error;
-        }
+            String url = urlManager.masterStatus(APP_KEY, masterId);
+            JSONObject result = (JSONObject) executeGetRequest(url).get(JsonConstants.RESULT);
 
-        return testStatus;
+            return (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) ?
+                    TestStatus.NotFound :
+                    getMasterStatusFromJSON(result, masterId);
+        } catch (Exception e) {
+            logger.warn("Error while getting master status ", e);
+            return TestStatus.Error;
+        }
     }
 
-    @Override
-    public synchronized HashMap<String, String> startTest(String testId, boolean collection) throws JSONException,
-            IOException {
+    private TestStatus getMasterStatusFromJSON(JSONObject result, String masterId) {
+        return (result.has(JsonConstants.STATUS) && !result.getString(JsonConstants.STATUS).equals("ENDED")) ?
+                TestStatus.Running :
+                getMasterStatusErrorsFromJSON(result, masterId);
+    }
 
-        String url = "";
-        HashMap<String, String> startResp = new HashMap<>();
-        if (collection) {
-            url = this.urlManager.collectionStart(APP_KEY, testId);
+    private TestStatus getMasterStatusErrorsFromJSON(JSONObject result, String masterId) {
+        if (result.has(JsonConstants.ERRORS) && !result.get(JsonConstants.ERRORS).equals(JSONObject.NULL)) {
+            logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
+            return TestStatus.Error;
         } else {
-            url = this.urlManager.testStart(APP_KEY, testId);
+            logger.info("Master with id = " + masterId + " has status = " + TestStatus.NotRunning.name());
+            return TestStatus.NotRunning;
         }
+    }
 
-        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
-        Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+
+    @Override
+    public synchronized HashMap<String, String> startTest(String testId, boolean isCollection) throws IOException {
+        HashMap<String, String> startResp = new HashMap<>();
+
+        String url = isCollection ?
+                urlManager.collectionStart(APP_KEY, testId) :
+                urlManager.testStart(APP_KEY, testId);
+
+
+        JSONObject response = executePostRequest(url, RequestBody.create(null, new byte[0]));
 
         try {
-            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
+            JSONObject result = (JSONObject) response.get(JsonConstants.RESULT);
             startResp.put(JsonConstants.ID, String.valueOf(result.get(JsonConstants.ID)));
-            startResp.put(JsonConstants.TEST_ID, collection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
+            startResp.put(JsonConstants.TEST_ID, isCollection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
                     String.valueOf(result.get(JsonConstants.TEST_ID)));
             startResp.put(JsonConstants.NAME, result.getString(JsonConstants.NAME));
         } catch (Exception e) {
-            startResp.put(JsonConstants.ERROR, jo.get(JsonConstants.ERROR).toString());
+            startResp.put(JsonConstants.ERROR, response.get(JsonConstants.ERROR).toString());
         }
 
         return startResp;
     }
 
     @Override
-    public JSONObject stopTest(String testId) throws IOException, JSONException {
-        String url = this.urlManager.testStop(APP_KEY, testId);
-        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
-        Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-
-        return new JSONObject(okhttp.newCall(r).execute().body().string());
+    public JSONObject stopTest(String testId) throws IOException {
+        String url = urlManager.testStop(APP_KEY, testId);
+        return executePostRequest(url, RequestBody.create(null, new byte[0]));
     }
 
     @Override
     public void terminateTest(String testId) throws IOException {
-        String url = this.urlManager.testTerminate(APP_KEY, testId);
-        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
-        Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-        okhttp.newCall(r).execute();
+        String url = urlManager.testTerminate(APP_KEY, testId);
+        executePostRequest(url, RequestBody.create(null, new byte[0]));
     }
 
 
     @Override
     public JSONObject testReport(String reportId) {
-        String url = this.urlManager.testReport(APP_KEY, reportId);
+        String url = urlManager.testReport(APP_KEY, reportId);
         JSONObject summary = null;
         JSONObject result = null;
         try {
-            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                    addHeader(AUTHORIZATION, getCredentials()).
-                        addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-            result = new JSONObject(okhttp.newCall(r).execute().body().string()).getJSONObject(JsonConstants.RESULT);
-            summary = (JSONObject) result.getJSONArray("summary")
-                    .get(0);
+            result = executeGetRequest(url).getJSONObject(JsonConstants.RESULT);
+            summary = (JSONObject) result.getJSONArray("summary").get(0);
         } catch (Exception e) {
-            this.logger.warn("Aggregate report(result object): " + result);
-            this.logger.warn("Error while parsing aggregate report summary: check common jenkins log and make sure that aggregate report" +
+            logger.warn("Aggregate report(result object): " + result);
+            logger.warn("Error while parsing aggregate report summary: check common jenkins log and make sure that aggregate report" +
                     "is valid/not empty.", e);
         }
 
@@ -290,29 +284,31 @@ public class ApiImpl implements Api {
     @Override
     public LinkedHashMultimap<String, String> testsMultiMap() {
         LinkedHashMultimap<String, String> testListOrdered = LinkedHashMultimap.create();
-        HashMap<Integer,String> ws = this.workspaces();
+
+
+        HashMap<Integer, String> ws = this.workspaces();
         logger.info("Getting tests...");
         Set<Integer> wsk = ws.keySet();
         for (Integer k : wsk) {
-            String wsn=ws.get(k);
-            String url = this.urlManager.tests(APP_KEY, k);
+            String wsn = ws.get(k);
+            String url = urlManager.tests(APP_KEY, k);
             try {
-                Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
-                        .addHeader(AUTHORIZATION, getCredentials()).
-                                addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-                JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+
+                JSONObject response = executeGetRequest(url);
                 JSONArray result = null;
-                this.logger.info("Received json: " + jo.toString());
-                if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
-                        (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
+                if (response.has(JsonConstants.ERROR) && (response.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
+                        (((JSONObject) response.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                     return testListOrdered;
                 }
-                if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
-                    result = (JSONArray) jo.get(JsonConstants.RESULT);
+
+                if (response.has(JsonConstants.RESULT) && (!response.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
+                    result = (JSONArray) response.get(JsonConstants.RESULT);
                 }
+
                 LinkedHashMultimap<String, String> wst = LinkedHashMultimap.create();
                 LinkedHashMultimap<String, String> wsc = this.collectionsMultiMap(k);
                 wst.putAll(wsc);
+
                 if (result != null && result.length() > 0) {
                     testListOrdered.put(String.valueOf(k) + "." + "workspace", "========" + wsn + "(" + k + ")========");
                     for (int i = 0; i < result.length(); i++) {
@@ -320,7 +316,7 @@ public class ApiImpl implements Api {
                         try {
                             entry = result.getJSONObject(i);
                         } catch (JSONException e) {
-                            this.logger.warn("JSONException while getting tests: " + e);
+                            logger.warn("JSONException while getting tests: " + e);
                         }
                         String id;
                         String name;
@@ -328,7 +324,7 @@ public class ApiImpl implements Api {
                             if (entry != null) {
                                 id = String.valueOf(entry.get(JsonConstants.ID));
                                 name = entry.has(JsonConstants.NAME) ? entry.getString(JsonConstants.NAME).replaceAll("&", "&amp;") : "";
-                                String testType = null;
+                                String testType;
                                 try {
                                     testType = entry.getJSONObject(JsonConstants.CONFIGURATION).getString(JsonConstants.TYPE);
                                 } catch (Exception e) {
@@ -337,26 +333,20 @@ public class ApiImpl implements Api {
                                 wst.put(id + "." + testType, name + "(" + id + "." + testType + ")");
                             }
                         } catch (JSONException ie) {
-                            this.logger.warn("JSONException while getting tests: " + ie);
+                            logger.warn("JSONException while getting tests: " + ie);
                         }
                     }
                 }
-                Comparator<Map.Entry<String, String>> c = new Comparator<Map.Entry<String, String>>() {
-                    @Override
-                    public int compare(Map.Entry<String, String> e1, Map.Entry<String, String> e2) {
-                        return e1.getValue().compareToIgnoreCase(e2.getValue());
-                    }
-                };
 
                 List<Map.Entry<String, String>> list = new ArrayList<>(wst.entries());
-                Collections.sort(list, c);
+                Collections.sort(list, comparator);
                 for (Map.Entry<String, String> entry : list) {
                     testListOrdered.put(entry.getKey(), entry.getValue());
                 }
 
             } catch (Exception e) {
-                this.logger.warn("Exception while getting tests: ", e);
-                this.logger.warn("Check connection/proxy settings");
+                logger.warn("Exception while getting tests: ", e);
+                logger.warn("Check connection/proxy settings");
                 testListOrdered.put(Constants.CHECK_SETTINGS, Constants.CHECK_SETTINGS);
             }
         }
@@ -368,28 +358,26 @@ public class ApiImpl implements Api {
     public LinkedHashMultimap<String, String> collectionsMultiMap(int workspaceId) {
         LinkedHashMultimap<String, String> collectionsListOrdered = LinkedHashMultimap.create();
         logger.info("Getting collections...");
-        String url = this.urlManager.multiTests(APP_KEY, workspaceId);
+        String url = urlManager.multiTests(APP_KEY, workspaceId);
         try {
-            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
-                    .addHeader(AUTHORIZATION, getCredentials()).
-                            addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+            JSONObject response = executeGetRequest(url);
             JSONArray result = null;
-            this.logger.info("Received json: " + jo.toString());
-            if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
-                    (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
+            if (response.has(JsonConstants.ERROR) && (response.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
+                    (((JSONObject) response.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                 return collectionsListOrdered;
             }
-            if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
-                result = (JSONArray) jo.get(JsonConstants.RESULT);
+
+            if (response.has(JsonConstants.RESULT) && (!response.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
+                result = (JSONArray) response.get(JsonConstants.RESULT);
             }
+
             if (result != null && result.length() > 0) {
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject entry = null;
                     try {
                         entry = result.getJSONObject(i);
                     } catch (JSONException e) {
-                        this.logger.warn("JSONException while getting tests: " + e);
+                        logger.warn("JSONException while getting tests: " + e);
                     }
                     String id;
                     String name;
@@ -406,47 +394,30 @@ public class ApiImpl implements Api {
                             collectionsListOrdered.put(id + "." + collectionsType, name + "(" + id + "." + collectionsType + ")");
                         }
                     } catch (JSONException ie) {
-                        this.logger.warn("JSONException while getting tests: " + ie);
+                        logger.warn("JSONException while getting tests: " + ie);
                     }
                 }
             }
         } catch (Exception e) {
-            this.logger.warn("Exception while getting tests: ", e);
-            this.logger.warn("Check connection/proxy settings");
+            logger.warn("Exception while getting tests: ", e);
+            logger.warn("Check connection/proxy settings");
             collectionsListOrdered.put(Constants.CHECK_SETTINGS, Constants.CHECK_SETTINGS);
         }
         return collectionsListOrdered;
     }
 
     @Override
-    public HashMap<Integer,String> accounts() {
-        String url = this.urlManager.accounts(APP_KEY);
-        Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
-                .addHeader(AUTHORIZATION, getCredentials()).build();
-        JSONObject jo = null;
-        JSONArray result = null;
-        JSONObject dp = null;
+    public HashMap<Integer, String> accounts() {
+        String url = urlManager.accounts(APP_KEY);
         HashMap<Integer, String> acs = new HashMap<>();
         try {
-            jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-        } catch (Exception ioe) {
-            logger.error("Failed to get accounts: ", ioe);
-            return acs;
-        }
-        try {
-            result = jo.getJSONArray(JsonConstants.RESULT);
-        } catch (Exception e) {
-            logger.error("Failed to get accounts: ", e);
-            return acs;
-        }
-        try {
+            JSONArray result = executeGetRequest(url).getJSONArray(JsonConstants.RESULT);
             for (int i = 0; i < result.length(); i++) {
                 JSONObject a = result.getJSONObject(i);
-                acs.put(a.getInt(JsonConstants.ID),a.getString(JsonConstants.NAME));
+                acs.put(a.getInt(JsonConstants.ID), a.getString(JsonConstants.NAME));
             }
         } catch (Exception e) {
             logger.error("Failed to get accounts: ", e);
-            return acs;
         }
         return acs;
     }
@@ -458,100 +429,61 @@ public class ApiImpl implements Api {
 
         Set<Integer> keys = acs.keySet();
         for (Integer key : keys) {
-            String url = this.urlManager.workspaces(APP_KEY, key);
-            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
-                    .addHeader(AUTHORIZATION, getCredentials()).build();
-            JSONObject jo = null;
-            JSONArray result = null;
-            try {
-                jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            } catch (Exception ioe) {
-                logger.error("Failed to get workspaces: " + ioe);
-                return ws;
-            }
-            try {
-                result = jo.getJSONArray(JsonConstants.RESULT);
-            } catch (Exception e) {
-                logger.error("Failed to get workspaces: " + e);
-                return ws;
-            }
-            try {
+            String url = urlManager.workspaces(APP_KEY, key);
 
+            try {
+                JSONArray result = executeGetRequest(url).getJSONArray(JsonConstants.RESULT);
                 for (int i = 0; i < result.length(); i++) {
                     JSONObject s = result.getJSONObject(i);
                     ws.put(s.getInt(JsonConstants.ID), s.getString(JsonConstants.NAME));
                 }
             } catch (Exception e) {
                 logger.error("Failed to get workspaces: " + e);
-                return ws;
             }
         }
         return ws;
     }
 
     @Override
-    public JSONObject getUser() throws IOException, JSONException {
-        String url = this.urlManager.getUser(APP_KEY);
-        Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).build();
-
-        return new JSONObject(okhttp.newCall(r).execute().body().string());
+    public JSONObject getUser() throws IOException {
+        String url = urlManager.getUser(APP_KEY);
+        return executeGetRequest(url);
     }
 
     @Override
-    public JSONObject getCIStatus(String sessionId) throws JSONException, NullPointerException, IOException {
-        this.logger.info("Trying to get jtl url for the sessionId = " + sessionId);
-        String url = this.urlManager.getCIStatus(APP_KEY, sessionId);
-        Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-
-        return new JSONObject(okhttp.newCall(r).execute().body().string()).getJSONObject(JsonConstants.RESULT);
+    public JSONObject getCIStatus(String sessionId) throws IOException {
+        logger.info("Trying to get jtl url for the sessionId = " + sessionId);
+        String url = urlManager.getCIStatus(APP_KEY, sessionId);
+        return executeGetRequest(url).getJSONObject(JsonConstants.RESULT);
     }
 
 
     @Override
     public String retrieveJUNITXML(String sessionId) throws IOException {
-        String url = this.urlManager.retrieveJUNITXML(APP_KEY, sessionId);
-        Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-
-        return okhttp.newCall(r).execute().body().string();
+        String url = urlManager.retrieveJUNITXML(APP_KEY, sessionId);
+        return executeGetRequest(url).toString();
     }
 
     @Override
-    public JSONObject retrieveJtlZip(String sessionId) throws IOException, JSONException {
-        this.logger.info("Trying to get jtl url for the sessionId=" + sessionId);
-        String url = this.urlManager.retrieveJTLZIP(APP_KEY, sessionId);
-        this.logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
-        Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-
-        return new JSONObject(okhttp.newCall(r).execute().body().string());
+    public JSONObject retrieveJtlZip(String sessionId) throws IOException {
+        logger.info("Trying to get jtl url for the sessionId=" + sessionId);
+        String url = urlManager.retrieveJTLZIP(APP_KEY, sessionId);
+        logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
+        return executeGetRequest(url);
     }
 
     @Override
-    public JSONObject generatePublicToken(String sessionId) throws IOException, JSONException {
-        String url = this.urlManager.generatePublicToken(APP_KEY, sessionId);
-        RequestBody emptyBody = RequestBody.create(null, new byte[0]);
-        Request r = new Request.Builder().url(url).post(emptyBody).addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-
-        return new JSONObject(okhttp.newCall(r).execute().body().string());
+    public JSONObject generatePublicToken(String sessionId) throws IOException {
+        String url = urlManager.generatePublicToken(APP_KEY, sessionId);
+        return executePostRequest(url, RequestBody.create(null, new byte[0]));
     }
 
     @Override
-    public List<String> getListOfSessionIds(String masterId) throws IOException, JSONException {
+    public List<String> getListOfSessionIds(String masterId) throws IOException {
         List<String> sessionsIds = new ArrayList<>();
-        String url = this.urlManager.listOfSessionIds(APP_KEY, masterId);
-        Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
+        String url = urlManager.listOfSessionIds(APP_KEY, masterId);
+        JSONObject jo = executeGetRequest(url);
 
-        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
         try {
             JSONArray sessions = jo.getJSONObject(JsonConstants.RESULT).getJSONArray("sessions");
             int sessionsLength = sessions.length();
@@ -559,7 +491,7 @@ public class ApiImpl implements Api {
                 sessionsIds.add(sessions.getJSONObject(i).getString(JsonConstants.ID));
             }
         } catch (Exception e) {
-            this.logger.info("Failed to get list of sessions from JSONObject " + jo, e);
+            logger.info("Failed to get list of sessions from JSONObject " + jo, e);
         }
 
         return sessionsIds;
@@ -570,16 +502,11 @@ public class ApiImpl implements Api {
         HashMap<Integer, String> ws = this.workspaces();
         Set<Integer> wsk = ws.keySet();
         for (Integer k : wsk) {
-            String url = this.urlManager.activeTests(APP_KEY, k);
-            JSONObject jo = null;
+            String url = urlManager.activeTests(APP_KEY, k);
             try {
-                Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
-                        .addHeader(AUTHORIZATION, getCredentials()).
-                                addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-                jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-                JSONObject result = null;
-                if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
-                    result = (JSONObject) jo.get(JsonConstants.RESULT);
+                JSONObject response = executeGetRequest(url);
+                if (response.has(JsonConstants.RESULT) && (!response.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
+                    JSONObject result = (JSONObject) response.get(JsonConstants.RESULT);
                     JSONArray tests = (JSONArray) result.get(JsonConstants.TESTS);
                     for (int i = 0; i < tests.length(); i++) {
                         if (String.valueOf(tests.getInt(i)).equals(testId)) {
@@ -594,7 +521,7 @@ public class ApiImpl implements Api {
                     }
                 }
             } catch (Exception e) {
-                this.logger.info("Failed to check if test=" + testId + " is active: received JSON = " + jo, e);
+                logger.info("Failed to check if test=" + testId + " is active", e);
                 return false; // TODO: Why here return false?? If at the next workspace will be active test we skip it!!!
             }
         }
@@ -603,41 +530,37 @@ public class ApiImpl implements Api {
 
 
     @Override
-    public boolean notes(String note, String masterId) throws Exception {
-        String noteEsc = StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}");
-        String url = this.urlManager.masterId(APP_KEY, masterId);
-        JSONObject noteJson = new JSONObject(noteEsc);
-        RequestBody body = RequestBody.create(TEXT, noteJson.toString());
-        Request r = new Request.Builder().url(url).patch(body).addHeader(AUTHORIZATION, getCredentials()).build();
-        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+    public boolean notes(String note, String masterId) {
+        String url = urlManager.masterId(APP_KEY, masterId);
         try {
-            if (jo.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
+            JSONObject response = executePostRequest(url,
+                    RequestBody.create(TEXT, StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}")));
+
+            if (response.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 return false;
             }
         } catch (Exception e) {
-            throw new Exception("Failed to submit report notes to masterId = " + masterId, e);
+            throw new RuntimeException("Failed to submit report notes to masterId = " + masterId, e);
         }
         return true;
     }
 
     @Override
-    public boolean properties(JSONArray properties, String sessionId) throws Exception {
-        String url = this.urlManager.properties(APP_KEY, sessionId);
-        RequestBody body = RequestBody.create(JSON, properties.toString());
-        Request r = new Request.Builder().url(url).post(body).addHeader(AUTHORIZATION, getCredentials()).build();
-        JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+    public boolean properties(JSONArray properties, String sessionId) {
+        String url = urlManager.properties(APP_KEY, sessionId);
         try {
-            if (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) {
+            JSONObject response = executePostRequest(url, RequestBody.create(JSON, properties.toString()));
+            if (response.get(JsonConstants.RESULT).equals(JSONObject.NULL)) {
                 return false;
             }
         } catch (Exception e) {
-            throw new Exception("Failed to submit report properties to sessionId = " + sessionId, e);
+            throw new RuntimeException("Failed to submit report properties to sessionId = " + sessionId, e);
         }
         return true;
     }
 
     @Override
-    public boolean collection(String testId) throws Exception {
+    public boolean collection(String testId) {
         boolean exists = false;
         boolean collection = false;
 
@@ -648,7 +571,7 @@ public class ApiImpl implements Api {
             if (point > 0 && testId.contains(((String) e.getKey()).substring(0, point))) {
                 collection = (((String) e.getKey()).substring(point + 1)).contains("multi");
                 if (((String) e.getKey()).substring(point + 1).contains("workspace")) {
-                    throw new Exception("Please, select valid testId instead of workspace header");
+                    throw new RuntimeException("Please, select valid testId instead of workspace header");
                 }
                 exists = true;
             }
@@ -657,7 +580,7 @@ public class ApiImpl implements Api {
             }
         }
         if (!exists) {
-            throw new Exception("Test with test id = " + testId + " is not present on server");
+            throw new RuntimeException("Test with test id = " + testId + " is not present on server");
         }
         return collection;
     }

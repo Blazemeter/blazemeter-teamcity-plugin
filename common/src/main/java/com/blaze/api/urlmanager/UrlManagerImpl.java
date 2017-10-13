@@ -14,11 +14,17 @@
 
 package com.blaze.api.urlmanager;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 
 public class UrlManagerImpl implements UrlManager {
+
+    public static final Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
     private String serverUrl = "";
 
@@ -44,221 +50,142 @@ public class UrlManagerImpl implements UrlManager {
 
     @Override
     public String masterStatus(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-            masterId = URLEncoder.encode(masterId, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + UrlManager.MASTERS + "/" + masterId + "/status?events=false&app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + UrlManager.MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/status?events=false&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String tests(String appKey, int workspaceId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + TESTS + "?limit=10000&workspaceId=" + workspaceId + "&app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + TESTS + "?limit=10000&workspaceId=" + workspaceId
+                + "&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String multiTests(String appKey, int workspaceId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl + V4 + "/multi-tests?limit=10000&workspaceId=" + workspaceId + "&app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + "/multi-tests?limit=10000&workspaceId=" + workspaceId
+                + "&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String testStart(String appKey, String testId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-            testId = URLEncoder.encode(testId, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + TESTS + "/"
-                + testId + "/start?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + TESTS + "/" + encode(testId, "testId", UrlManager.UTF_8)
+                + "/start?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String collectionStart(String appKey, String collectionId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-            collectionId = URLEncoder.encode(collectionId, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + "/collections/"
-                + collectionId + "/start?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + "/collections/" + encode(collectionId, "collectionId", UrlManager.UTF_8)
+                + "/start?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String testStop(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-            masterId = URLEncoder.encode(masterId, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl + V4 + UrlManager.MASTERS + "/"
-                + masterId + "/stop?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + UrlManager.MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/stop?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String testTerminate(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-            masterId = URLEncoder.encode(masterId, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + UrlManager.MASTERS + "/"
-                + masterId + "/terminate?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + UrlManager.MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/terminate?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String testReport(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-            masterId = URLEncoder.encode(masterId, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + UrlManager.MASTERS + "/"
-                + masterId + "/reports/main/summary?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + UrlManager.MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/reports/main/summary?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String getUser(String appKey) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + "/user?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + "/user?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String getCIStatus(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + MASTERS + "/" + masterId + UrlManager.CI_STATUS + "?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + UrlManager.CI_STATUS + "?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String retrieveJUNITXML(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + MASTERS + "/" + masterId +
-                "/reports/thresholds?format=junit&app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/reports/thresholds?format=junit&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String retrieveJTLZIP(String appKey, String sessionId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + "/sessions/" + sessionId +
-                "/reports/logs?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + "/sessions/" + encode(sessionId, "sessionId", UrlManager.UTF_8)
+                + "/reports/logs?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String generatePublicToken(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl + V4 + MASTERS + "/" + masterId +
-                "/publicToken?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/public-token?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
-
 
     @Override
     public String listOfSessionIds(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + MASTERS + "/" + masterId +
-                "/sessions?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "/sessions?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String activeTests(String appKey, int workspaceId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl + V4 + UrlManager.MASTERS + "?workspaceId=" + workspaceId + "&active=true&app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + UrlManager.MASTERS + "?workspaceId=" + workspaceId
+                + "&active=true&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String masterId(String appKey, String masterId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + UrlManager.MASTERS + "/" + masterId + "?app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + UrlManager.MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
+                + "?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String properties(String appKey, String sessionId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return serverUrl + V4 + "/sessions/" + sessionId + "/properties?target=all&app_key=" + appKey + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + "/sessions/" + encode(sessionId, "sessionId", UrlManager.UTF_8)
+                + "/properties?target=all&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String workspaces(String appKey, int accountId) {
-        try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return serverUrl + V4 + "/workspaces?limit=1000&enabled=true&app_key=" + appKey + "&" + "accountId=" + accountId + CLIENT_IDENTIFICATION;
+        return serverUrl + V4 + "/workspaces?limit=1000&enabled=true&app_key="
+                + encode(appKey, "appKey", UrlManager.UTF_8) + "&accountId=" + accountId
+                + CLIENT_IDENTIFICATION;
     }
 
     @Override
     public String accounts(String appKey) {
+        return serverUrl + V4 + "/accounts?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
+    }
+
+    private String encode(String text, String paramName, String encoding) {
         try {
-            appKey = URLEncoder.encode(appKey, UrlManager.UTF_8);
+            return URLEncoder.encode(text, encoding);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.warn("Cannot encode " + paramName + " to '" + encoding + "' encoding", e);
+            return text;
         }
-        return serverUrl + V4 + "/accounts?app_key=" + appKey + "&" + CLIENT_IDENTIFICATION;
     }
 }
 

@@ -120,7 +120,7 @@ public class TestUrlManager {
     @Test
     public void generatePublicToken_masters() {
         String expGenPublicToken = bmUrlManager.getServerUrl() + UrlManager.V4 + UrlManager.MASTERS + "/" + masterId +
-                "/publicToken?app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
+                "/public-token?app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String actGenPublicToken = bmUrlManager.generatePublicToken(appKey, masterId);
         assertEquals(expGenPublicToken, actGenPublicToken);
     }
@@ -215,7 +215,7 @@ public class TestUrlManager {
 
     @Test
     public void accounts() {
-        String exp = bmUrlManager.getServerUrl() + UrlManager.V4 + "/accounts?app_key=" + appKey + "&" + UrlManager.CLIENT_IDENTIFICATION;
+        String exp = bmUrlManager.getServerUrl() + UrlManager.V4 + "/accounts?app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String act = bmUrlManager.accounts(appKey);
         assertEquals(exp, act);
     }

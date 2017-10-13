@@ -14,15 +14,13 @@
 
 package com.blaze.api;
 
-import com.google.common.collect.LinkedHashMultimap;
 import com.blaze.runner.TestStatus;
+import com.google.common.collect.LinkedHashMultimap;
 import okhttp3.MediaType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.mail.MessagingException;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,39 +44,39 @@ public interface Api {
 
     int getTestMasterStatusCode(String id);
 
-    HashMap<String, String> startTest(String testId, boolean collection) throws JSONException, IOException;
+    HashMap<String, String> startTest(String testId, boolean collection) throws IOException;
 
-    JSONObject stopTest(String testId) throws IOException, JSONException;
+    JSONObject stopTest(String testId) throws IOException;
 
     void terminateTest(String testId) throws IOException;
 
     JSONObject testReport(String reportId);
 
-    LinkedHashMultimap<String, String> testsMultiMap() throws IOException, MessagingException;
+    LinkedHashMultimap<String, String> testsMultiMap();
 
-    LinkedHashMultimap<String, String> collectionsMultiMap(int workspaceId) throws IOException, MessagingException;
+    LinkedHashMultimap<String, String> collectionsMultiMap(int workspaceId);
 
-    JSONObject getUser() throws IOException, JSONException;
+    JSONObject getUser() throws IOException;
 
-    JSONObject getCIStatus(String sessionId) throws JSONException, IOException;
+    JSONObject getCIStatus(String sessionId) throws IOException;
 
     boolean active(String testId);
 
     String retrieveJUNITXML(String sessionId) throws IOException;
 
-    JSONObject retrieveJtlZip(String sessionId) throws IOException, JSONException;
+    JSONObject retrieveJtlZip(String sessionId) throws IOException;
 
-    List<String> getListOfSessionIds(String masterId) throws IOException, JSONException;
+    List<String> getListOfSessionIds(String masterId) throws IOException;
 
-    JSONObject generatePublicToken(String sessionId) throws IOException, JSONException;
+    JSONObject generatePublicToken(String sessionId) throws IOException;
 
     String getServerUrl();
 
     void setServerUrl(String serverUrl);
 
-    boolean notes(String note, String masterId) throws Exception;
+    boolean notes(String note, String masterId);
 
-    boolean properties(JSONArray properties, String sessionId) throws Exception;
+    boolean properties(JSONArray properties, String sessionId);
 
     String getApiKeyID();
 
@@ -92,6 +90,6 @@ public interface Api {
 
     Map<String, Collection<String>> getTestsMultiMap();
 
-    boolean collection(String testId) throws Exception;
+    boolean collection(String testId);
 }
 
