@@ -1,36 +1,16 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:include page="/blazeRunnerController.html"/>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 <jsp:useBean id="api" class="com.blaze.api.ApiImpl"/>
 <jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerImpl"/>
-<c:choose>
-    <c:when test="${not empty propertiesBean.properties['API_KEY_ID']}">
-        <c:set target="${api}" property="apiKeyID" value="${propertiesBean.properties['API_KEY_ID']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${api}" property="apiKeyID" value="${apiKeyID}"/>
-    </c:otherwise>
-</c:choose>
-<c:choose>
-    <c:when test="${not empty propertiesBean.properties['API_KEY_SECRET']}">
-        <c:set target="${api}" property="apiKeySecret" value="${propertiesBean.properties['API_KEY_SECRET']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${api}" property="apiKeySecret" value="${apiKeySecret}"/>
-    </c:otherwise>
-</c:choose>
-<c:choose>
-    <c:when test="${not empty propertiesBean.properties['BLAZEMETER_URL']}">
-        <c:set target="${url}" property="serverUrl"
-               value="${propertiesBean.properties['BLAZEMETER_URL']}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set target="${url}" property="serverUrl" value="${blazeMeterUrl}"/>
-    </c:otherwise>
-</c:choose>
+
+<c:set target="${api}" property="apiKeyID" value="${propertiesBean.defaultProperties['API_KEY_ID']}"/>
+<c:set target="${api}" property="apiKeySecret" value="${propertiesBean.defaultProperties['API_KEY_SECRET']}"/>
+<c:set target="${url}" property="serverUrl" value="${propertiesBean.defaultProperties['BLAZEMETER_URL']}"/>
+
 <c:set target="${api}" property="urlManager" value="${url}"/>
+
 <c:set var="isFirstOptionItem" value="true"/>
 <l:settingsGroup title="BlazeMeter">
     <tr>

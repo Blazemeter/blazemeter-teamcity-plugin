@@ -14,10 +14,6 @@
 	<!-- Main runner-->
 	<bean id="BlazeRunType" class="com.blaze.runner.BlazeRunType" depends-on="blazeServerSettings" />
 
-	<!-- Edit settings controller -->
-	<bean id="blazeMeterSettingsController" class="com.blaze.runner.BlazeMeterSettingsController"
-		init-method="register" depends-on="blazeServerSettings" />
-
 
 	<bean id="blazeBuildStartContextProcessor" class="com.blaze.runner.BlazeBuildStartContextProcessor" init-method="register"/>
 
