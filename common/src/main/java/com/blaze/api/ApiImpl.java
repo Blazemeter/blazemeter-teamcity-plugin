@@ -109,13 +109,13 @@ public class ApiImpl implements Api {
             }
 
             okhttp = new OkHttpClient.Builder()
-                    .addInterceptor(new RetryInterceptor(this.logger))
+                    .addInterceptor(new RetryInterceptor(logger))
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .proxy(this.proxy)
                     .proxyAuthenticator(this.auth).build();
         } catch (Exception ex) {
-            this.logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
+            logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
         }
 
     }
@@ -139,7 +139,7 @@ public class ApiImpl implements Api {
         httpLog = new HttpLoggingInterceptor(this.httpl);
         httpLog.setLevel(HttpLoggingInterceptor.Level.BODY);
         okhttp = new OkHttpClient.Builder()
-                .addInterceptor(new RetryInterceptor(this.logger))
+                .addInterceptor(new RetryInterceptor(logger))
                 .addInterceptor(httpLog)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
@@ -160,7 +160,7 @@ public class ApiImpl implements Api {
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
             statusCode = result.getInt("progress");
         } catch (Exception e) {
-            this.logger.warn("Error getting master status code: ", e);
+            logger.warn("Error getting master status code: ", e);
         }
 
         return statusCode;
@@ -183,16 +183,16 @@ public class ApiImpl implements Api {
                     testStatus = TestStatus.Running;
                 } else {
                     if (result.has(JsonConstants.ERRORS) && !result.get(JsonConstants.ERRORS).equals(JSONObject.NULL)) {
-                        this.logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
+                        logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
                         testStatus = TestStatus.Error;
                     } else {
                         testStatus = TestStatus.NotRunning;
-                        this.logger.info("Master with id = " + id + " has status = " + TestStatus.NotRunning.name());
+                        logger.info("Master with id = " + id + " has status = " + TestStatus.NotRunning.name());
                     }
                 }
             }
         } catch (Exception e) {
-            this.logger.warn("Error while getting master status ", e);
+            logger.warn("Error while getting master status ", e);
             testStatus = TestStatus.Error;
         }
 
@@ -264,8 +264,8 @@ public class ApiImpl implements Api {
             summary = (JSONObject) result.getJSONArray("summary")
                     .get(0);
         } catch (Exception e) {
-            this.logger.warn("Aggregate report(result object): " + result);
-            this.logger.warn("Error while parsing aggregate report summary: check common jenkins log and make sure that aggregate report" +
+            logger.warn("Aggregate report(result object): " + result);
+            logger.warn("Error while parsing aggregate report summary: check common jenkins log and make sure that aggregate report" +
                     "is valid/not empty.", e);
         }
 
@@ -294,7 +294,7 @@ public class ApiImpl implements Api {
                                 addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
                 JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
                 JSONArray result = null;
-                this.logger.info("Received json: " + jo.toString());
+                logger.info("Received json: " + jo.toString());
                 if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
                         (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                     return testListOrdered;
@@ -312,7 +312,7 @@ public class ApiImpl implements Api {
                         try {
                             entry = result.getJSONObject(i);
                         } catch (JSONException e) {
-                            this.logger.warn("JSONException while getting tests: " + e);
+                            logger.warn("JSONException while getting tests: " + e);
                         }
                         String id;
                         String name;
@@ -329,7 +329,7 @@ public class ApiImpl implements Api {
                                 wst.put(id + "." + testType, name + "(" + id + "." + testType + ")");
                             }
                         } catch (JSONException ie) {
-                            this.logger.warn("JSONException while getting tests: " + ie);
+                            logger.warn("JSONException while getting tests: " + ie);
                         }
                     }
                 }
@@ -347,8 +347,8 @@ public class ApiImpl implements Api {
                 }
 
             } catch (Exception e) {
-                this.logger.warn("Exception while getting tests: ", e);
-                this.logger.warn("Check connection/proxy settings");
+                logger.warn("Exception while getting tests: ", e);
+                logger.warn("Check connection/proxy settings");
                 testListOrdered.put(Constants.CHECK_SETTINGS, Constants.CHECK_SETTINGS);
             }
         }
@@ -367,7 +367,7 @@ public class ApiImpl implements Api {
                             addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
             JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
             JSONArray result = null;
-            this.logger.info("Received json: " + jo.toString());
+            logger.info("Received json: " + jo.toString());
             if (jo.has(JsonConstants.ERROR) && (jo.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
                     (((JSONObject) jo.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
                 return collectionsListOrdered;
@@ -381,7 +381,7 @@ public class ApiImpl implements Api {
                     try {
                         entry = result.getJSONObject(i);
                     } catch (JSONException e) {
-                        this.logger.warn("JSONException while getting tests: " + e);
+                        logger.warn("JSONException while getting tests: " + e);
                     }
                     String id;
                     String name;
@@ -398,13 +398,13 @@ public class ApiImpl implements Api {
                             collectionsListOrdered.put(id + "." + collectionsType, name + "(" + id + "." + collectionsType + ")");
                         }
                     } catch (JSONException ie) {
-                        this.logger.warn("JSONException while getting tests: " + ie);
+                        logger.warn("JSONException while getting tests: " + ie);
                     }
                 }
             }
         } catch (Exception e) {
-            this.logger.warn("Exception while getting tests: ", e);
-            this.logger.warn("Check connection/proxy settings");
+            logger.warn("Exception while getting tests: ", e);
+            logger.warn("Check connection/proxy settings");
             collectionsListOrdered.put(Constants.CHECK_SETTINGS, Constants.CHECK_SETTINGS);
         }
         return collectionsListOrdered;
@@ -449,7 +449,6 @@ public class ApiImpl implements Api {
                 }
             } catch (Exception e) {
                 logger.error("Failed to get workspaces: " + e);
-                return ws;
             }
         }
         return ws;
@@ -466,7 +465,7 @@ public class ApiImpl implements Api {
 
     @Override
     public JSONObject getCIStatus(String sessionId) throws IOException {
-        this.logger.info("Trying to get jtl url for the sessionId = " + sessionId);
+        logger.info("Trying to get jtl url for the sessionId = " + sessionId);
         String url = this.urlManager.getCIStatus(APP_KEY, sessionId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                 addHeader(AUTHORIZATION, getCredentials()).
@@ -488,9 +487,9 @@ public class ApiImpl implements Api {
 
     @Override
     public JSONObject retrieveJtlZip(String sessionId) throws IOException {
-        this.logger.info("Trying to get jtl url for the sessionId=" + sessionId);
+        logger.info("Trying to get jtl url for the sessionId=" + sessionId);
         String url = this.urlManager.retrieveJTLZIP(APP_KEY, sessionId);
-        this.logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
+        logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
                 addHeader(AUTHORIZATION, getCredentials()).
                     addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
@@ -525,7 +524,7 @@ public class ApiImpl implements Api {
                 sessionsIds.add(sessions.getJSONObject(i).getString(JsonConstants.ID));
             }
         } catch (Exception e) {
-            this.logger.info("Failed to get list of sessions from JSONObject " + jo, e);
+            logger.info("Failed to get list of sessions from JSONObject " + jo, e);
         }
 
         return sessionsIds;
@@ -560,7 +559,7 @@ public class ApiImpl implements Api {
                     }
                 }
             } catch (Exception e) {
-                this.logger.info("Failed to check if test=" + testId + " is active: received JSON = " + jo, e);
+                logger.info("Failed to check if test=" + testId + " is active: received JSON = " + jo, e);
                 return false; // TODO: Why here return false?? If at the next workspace will be active test we skip it!!!
             }
         }
