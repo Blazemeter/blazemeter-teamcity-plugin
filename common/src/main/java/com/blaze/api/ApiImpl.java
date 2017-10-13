@@ -147,34 +147,32 @@ public class ApiImpl implements Api {
                 .proxyAuthenticator(this.auth).build();
     }
 
+    private JSONObject executeRequest(String url) throws IOException {
+        Request request = new Request.Builder().url(url).get().
+                addHeader(ACCEPT, APP_JSON).
+                addHeader(AUTHORIZATION, getCredentials()).
+                addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
+        return new JSONObject(okhttp.newCall(request).execute().body().string());
+    }
 
     @Override
     public int getTestMasterStatusCode(String id) {
-        int statusCode = 0;
         try {
             String url = this.urlManager.masterStatus(APP_KEY, id);
-            Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON).
-                    addHeader(AUTHORIZATION, getCredentials()).
-                    addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
-            statusCode = result.getInt("progress");
+            JSONObject result = (JSONObject) executeRequest(url).get(JsonConstants.RESULT);
+            return result.getInt("progress");
         } catch (Exception e) {
             logger.warn("Error getting master status code: ", e);
         }
 
-        return statusCode;
+        return 0;
     }
 
     @Override
     public TestStatus masterStatus(String masterId) {
         try {
             String url = this.urlManager.masterStatus(APP_KEY, masterId);
-            Request r = new Request.Builder().url(url).get()
-                    .addHeader(ACCEPT, APP_JSON).addHeader(AUTHORIZATION, getCredentials()).
-                            addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
-            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-            JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
+            JSONObject result = (JSONObject) executeRequest(url).get(JsonConstants.RESULT);
 
             return (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) ?
                     TestStatus.NotFound :
@@ -543,9 +541,8 @@ public class ApiImpl implements Api {
                         .addHeader(AUTHORIZATION, getCredentials()).
                                 addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
                 jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-                JSONObject result = null;
                 if (jo.has(JsonConstants.RESULT) && (!jo.get(JsonConstants.RESULT).equals(JSONObject.NULL))) {
-                    result = (JSONObject) jo.get(JsonConstants.RESULT);
+                    JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
                     JSONArray tests = (JSONArray) result.get(JsonConstants.TESTS);
                     for (int i = 0; i < tests.length(); i++) {
                         if (String.valueOf(tests.getInt(i)).equals(testId)) {
