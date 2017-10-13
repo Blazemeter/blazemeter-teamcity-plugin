@@ -167,37 +167,41 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public TestStatus masterStatus(String id) {
-        TestStatus testStatus;
+    public TestStatus masterStatus(String masterId) {
         try {
-            String url = this.urlManager.masterStatus(APP_KEY, id);
+            String url = this.urlManager.masterStatus(APP_KEY, masterId);
             Request r = new Request.Builder().url(url).get()
                     .addHeader(ACCEPT, APP_JSON).addHeader(AUTHORIZATION, getCredentials()).
                             addHeader(CONTENT_TYPE, APP_JSON_UTF_8).build();
             JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
             JSONObject result = (JSONObject) jo.get(JsonConstants.RESULT);
-            if (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) {
-                testStatus = TestStatus.NotFound;
-            } else {
-                if (result.has(JsonConstants.STATUS) && !result.getString(JsonConstants.STATUS).equals("ENDED")) {
-                    testStatus = TestStatus.Running;
-                } else {
-                    if (result.has(JsonConstants.ERRORS) && !result.get(JsonConstants.ERRORS).equals(JSONObject.NULL)) {
-                        logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
-                        testStatus = TestStatus.Error;
-                    } else {
-                        testStatus = TestStatus.NotRunning;
-                        logger.info("Master with id = " + id + " has status = " + TestStatus.NotRunning.name());
-                    }
-                }
-            }
+
+            return (result.has(JsonConstants.DATA_URL) && result.get(JsonConstants.DATA_URL) == null) ?
+                    TestStatus.NotFound :
+                    getMasterStatusFromJSON(result, masterId);
         } catch (Exception e) {
             logger.warn("Error while getting master status ", e);
-            testStatus = TestStatus.Error;
+            return TestStatus.Error;
         }
-
-        return testStatus;
     }
+
+    private TestStatus getMasterStatusFromJSON(JSONObject result, String masterId) {
+        return (result.has(JsonConstants.STATUS) && !result.getString(JsonConstants.STATUS).equals("ENDED")) ?
+                TestStatus.Running :
+                getMasterStatusErrorsFromJSON(result, masterId);
+    }
+
+    private TestStatus getMasterStatusErrorsFromJSON(JSONObject result, String masterId) {
+        if (result.has(JsonConstants.ERRORS) && !result.get(JsonConstants.ERRORS).equals(JSONObject.NULL)) {
+            logger.debug("Error while getting master status: " + result.get(JsonConstants.ERRORS).toString());
+            return TestStatus.Error;
+        } else {
+            logger.info("Master with id = " + masterId + " has status = " + TestStatus.NotRunning.name());
+            return TestStatus.NotRunning;
+        }
+    }
+
+
 
     @Override
     public synchronized HashMap<String, String> startTest(String testId, boolean collection) throws IOException {
