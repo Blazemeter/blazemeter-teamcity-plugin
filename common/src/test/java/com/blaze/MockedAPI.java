@@ -336,7 +336,7 @@ public class MockedAPI {
 
 
     public static void getReportUrl() throws IOException {
-        String expectedPath = UrlManager.V4 + UrlManager.MASTERS + "/" + TestConstants.TEST_MASTER_ID + "/publicToken";
+        String expectedPath = UrlManager.V4 + UrlManager.MASTERS + "/" + TestConstants.TEST_MASTER_ID + "/public-token";
         File jsonFile = new File(TestConstants.RESOURCES + "/getReportUrl_pos.json");
         String getReportUrl = FileUtils.readFileToString(jsonFile);
         String c = Credentials.basic(TestConstants.TEST_API_ID_VALID, TestConstants.TEST_API_SECRET_VALID);

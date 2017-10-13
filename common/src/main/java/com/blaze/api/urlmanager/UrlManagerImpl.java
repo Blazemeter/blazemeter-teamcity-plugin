@@ -193,7 +193,7 @@ public class UrlManagerImpl implements UrlManager {
             e.printStackTrace();
         }
         return serverUrl + V4 + MASTERS + "/" + masterId +
-                "/publicToken?app_key=" + appKey + CLIENT_IDENTIFICATION;
+                "/public-token?app_key=" + appKey + CLIENT_IDENTIFICATION;
     }
 
 
