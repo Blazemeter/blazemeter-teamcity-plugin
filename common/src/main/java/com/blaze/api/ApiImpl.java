@@ -415,30 +415,17 @@ public class ApiImpl implements Api {
         String url = this.urlManager.accounts(APP_KEY);
         Request r = new Request.Builder().url(url).get().addHeader(ACCEPT, APP_JSON)
                 .addHeader(AUTHORIZATION, getCredentials()).build();
-        JSONObject jo = null;
-        JSONArray result = null;
-        JSONObject dp = null;
+
         HashMap<Integer, String> acs = new HashMap<>();
         try {
-            jo = new JSONObject(okhttp.newCall(r).execute().body().string());
-        } catch (Exception ioe) {
-            logger.error("Failed to get accounts: ", ioe);
-            return acs;
-        }
-        try {
-            result = jo.getJSONArray(JsonConstants.RESULT);
-        } catch (Exception e) {
-            logger.error("Failed to get accounts: ", e);
-            return acs;
-        }
-        try {
+            JSONObject jo = new JSONObject(okhttp.newCall(r).execute().body().string());
+            JSONArray result = jo.getJSONArray(JsonConstants.RESULT);
             for (int i = 0; i < result.length(); i++) {
                 JSONObject a = result.getJSONObject(i);
                 acs.put(a.getInt(JsonConstants.ID),a.getString(JsonConstants.NAME));
             }
         } catch (Exception e) {
             logger.error("Failed to get accounts: ", e);
-            return acs;
         }
         return acs;
     }
