@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
+// TODO: remove it...
 public class CutUserKeyFormatter extends SimpleFormatter {
 
     @Override
