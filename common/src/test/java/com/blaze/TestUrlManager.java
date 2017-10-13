@@ -215,7 +215,7 @@ public class TestUrlManager {
 
     @Test
     public void accounts() {
-        String exp = bmUrlManager.getServerUrl() + UrlManager.V4 + "/accounts?app_key=" + appKey + "&" + UrlManager.CLIENT_IDENTIFICATION;
+        String exp = bmUrlManager.getServerUrl() + UrlManager.V4 + "/accounts?app_key=" + appKey + UrlManager.CLIENT_IDENTIFICATION;
         String act = bmUrlManager.accounts(appKey);
         assertEquals(exp, act);
     }
