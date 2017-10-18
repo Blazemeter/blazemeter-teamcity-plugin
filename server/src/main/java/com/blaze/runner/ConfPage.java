@@ -57,8 +57,6 @@ public class ConfPage extends AdminPage {
             model.put("apiKeyID", mainSettings.getApiKeyID());
             model.put("apiKeySecret", mainSettings.getApiKeySecret());
             model.put("blazeMeterUrl", mainSettings.getBlazeMeterUrl());
-            // TODO: why we write in file on each refresh of admin page??
-            mainSettings.saveProperties();
         }
     }
 
