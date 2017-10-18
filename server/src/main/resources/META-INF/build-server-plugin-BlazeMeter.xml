@@ -19,8 +19,6 @@
 
 	<!-- Administration controllers -->
 	<bean id="userKeyControler" class="com.blaze.runner.BlazeRunTypeController" init-method="register">
-		<constructor-arg index="0" value="/saveUserKeys" />
-		<constructor-arg index="1" value="adminPage.jsp" />
 		<property name="mainSettings" ref="blazeServerSettings"/>
 	</bean>
 
