@@ -18,13 +18,17 @@ import java.io.*;
 import java.util.Properties;
 
 import jetbrains.buildServer.serverSide.ServerPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Entity for store admin properties:
- *  - apiKeyID and apiKeySecret  - BlazeMeter user API key and API secret
- *  - blazeMeterUrl - BlazeMeter URL
+ * - apiKeyID and apiKeySecret  - BlazeMeter user API key and API secret
+ * - blazeMeterUrl - BlazeMeter URL
  */
 public class AdminSettings {
+
+    private Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
     public ServerPaths serverPaths;
     private String apiKeyID = "";
@@ -39,31 +43,19 @@ public class AdminSettings {
         loadProperties();
     }
 
-    public void saveProperties() {
+    public void saveProperties() throws IOException {
         File keyFile = propFile();
         if (keyFile == null) {
-            return;
+            throw new RuntimeException("Property file not found");
         }
 
-        FileWriter outFile = null;
-        try {
-            Properties prop = new Properties();
-            outFile = new FileWriter(keyFile);
-            prop.put("apiKeyID", this.apiKeyID);
-            prop.put("apiKeySecret", this.apiKeySecret);
-            prop.put("blazeMeterUrl", this.blazeMeterUrl);
-            prop.store(outFile, null);
-        } catch (IOException e) {
-            System.out.println("Cannot save configuration: " + e.getMessage());
-        } finally {
-            try {
-                if (outFile != null) {
-                    outFile.close();
-                }
-            } catch (IOException e) {
-                System.out.println("Cannot close " + keyFile.getAbsolutePath() + ": " + e.getMessage());
-            }
-        }
+        Properties prop = new Properties();
+        FileWriter outFile = new FileWriter(keyFile);
+        prop.put("apiKeyID", this.apiKeyID);
+        prop.put("apiKeySecret", this.apiKeySecret);
+        prop.put("blazeMeterUrl", this.blazeMeterUrl);
+        prop.store(outFile, null);
+        outFile.close();
     }
 
     public void loadProperties() {
@@ -82,14 +74,14 @@ public class AdminSettings {
             this.blazeMeterUrl = prop.getProperty("blazeMeterUrl");
             inFile.close();
         } catch (IOException e) {
-            System.out.println("Cannot load configuration: " + e.getMessage());
+            logger.error("Cannot load configuration: " + e.getMessage());
         } finally {
             try {
                 if (inFile != null) {
                     inFile.close();
                 }
             } catch (IOException e) {
-                System.out.println("Cannot close " + keyFile.getAbsolutePath() + ": " + e.getMessage());
+                logger.error("Cannot close " + keyFile.getAbsolutePath() + ": " + e.getMessage());
             }
         }
     }
@@ -100,10 +92,10 @@ public class AdminSettings {
             try {
                 boolean created = keyFile.createNewFile();
                 if (!created) {
-                    System.out.println("Cannot create configuration file, file already exists!");
+                    logger.error("Cannot create configuration file, file already exists!");
                 }
             } catch (IOException e) {
-                System.out.println("Cannot create configuration file! Error is: " + e.getMessage());
+                logger.error("Cannot create configuration file! Error is: " + e.getMessage());
                 return null;
             }
         }

@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiImpl implements Api {
 
-    private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
+    private Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
     private static final Comparator<Map.Entry<String, String>> comparator = new Comparator<Map.Entry<String, String>>() {
         @Override
