@@ -21,37 +21,31 @@ import jetbrains.buildServer.controllers.ActionErrors;
 import jetbrains.buildServer.controllers.AjaxRequestProcessor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.log.Loggers;
-import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
 
 /**
  * Controller for configure admin properties
  */
 public class BlazeRunTypeController extends BaseController {
 
+    private Logger logger = LoggerFactory.getLogger("com.blazemeter");
     private final WebControllerManager myManager;
-    private final String actualUrl;
-    private final String actualJsp;
     private AdminSettings mainSettings;
-    private final ServerPaths serverPaths;
 
     /**
-     *
-     * @param actualUrl
-     * @param actualJsp
      * @param manager
-     * @param serverPaths
      */
-    public BlazeRunTypeController(@NotNull final String actualUrl, @NotNull final String actualJsp,
-                                  final WebControllerManager manager, final ServerPaths serverPaths) {
-        this.actualJsp = actualJsp;
-        this.actualUrl = actualUrl;
+    public BlazeRunTypeController(@NotNull AdminSettings mainSettings, final WebControllerManager manager) {
+        this.mainSettings = mainSettings;
         this.myManager = manager;
-        this.serverPaths = serverPaths;
     }
 
     public AdminSettings getMainSettings() {
@@ -63,7 +57,7 @@ public class BlazeRunTypeController extends BaseController {
     }
 
     public void register() {
-        myManager.registerController(actualUrl, this);
+        myManager.registerController("/saveUserKeys/", this);
     }
 
     @Override
@@ -73,12 +67,10 @@ public class BlazeRunTypeController extends BaseController {
             public void handleRequest(@NotNull final HttpServletRequest request, final @NotNull HttpServletResponse response,
                                       @NotNull final Element xmlResponse) {
                 try {
-                    doAction(request);
+                    doAction(request, xmlResponse);
                 } catch (Exception e) {
-                    Loggers.SERVER.warn(e);
-                    ActionErrors errors = new ActionErrors();
-                    errors.addError("blazeMessage", getMessageWithNested(e));
-                    errors.serialize(xmlResponse);
+                    logger.error("Cannot save BlazeMeter configuration", e);
+                    addResultElement(xmlResponse, "blazeErrorMessage", "Cannot save BlazeMeter configuration " + getMessageWithNested(e));
                 }
             }
         });
@@ -86,15 +78,47 @@ public class BlazeRunTypeController extends BaseController {
         return null;
     }
 
-    private void doAction(final HttpServletRequest request) throws Exception {
+    private void doAction(final HttpServletRequest request, Element xmlResponse) throws IOException {
         String apiKeyID = request.getParameter("apiKeyID");
         String apiKeySecret = request.getParameter("apiKeySecret");
         String blazeMeterUrl = request.getParameter("blazeMeterUrl");
-        mainSettings.setApiKeyID(apiKeyID);
-        mainSettings.setApiKeySecret(apiKeySecret);
-        if (blazeMeterUrl != null) {
+        String validationWarnings = getValidationWarnings(apiKeyID, apiKeySecret, blazeMeterUrl);
+        if (!validationWarnings.isEmpty()) {
+            addResultElement(xmlResponse, "blazeWarningMessage", validationWarnings);
+        } else {
+            mainSettings.setApiKeyID(apiKeyID);
+            mainSettings.setApiKeySecret(apiKeySecret);
             mainSettings.setBlazeMeterUrl(blazeMeterUrl);
+            mainSettings.saveProperties();
+            addResultElement(xmlResponse, "blazeSuccessMessage", "Configuration saved successfully!");
         }
+    }
+
+    private String getValidationWarnings(String apiKeyID, String apiKeySecret, String blazeMeterUrl) {
+        String result = "";
+
+        if (apiKeyID == null || apiKeyID.isEmpty()) {
+            result += "Set valid 'API key ID'";
+        }
+
+        if (apiKeySecret == null || apiKeySecret.isEmpty()) {
+            result += "Set valid 'API key secret'";
+        }
+
+        if (blazeMeterUrl == null || blazeMeterUrl.isEmpty()) {
+            result += "Set valid 'BlazeMeter URL'";
+        }
+
+        //TODO: validate ID + secret + url using api
+
+        return result;
+    }
+
+    public void addResultElement(Element xmlResponse, String resultId, String resultContent) {
+        Element resultElement = new Element("result");
+        resultElement.setAttribute("id", resultId);
+        resultElement.addContent(resultContent);
+        xmlResponse.addContent(resultElement);
     }
 
     static private String getMessageWithNested(Throwable e) {
