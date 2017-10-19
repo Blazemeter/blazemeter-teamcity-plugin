@@ -17,10 +17,8 @@ package com.blaze.runner;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jetbrains.buildServer.controllers.ActionErrors;
 import jetbrains.buildServer.controllers.AjaxRequestProcessor;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 
 import org.jdom.Element;
@@ -98,19 +96,19 @@ public class BlazeRunTypeController extends BaseController {
         String result = "";
 
         if (apiKeyID == null || apiKeyID.isEmpty()) {
-            result += "Set valid 'API key ID'";
+            result += "<li>Set valid 'API key ID'</li>";
         }
 
         if (apiKeySecret == null || apiKeySecret.isEmpty()) {
-            result += "Set valid 'API key secret'";
+            result += "<li>Set valid 'API key secret'</li>";
         }
 
         if (blazeMeterUrl == null || blazeMeterUrl.isEmpty()) {
-            result += "Set valid 'BlazeMeter URL'";
+            result += "<li>Set valid 'BlazeMeter URL'</li>";
         }
 
-        //TODO: validate ID + secret + url using api
 
+        //TODO: validate ID + secret + url using api
         return result;
     }
 
