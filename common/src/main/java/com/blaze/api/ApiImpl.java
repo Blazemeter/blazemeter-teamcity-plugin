@@ -576,13 +576,13 @@ public class ApiImpl implements Api {
         boolean exists = false;
         boolean collection = false;
 
-        LinkedHashMultimap tests = this.testsMultiMap();
-        Set<Map.Entry> entries = tests.entries();
-        for (Map.Entry e : entries) {
-            int point = ((String) e.getKey()).indexOf(".");
-            if (point > 0 && testId.contains(((String) e.getKey()).substring(0, point))) {
-                collection = (((String) e.getKey()).substring(point + 1)).contains("multi");
-                if (((String) e.getKey()).substring(point + 1).contains("workspace")) {
+        LinkedHashMultimap<String, String> tests = this.testsMultiMap();
+        Set<Map.Entry<String, String>> entries = tests.entries();
+        for (Map.Entry<String, String> e : entries) {
+            int point = e.getKey().indexOf(".");
+            if (point > 0 && testId.contains( e.getKey().substring(0, point))) {
+                collection = (e.getKey().substring(point + 1)).contains("multi");
+                if (e.getKey().substring(point + 1).contains("workspace")) {
                     throw new RuntimeException("Please, select valid testId instead of workspace header");
                 }
                 exists = true;
