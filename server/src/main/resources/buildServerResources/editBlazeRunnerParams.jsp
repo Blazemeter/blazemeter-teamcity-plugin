@@ -17,7 +17,7 @@
         <th><label>BlazeMeter tests:</label></th>
         <td>
 
-            <props:selectProperty name="all_tests">
+            <props:selectProperty name="all_tests" className="longField">
                 <c:forEach var="test" items="${api.testsMultiMap}">
                     <c:forEach var="value" items="${test.value}">
 
