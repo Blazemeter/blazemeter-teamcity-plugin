@@ -310,7 +310,7 @@ public class ApiImpl implements Api {
                 wst.putAll(wsc);
 
                 if (result != null && result.length() > 0) {
-                    testListOrdered.put(String.valueOf(k) + "." + "workspace", "========" + wsn + "(" + k + ")========");
+                    testListOrdered.put(String.valueOf(k) + ".workspace", wsn + "(" + k + ")");
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject entry = null;
                         try {
