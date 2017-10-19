@@ -51,15 +51,13 @@
 <tr>
     <th><label>Download JUnit report:</label></th>
     <td>
-        <props:checkboxProperty name="blazeMeterPlugin.request.junit" treatFalseValuesCorrectly="${true}"
-                                uncheckedValue="false"/>
+        <props:checkboxProperty name="blazeMeterPlugin.request.junit"/>
     </td>
 </tr>
 <tr>
     <th><label>Download JTL report:</label></th>
     <td>
-        <props:checkboxProperty name="blazeMeterPlugin.request.jtl" treatFalseValuesCorrectly="${true}"
-                                uncheckedValue="false"/>
+        <props:checkboxProperty name="blazeMeterPlugin.request.jtl"/>
     </td>
 </tr>
 
