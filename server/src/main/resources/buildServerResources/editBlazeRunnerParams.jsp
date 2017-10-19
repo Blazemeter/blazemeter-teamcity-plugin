@@ -62,28 +62,35 @@
                                 uncheckedValue="false"/>
     </td>
 </tr>
-<tr>
+
+<%--Advanced options start --%>
+
+
+<tr class="advancedSetting advanced_hidden">
     <th><label>JUnit report path:</label></th>
     <td>
         <props:textProperty name="blazeMeterPlugin.request.junit.path"/>
     </td>
 </tr>
-<tr>
+<tr class="advancedSetting advanced_hidden">
     <th><label>JTL report path:</label></th>
     <td>
         <props:textProperty name="blazeMeterPlugin.request.jtl.path"/>
     </td>
 </tr>
-<tr>
+<tr class="advancedSetting advanced_hidden">
     <th><label>Notes:</label></th>
     <td>
         <props:multilineProperty name="blazeMeterPlugin.notes" linkTitle="" cols="35" rows="4" expanded="true"/>
     </td>
 </tr>
-<tr>
-    <th><label>JMeter propeties:</label></th>
+<tr class="advancedSetting advanced_hidden">
+    <th><label>JMeter properties:</label></th>
     <td>
         <props:multilineProperty name="blazeMeterPlugin.jmeter.properties" linkTitle="" cols="35" rows="2" expanded="true"/>
     </td>
 </tr>
+
+<%--Advanced options end --%>
+
 </l:settingsGroup>
