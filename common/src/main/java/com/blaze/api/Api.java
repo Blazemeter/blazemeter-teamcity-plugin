@@ -84,6 +84,8 @@ public interface Api {
 
     void setApiKeySecret(String apiKeySecret);
 
+    boolean verifyCredentials();
+
     HashMap<Integer, String> accounts();
 
     HashMap<Integer, String> workspaces();
