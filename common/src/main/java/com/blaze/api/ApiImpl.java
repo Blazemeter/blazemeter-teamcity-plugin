@@ -460,15 +460,15 @@ public class ApiImpl implements Api {
 
     @Override
     public String retrieveJUNITXML(String sessionId) throws IOException {
+        logger.info("Trying to receive JUnit json for the sessionId = " + sessionId);
         String url = urlManager.retrieveJUNITXML(APP_KEY, sessionId);
         return executeGetRequest(url).toString();
     }
 
     @Override
     public JSONObject retrieveJtlZip(String sessionId) throws IOException {
-        logger.info("Trying to get jtl url for the sessionId=" + sessionId);
+        logger.info("Trying to receive jtl json for the sessionId = " + sessionId);
         String url = urlManager.retrieveJTLZIP(APP_KEY, sessionId);
-        logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
         return executeGetRequest(url);
     }
 
