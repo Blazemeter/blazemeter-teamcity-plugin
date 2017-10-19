@@ -118,23 +118,16 @@ public class BlazeRunTypeController extends BaseController {
     private String getValidationWarnings(String apiKeyID, String apiKeySecret, String blazeMeterUrl) {
         String result = "";
 
-        if (apiKeyID == null || apiKeyID.isEmpty()) {
-            result += "<li>Set valid 'API key ID'</li>";
+        if (apiKeyID == null || apiKeyID.isEmpty() ||
+                apiKeySecret == null || apiKeySecret.isEmpty() ||
+                blazeMeterUrl == null || blazeMeterUrl.isEmpty()) {
+            result += "Please, fill all fields with valid data before saving";
         }
-
-        if (apiKeySecret == null || apiKeySecret.isEmpty()) {
-            result += "<li>Set valid 'API key secret'</li>";
-        }
-
-        if (blazeMeterUrl == null || blazeMeterUrl.isEmpty()) {
-            result += "<li>Set valid 'BlazeMeter URL'</li>";
-        }
-
 
         if (result.isEmpty()) {
             Api api = new ApiImpl(apiKeyID, apiKeySecret, blazeMeterUrl, httpLogger);
             if (!api.verifyCredentials()) {
-                result += "<li>Invalid user credentials, please check it</li>";
+                result += "Invalid user credentials or/and server url, please check it";
             }
         }
 
