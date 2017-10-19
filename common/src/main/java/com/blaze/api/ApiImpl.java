@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ApiImpl implements Api {
 
-    private Logger logger = (Logger) LoggerFactory.getLogger("com.blazemeter");
+    private Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
     private static final Comparator<Map.Entry<String, String>> comparator = new Comparator<Map.Entry<String, String>>() {
         @Override
@@ -528,6 +528,18 @@ public class ApiImpl implements Api {
         return false;
     }
 
+    @Override
+    public boolean verifyCredentials() {
+        logger.info("Verifying userKey...");
+        String url = this.urlManager.getUser(APP_KEY);
+        try {
+            JSONObject response = executeGetRequest(url);
+            return response.get(JsonConstants.ERROR).equals(JSONObject.NULL);
+        } catch (Exception e) {
+            logger.error("Got an exception while verifying credentials: ", e);
+            return false;
+        }
+    }
 
     @Override
     public boolean notes(String note, String masterId) {
