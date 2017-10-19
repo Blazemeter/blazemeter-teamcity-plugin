@@ -18,31 +18,37 @@
         <td>
 
             <props:selectProperty name="all_tests" className="longField">
-                <c:forEach var="test" items="${api.testsMultiMap}">
-                    <c:forEach var="value" items="${test.value}">
-
-                        <c:choose>
-                            <c:when test="${test.key.contains('.workspace')}">
+                <c:set var="testsCollection" value="${api.testsMultiMap}"/>
+                <c:choose>
+                    <c:when test="${testsCollection.size() == 0}">
+                        <props:option value="">No tests for this account</props:option>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="test" items="testsCollection">
+                            <c:forEach var="value" items="${test.value}">
                                 <c:choose>
-                                    <c:when test="${isFirstOptionItem}">
-                                        <c:set var="isFirstOptionItem" value="false"/>
+                                    <c:when test="${test.key.contains('.workspace')}">
+                                        <c:choose>
+                                            <c:when test="${isFirstOptionItem}">
+                                                <c:set var="isFirstOptionItem" value="false"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                </optgroup>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <optgroup label="${value}">
                                     </c:when>
                                     <c:otherwise>
-                                        </optgroup>
+                                        <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
+                                            ${value}
+                                        </props:option>
                                     </c:otherwise>
                                 </c:choose>
-                                <optgroup label="${value}">
-                            </c:when>
-                            <c:otherwise>
-                                <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
-                                    ${value}
-                                </props:option>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                </c:forEach>
-                </optgroup>
-
+                            </c:forEach>
+                        </c:forEach>
+                        </optgroup>
+                    </c:otherwise>
+                </c:choose>
             </props:selectProperty>
             <span class="error" id="error_all_tests"></span>
             <span class="smallNote">Select the test to execute.</span>
