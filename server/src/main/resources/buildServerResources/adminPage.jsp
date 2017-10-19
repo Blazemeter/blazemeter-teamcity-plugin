@@ -42,7 +42,7 @@
 
     function setValue(resultSpan, value) {
         resultSpan.show();
-        resultSpan.innerHTML = value;
+        resultSpan.textContent = value;
     }
 </script>
 
@@ -74,7 +74,7 @@
         <input type="button" name="submitBlazeMeterAdminPageForm" value="Save" onclick="return sendReqSave();"
                class="btn btn_primary submitButton"/>
         <span class="icon_success icon16 successMessage" id="blazeSuccessMessage" style="display:none;"></span>
-        <ul class="icon_before icon16 attentionComment" id="blazeWarningMessage" style="display:none;list-style-position: inside;"></ul>
+        <span class="icon_before icon16 attentionComment" id="blazeWarningMessage" style="display:none;"></span>
         <span class="icon_error icon16 errorMessage" id="blazeErrorMessage" style="display:none;"></span>
     </div>
 </form>
