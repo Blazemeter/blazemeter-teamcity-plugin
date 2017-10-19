@@ -24,7 +24,7 @@
                         <props:option value="">No tests for this account</props:option>
                     </c:when>
                     <c:otherwise>
-                        <c:forEach var="test" items="testsCollection">
+                        <c:forEach var="test" items="${testsCollection}">
                             <c:forEach var="value" items="${test.value}">
                                 <c:choose>
                                     <c:when test="${test.key.contains('.workspace')}">
