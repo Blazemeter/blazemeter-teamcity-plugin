@@ -14,19 +14,21 @@
 
 package com.blaze.runner;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.blaze.api.Api;
+import com.blaze.api.ApiImpl;
+import com.blaze.api.HttpLogger;
 import jetbrains.buildServer.controllers.AjaxRequestProcessor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
-
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -38,12 +40,33 @@ public class BlazeRunTypeController extends BaseController {
     private final WebControllerManager myManager;
     private AdminSettings mainSettings;
 
+    private HttpLogger httpLogger;
+
+
     /**
      * @param manager
      */
     public BlazeRunTypeController(@NotNull AdminSettings mainSettings, final WebControllerManager manager) {
         this.mainSettings = mainSettings;
         this.myManager = manager;
+        httpLogger = createHttpLogger();
+    }
+
+    private HttpLogger createHttpLogger() {
+        try {
+            File file = new File(mainSettings.serverPaths.getLogsPath(), "/bzm-admin-page-logs.log");
+            if (!file.exists()) {
+                boolean created = file.createNewFile();
+                if (!created) {
+                    logger.error("Cannot logs file for admin page, file already exists!");
+                }
+            }
+            logger.info("Log for Admin page will be store at " + file.getAbsolutePath());
+            return new HttpLogger(file.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("Cannot create tmp file for logs", e);
+            throw new RuntimeException("Cannot create tmp file for logs", e);
+        }
     }
 
     public AdminSettings getMainSettings() {
@@ -108,7 +131,13 @@ public class BlazeRunTypeController extends BaseController {
         }
 
 
-        //TODO: validate ID + secret + url using api
+        if (result.isEmpty()) {
+            Api api = new ApiImpl(apiKeyID, apiKeySecret, blazeMeterUrl, httpLogger);
+            if (!api.verifyCredentials()) {
+                result += "<li>Invalid user credentials, please check it</li>";
+            }
+        }
+
         return result;
     }
 
