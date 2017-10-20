@@ -584,7 +584,7 @@ public class ApiImpl implements Api {
                 if (id.endsWith(".workspace")) {
                     throw new RuntimeException("Please, select valid testId instead of workspace header (" + id + ")");
                 }
-                return id.endsWith(".multi");
+                return id.endsWith(".multi") || id.endsWith(".multi-location");
             }
         }
         throw new RuntimeException("Test with test id = " + testId + " is not present on server");
