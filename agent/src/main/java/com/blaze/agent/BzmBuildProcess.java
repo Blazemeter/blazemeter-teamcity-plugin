@@ -161,7 +161,6 @@ public class BzmBuildProcess implements BuildProcess {
             }
         }
 
-        File jtlDir = Utils.mkReportDir(this.buildRunCtxt, this.jtlPath);
         logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestStatus status;
         long testInitStart = System.currentTimeMillis();
@@ -183,13 +182,7 @@ public class BzmBuildProcess implements BuildProcess {
             boolean terminate = bzmBuild.stopMaster(masterId, logger);
             if (!terminate) {
                 downloadJUnitReport(masterId);
-                if (jtl) {
-                    try {
-                        bzmBuild.jtlReports(masterId, jtlDir);
-                    } catch (Exception je) {
-                        logger.error("Failed to download jtl-report: " + je.getMessage());
-                    }
-                }
+                downloadJTLReport(masterId);
             }
             httpl.close();
             return BuildFinishedStatus.INTERRUPTED;
@@ -218,13 +211,7 @@ public class BzmBuildProcess implements BuildProcess {
             if (!terminate) {
                 bzmBuild.waitNotActive(this.testId);
                 downloadJUnitReport(masterId);
-                if (jtl) {
-                    try {
-                        bzmBuild.jtlReports(masterId, jtlDir);
-                    } catch (Exception je) {
-                        logger.error("Failed to download jtl-report: " + je.getMessage());
-                    }
-                }
+                downloadJTLReport(masterId);
             }
             httpl.close();
             return BuildFinishedStatus.INTERRUPTED;
@@ -244,14 +231,7 @@ public class BzmBuildProcess implements BuildProcess {
         }
 
         downloadJUnitReport(masterId);
-
-        if (jtl) {
-            try {
-                bzmBuild.jtlReports(masterId, jtlDir);
-            } catch (Exception je) {
-                logger.error("Failed to download jtl-report: " + je.getMessage());
-            }
-        }
+        downloadJTLReport(masterId);
 
         httpl.close();
         return bzmBuild.validateCIStatus(masterId, logger);
@@ -264,4 +244,14 @@ public class BzmBuildProcess implements BuildProcess {
         }
     }
 
+    private void downloadJTLReport(String masterId) {
+        if (jtl) {
+            try {
+                File jtlDir = Utils.mkReportDir(this.buildRunCtxt, this.jtlPath);
+                bzmBuild.jtlReports(masterId, jtlDir);
+            } catch (Exception je) {
+                logger.error("Failed to download jtl-report: " + je.getMessage());
+            }
+        }
+    }
 }
