@@ -161,7 +161,6 @@ public class BzmBuildProcess implements BuildProcess {
             }
         }
 
-        File junitDir = Utils.mkReportDir(this.buildRunCtxt, this.junitPath);
         File jtlDir = Utils.mkReportDir(this.buildRunCtxt, this.jtlPath);
         logger.activityStarted("Check", DefaultMessagesInfo.BLOCK_TYPE_BUILD_STEP);
         TestStatus status;
@@ -183,9 +182,7 @@ public class BzmBuildProcess implements BuildProcess {
             logger.warning("Build was aborted by user");
             boolean terminate = bzmBuild.stopMaster(masterId, logger);
             if (!terminate) {
-                if (junit) {
-                    bzmBuild.junitXml(masterId, junitDir);
-                }
+                downloadJUnitReport(masterId);
                 if (jtl) {
                     try {
                         bzmBuild.jtlReports(masterId, jtlDir);
@@ -220,9 +217,7 @@ public class BzmBuildProcess implements BuildProcess {
             boolean terminate = bzmBuild.stopMaster(masterId, logger);
             if (!terminate) {
                 bzmBuild.waitNotActive(this.testId);
-                if (junit) {
-                    bzmBuild.junitXml(masterId, junitDir);
-                }
+                downloadJUnitReport(masterId);
                 if (jtl) {
                     try {
                         bzmBuild.jtlReports(masterId, jtlDir);
@@ -248,9 +243,7 @@ public class BzmBuildProcess implements BuildProcess {
             logger.message(testResult.toString());
         }
 
-        if (junit) {
-            bzmBuild.junitXml(masterId, junitDir);
-        }
+        downloadJUnitReport(masterId);
 
         if (jtl) {
             try {
@@ -263,4 +256,12 @@ public class BzmBuildProcess implements BuildProcess {
         httpl.close();
         return bzmBuild.validateCIStatus(masterId, logger);
     }
+
+    private void downloadJUnitReport(String masterId) {
+        if (junit) {
+            File junitDir = Utils.mkReportDir(this.buildRunCtxt, this.junitPath);
+            bzmBuild.junitXml(masterId, junitDir);
+        }
+    }
+
 }
