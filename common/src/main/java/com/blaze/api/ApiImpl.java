@@ -175,7 +175,7 @@ public class ApiImpl implements Api {
 
     private String executeRequest(Request request) throws IOException {
         String response = okhttp.newCall(request).execute().body().string();
-        logger.info("Received response: " + response);
+        logger.debug("Received response: " + response);
         return response;
     }
 
@@ -231,8 +231,7 @@ public class ApiImpl implements Api {
         String url = isCollection ?
                 urlManager.collectionStart(APP_KEY, testId) :
                 urlManager.testStart(APP_KEY, testId);
-
-
+        logger.info(isCollection ? ("Starting multi test with id: " + testId) : ("Starting test with id: " + testId));
         JSONObject response = executePostRequest(url, RequestBody.create(null, new byte[0]));
 
         try {
@@ -577,28 +576,18 @@ public class ApiImpl implements Api {
 
     @Override
     public boolean collection(String testId) {
-        boolean exists = false;
-        boolean collection = false;
-
         LinkedHashMultimap<String, String> tests = this.testsMultiMap();
         Set<Map.Entry<String, String>> entries = tests.entries();
         for (Map.Entry<String, String> e : entries) {
-            int point = e.getKey().indexOf(".");
-            if (point > 0 && testId.contains( e.getKey().substring(0, point))) {
-                collection = (e.getKey().substring(point + 1)).contains("multi");
-                if (e.getKey().substring(point + 1).contains("workspace")) {
-                    throw new RuntimeException("Please, select valid testId instead of workspace header");
+            String id = e.getKey();
+            if (testId.equals(id)) {
+                if (id.endsWith(".workspace")) {
+                    throw new RuntimeException("Please, select valid testId instead of workspace header (" + id + ")");
                 }
-                exists = true;
-            }
-            if (collection) {
-                break;
+                return id.endsWith(".multi");
             }
         }
-        if (!exists) {
-            throw new RuntimeException("Test with test id = " + testId + " is not present on server");
-        }
-        return collection;
+        throw new RuntimeException("Test with test id = " + testId + " is not present on server");
     }
 
     private String getCredentials() {
