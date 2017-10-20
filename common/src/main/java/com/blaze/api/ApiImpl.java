@@ -162,10 +162,8 @@ public class ApiImpl implements Api {
         return execute(createRequestBuilder(url).post(requestBody).build());
     }
 
-    private JSONObject execute (Request request) throws IOException {
-        JSONObject response = new JSONObject(okhttp.newCall(request).execute().body().string());
-        logger.info("Received json: " + response.toString());
-        return response;
+    private JSONObject execute(Request request) throws IOException {
+        return new JSONObject(executeRequest(request));
     }
 
     private Request.Builder createRequestBuilder(String url) {
@@ -173,6 +171,12 @@ public class ApiImpl implements Api {
                 addHeader(ACCEPT, APP_JSON).
                 addHeader(AUTHORIZATION, getCredentials()).
                 addHeader(CONTENT_TYPE, APP_JSON_UTF_8);
+    }
+
+    private String executeRequest(Request request) throws IOException {
+        String response = okhttp.newCall(request).execute().body().string();
+        logger.info("Received response: " + response);
+        return response;
     }
 
     @Override
@@ -460,15 +464,15 @@ public class ApiImpl implements Api {
 
     @Override
     public String retrieveJUNITXML(String sessionId) throws IOException {
+        logger.info("Trying to receive JUnit json for the sessionId = " + sessionId);
         String url = urlManager.retrieveJUNITXML(APP_KEY, sessionId);
-        return executeGetRequest(url).toString();
+        return executeRequest(createRequestBuilder(url).get().build());
     }
 
     @Override
     public JSONObject retrieveJtlZip(String sessionId) throws IOException {
-        logger.info("Trying to get jtl url for the sessionId=" + sessionId);
+        logger.info("Trying to receive jtl json for the sessionId = " + sessionId);
         String url = urlManager.retrieveJTLZIP(APP_KEY, sessionId);
-        logger.info("Trying to retrieve jtl json for the sessionId = " + sessionId);
         return executeGetRequest(url);
     }
 
