@@ -39,7 +39,7 @@
                                         <optgroup label="${value}">
                                     </c:when>
                                     <c:otherwise>
-                                        <props:option value="${value}" selected="false" title="${test.key}" id="${value}">
+                                        <props:option value="${test.key}" selected="false" title="${test.key}" id="${test.key}">
                                             ${value}
                                         </props:option>
                                     </c:otherwise>

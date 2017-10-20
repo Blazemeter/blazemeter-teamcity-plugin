@@ -47,7 +47,7 @@ public class Utils {
 
     public static String getTestId(String testId) {
         try {
-            return testId.substring(testId.lastIndexOf("(") + 1, testId.lastIndexOf("."));
+            return testId.substring(0, testId.lastIndexOf("."));
         } catch (Exception e) {
             return testId;
         }
