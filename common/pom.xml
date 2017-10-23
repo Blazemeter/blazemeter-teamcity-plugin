@@ -18,7 +18,33 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/com/blaze/utils/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources/com/blaze/utils</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>version.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
 
+                    </execution>
+                </executions>
+            </plugin>
             <plugin><!-- Can be removed again when required core is updated to 1.428+ -->
                 <groupId>com.cloudbees</groupId>
                 <artifactId>maven-license-plugin</artifactId>
