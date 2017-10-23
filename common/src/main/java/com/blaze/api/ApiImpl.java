@@ -549,7 +549,7 @@ public class ApiImpl implements Api {
         String url = urlManager.masterId(APP_KEY, masterId);
         try {
             JSONObject response = executePostRequest(url,
-                    RequestBody.create(TEXT, StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}")));
+                    RequestBody.create(TEXT, new JSONObject(StringEscapeUtils.escapeJson("{'" + JsonConstants.NOTE + "':'" + note + "'}")).toString()));
 
             if (response.get(JsonConstants.ERROR).equals(JSONObject.NULL)) {
                 return false;
