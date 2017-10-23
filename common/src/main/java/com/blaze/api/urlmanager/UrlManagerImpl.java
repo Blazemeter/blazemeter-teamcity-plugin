@@ -49,6 +49,13 @@ public class UrlManagerImpl implements UrlManager {
     }
 
     @Override
+    public String getTestLabel(String appKey, String testId) {
+        return serverUrl + V4 + UrlManager.TESTS + "/" + encode(testId, "testId", UrlManager.UTF_8)
+                + "?app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)
+                + CLIENT_IDENTIFICATION;
+    }
+
+    @Override
     public String masterStatus(String appKey, String masterId) {
         return serverUrl + V4 + UrlManager.MASTERS + "/" + encode(masterId, "masterId", UrlManager.UTF_8)
                 + "/status?events=false&app_key=" + encode(appKey, "appKey", UrlManager.UTF_8)

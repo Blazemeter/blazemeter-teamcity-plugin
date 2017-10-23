@@ -1,10 +1,17 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
+<jsp:useBean id="api" class="com.blaze.api.ApiImpl"/>
+<jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerImpl"/>
 
+<c:set target="${api}" property="apiKeyID" value="${propertiesBean.defaultProperties['API_KEY_ID']}"/>
+<c:set target="${api}" property="apiKeySecret" value="${propertiesBean.defaultProperties['API_KEY_SECRET']}"/>
+<c:set target="${url}" property="serverUrl" value="${propertiesBean.defaultProperties['BLAZEMETER_URL']}"/>
+
+<c:set target="${api}" property="urlManager" value="${url}"/>
 
 <div class="parameter">
-     BlazeMeter test: <strong><props:displayValue name="all_tests"/></strong>
+     BlazeMeter test: <strong>${api.getTestLabel(propertiesBean.properties['all_tests'])}</strong>
 </div>
 
 <div class="parameter">
