@@ -193,6 +193,25 @@ public class ApiImpl implements Api {
     }
 
     @Override
+    public String getTestLabel(String testId) {
+        try {
+            String numberTestId = extractNumberId(testId);
+            logger.info("Get test label for testId=" + numberTestId);
+            String url = urlManager.getTestLabel(APP_KEY, numberTestId);
+            JSONObject result = (JSONObject) executeGetRequest(url).get(JsonConstants.RESULT);
+            return result.getString(JsonConstants.NAME) + "(" + testId + ")";
+        } catch (Exception e) {
+            logger.warn("Error while getting test label for testId=" + testId, e);
+            return testId;
+        }
+    }
+
+    private String extractNumberId(String testId) {
+        int pos = testId.lastIndexOf('.');
+        return (pos > 0) ? testId.substring(0, pos) : testId;
+    }
+
+    @Override
     public TestStatus masterStatus(String masterId) {
         try {
             String url = urlManager.masterStatus(APP_KEY, masterId);

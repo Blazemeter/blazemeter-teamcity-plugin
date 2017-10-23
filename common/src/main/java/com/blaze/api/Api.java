@@ -42,6 +42,8 @@ public interface Api {
 
     TestStatus masterStatus(String id);
 
+    String getTestLabel(String testId);
+
     int getTestMasterStatusCode(String id);
 
     HashMap<String, String> startTest(String testId, boolean collection) throws IOException;

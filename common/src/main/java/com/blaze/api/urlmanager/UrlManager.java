@@ -31,7 +31,9 @@ public interface UrlManager {
 
     void setServerUrl(String serverUrl);
 
-    String masterStatus(String appKey, String testId);
+    String getTestLabel(String appKey, String testId);
+
+    String masterStatus(String appKey, String masterId);
 
     String tests(String appKey, int workspaceId);
 
