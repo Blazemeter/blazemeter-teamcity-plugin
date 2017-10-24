@@ -124,13 +124,13 @@ public class TestApiImpl {
     }
 
     @Test
-    public void accountId() {
+    public void accountId() throws IOException {
         blazemeterApi = new ApiImpl(TestConstants.TEST_API_ID_VALID, TestConstants.TEST_API_SECRET_VALID, TestConstants.mockedApiUrl);
         assertTrue(blazemeterApi.accounts().size() == 3);
     }
 
     @Test
-    public void workspaces() {
+    public void workspaces() throws IOException {
         blazemeterApi = new ApiImpl(TestConstants.TEST_API_ID_VALID, TestConstants.TEST_API_SECRET_VALID, TestConstants.mockedApiUrl);
         HashMap<Integer, String> ws = blazemeterApi.workspaces();
         assertEquals(1, ws.size());

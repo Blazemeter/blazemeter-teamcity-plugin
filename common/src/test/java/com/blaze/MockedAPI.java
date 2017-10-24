@@ -387,6 +387,30 @@ public class MockedAPI {
                 .respond(
                         response().withHeader(Api.APP_JSON)
                                 .withStatusCode(200).withBody(b));
+        mockServer.when(
+                request()
+                        .withMethod("GET")
+                        .withPath(expectedPath)
+                        .withQueryStringParameter("accountId", "9323")
+                        .withHeader(Api.ACCEPT, Api.APP_JSON)
+                        .withHeader(Api.AUTHORIZATION, c),
+                unlimited()
+        )
+                .respond(
+                        response().withHeader(Api.APP_JSON)
+                                .withStatusCode(200).withBody(b));
+        mockServer.when(
+                request()
+                        .withMethod("GET")
+                        .withPath(expectedPath)
+                        .withQueryStringParameter("accountId", "9324")
+                        .withHeader(Api.ACCEPT, Api.APP_JSON)
+                        .withHeader(Api.AUTHORIZATION, c),
+                unlimited()
+        )
+                .respond(
+                        response().withHeader(Api.APP_JSON)
+                                .withStatusCode(200).withBody(b));
     }
 
 
