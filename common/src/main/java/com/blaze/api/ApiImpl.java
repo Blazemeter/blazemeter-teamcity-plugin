@@ -19,6 +19,7 @@ import com.blaze.api.urlmanager.UrlManagerImpl;
 import com.blaze.runner.Constants;
 import com.blaze.runner.JsonConstants;
 import com.blaze.runner.TestStatus;
+import com.blaze.utils.Utils;
 import com.google.common.collect.LinkedHashMultimap;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
@@ -195,7 +196,7 @@ public class ApiImpl implements Api {
     @Override
     public String getTestLabel(String testId) {
         try {
-            String numberTestId = extractNumberId(testId);
+            String numberTestId = Utils.getTestId(testId);
             logger.info("Get test label for testId=" + numberTestId);
             String url = urlManager.getTestLabel(APP_KEY, numberTestId);
             JSONObject result = (JSONObject) executeGetRequest(url).get(JsonConstants.RESULT);
@@ -204,11 +205,6 @@ public class ApiImpl implements Api {
             logger.warn("Error while getting test label for testId=" + testId, e);
             return testId;
         }
-    }
-
-    private String extractNumberId(String testId) {
-        int pos = testId.lastIndexOf('.');
-        return (pos > 0) ? testId.substring(0, pos) : testId;
     }
 
     @Override
