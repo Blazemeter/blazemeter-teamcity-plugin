@@ -256,7 +256,8 @@ public class ApiImpl implements Api {
         try {
             JSONObject result = (JSONObject) response.get(JsonConstants.RESULT);
             startResp.put(JsonConstants.ID, String.valueOf(result.get(JsonConstants.ID)));
-            startResp.put(JsonConstants.TEST_ID, isCollection ? String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
+            startResp.put(JsonConstants.TEST_ID, isCollection ?
+                    String.valueOf(result.get(JsonConstants.TEST_COLLECTION_ID)) :
                     String.valueOf(result.get(JsonConstants.TEST_ID)));
             startResp.put(JsonConstants.NAME, result.getString(JsonConstants.NAME));
         } catch (Exception e) {
@@ -544,7 +545,6 @@ public class ApiImpl implements Api {
                 }
             } catch (Exception e) {
                 logger.info("Failed to check if test=" + testId + " is active", e);
-                return false; // TODO: Why here return false?? If at the next workspace will be active test we skip it!!!
             }
         }
         return false;

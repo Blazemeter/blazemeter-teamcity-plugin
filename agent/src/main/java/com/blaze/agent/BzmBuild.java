@@ -77,11 +77,14 @@ public class BzmBuild {
         return true;
     }
 
-    public String startTest(String testId, BuildProgressLogger logger) throws IOException, JSONException {
+    public String startTest(String testId) throws IOException, JSONException {
         try {
             boolean collection = api.collection(testId);
             String testId_num = Utils.getTestId(testId);
             HashMap<String, String> startTestResp = api.startTest(testId_num, collection);
+            if (startTestResp.containsKey(JsonConstants.ERROR)) {
+                logger.error("Getting error while starting BlazeMeter test: " + startTestResp.get(JsonConstants.ERROR));
+            }
             this.masterId = startTestResp.get(JsonConstants.ID);
         } catch (Exception e) {
             logger.error("Exception while starting BlazeMeter Test: " + e.getMessage());
