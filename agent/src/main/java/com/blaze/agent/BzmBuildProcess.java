@@ -128,7 +128,7 @@ public class BzmBuildProcess implements BuildProcess {
     @SuppressWarnings("static-access")
     @Override
     public BuildFinishedStatus waitFor() throws RunBuildException {
-        logger.message("Attempting to start test with id: " + testId);
+
 
         String masterId = null;
         try {

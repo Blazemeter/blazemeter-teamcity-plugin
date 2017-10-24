@@ -79,6 +79,7 @@ public class BzmBuild {
 
     public String startTest(String testId) throws IOException, JSONException {
         try {
+            logger.message("Attempting to start test with id: " + api.getTestLabel(testId));
             boolean collection = api.collection(testId);
             String testId_num = Utils.getTestId(testId);
             HashMap<String, String> startTestResp = api.startTest(testId_num, collection);
