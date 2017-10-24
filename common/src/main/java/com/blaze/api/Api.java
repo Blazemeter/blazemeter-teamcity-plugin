@@ -88,9 +88,9 @@ public interface Api {
 
     boolean verifyCredentials();
 
-    HashMap<Integer, String> accounts();
+    HashMap<Integer, String> accounts() throws IOException;
 
-    HashMap<Integer, String> workspaces();
+    HashMap<Integer, String> workspaces() throws IOException ;
 
     Map<String, Collection<String>> getTestsMultiMap();
 

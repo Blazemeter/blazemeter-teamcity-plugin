@@ -125,7 +125,6 @@ public class ApiImpl implements Api {
         } catch (Exception ex) {
             logger.warn("ERROR Instantiating HTTPClient. Exception received: ", ex);
         }
-
     }
 
     public ApiImpl(String apiKeyID, String apiKeySecret, String blazeMeterUrl) {
@@ -305,18 +304,19 @@ public class ApiImpl implements Api {
         LinkedHashMultimap<String, String> testListOrdered = LinkedHashMultimap.create();
 
 
-        HashMap<Integer, String> ws = this.workspaces();
-        logger.info("Getting tests...");
-        Set<Integer> wsk = ws.keySet();
-        for (Integer k : wsk) {
-            String wsn = ws.get(k);
-            String url = urlManager.tests(APP_KEY, k);
-            try {
+        try {
+            HashMap<Integer, String> ws = this.workspaces();
+            logger.info("Getting tests...");
+            Set<Integer> wsk = ws.keySet();
+            for (Integer k : wsk) {
+                String wsn = ws.get(k);
+                String url = urlManager.tests(APP_KEY, k);
 
                 JSONObject response = executeGetRequest(url);
                 JSONArray result = null;
                 if (response.has(JsonConstants.ERROR) && (response.get(JsonConstants.RESULT).equals(JSONObject.NULL)) &&
                         (((JSONObject) response.get(JsonConstants.ERROR)).getInt(JsonConstants.CODE) == 401)) {
+                    testListOrdered.put("", "Error while getting tests for workspace(" + k + "):" + response.get(JsonConstants.ERROR));
                     return testListOrdered;
                 }
 
@@ -362,12 +362,12 @@ public class ApiImpl implements Api {
                 for (Map.Entry<String, String> entry : list) {
                     testListOrdered.put(entry.getKey(), entry.getValue());
                 }
-
-            } catch (Exception e) {
-                logger.warn("Exception while getting tests: ", e);
-                logger.warn("Check connection/proxy settings");
-                testListOrdered.put(Constants.CHECK_SETTINGS, Constants.CHECK_SETTINGS);
             }
+
+        } catch (Exception e) {
+            logger.warn("Exception while getting tests: ", e);
+            logger.warn("Check connection/proxy settings");
+            testListOrdered.put("", Constants.CHECK_SETTINGS + " (Caught exception: " + e.getMessage() + ")");
         }
 
         return testListOrdered;
@@ -426,38 +426,30 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public HashMap<Integer, String> accounts() {
+    public HashMap<Integer, String> accounts() throws IOException {
         String url = urlManager.accounts(APP_KEY);
         HashMap<Integer, String> acs = new HashMap<>();
-        try {
-            JSONArray result = executeGetRequest(url).getJSONArray(JsonConstants.RESULT);
-            for (int i = 0; i < result.length(); i++) {
-                JSONObject a = result.getJSONObject(i);
-                acs.put(a.getInt(JsonConstants.ID), a.getString(JsonConstants.NAME));
-            }
-        } catch (Exception e) {
-            logger.error("Failed to get accounts: ", e);
+        JSONArray result = executeGetRequest(url).getJSONArray(JsonConstants.RESULT);
+        for (int i = 0; i < result.length(); i++) {
+            JSONObject a = result.getJSONObject(i);
+            acs.put(a.getInt(JsonConstants.ID), a.getString(JsonConstants.NAME));
         }
         return acs;
     }
 
     @Override
-    public HashMap<Integer, String> workspaces() {
-        HashMap<Integer, String> acs = this.accounts();
+    public HashMap<Integer, String> workspaces() throws IOException {
+        HashMap<Integer, String> acs = accounts();
         HashMap<Integer, String> ws = new HashMap<>();
 
         Set<Integer> keys = acs.keySet();
         for (Integer key : keys) {
             String url = urlManager.workspaces(APP_KEY, key);
 
-            try {
-                JSONArray result = executeGetRequest(url).getJSONArray(JsonConstants.RESULT);
-                for (int i = 0; i < result.length(); i++) {
-                    JSONObject s = result.getJSONObject(i);
-                    ws.put(s.getInt(JsonConstants.ID), s.getString(JsonConstants.NAME));
-                }
-            } catch (Exception e) {
-                logger.error("Failed to get workspaces: " + e);
+            JSONArray result = executeGetRequest(url).getJSONArray(JsonConstants.RESULT);
+            for (int i = 0; i < result.length(); i++) {
+                JSONObject s = result.getJSONObject(i);
+                ws.put(s.getInt(JsonConstants.ID), s.getString(JsonConstants.NAME));
             }
         }
         return ws;
@@ -518,7 +510,14 @@ public class ApiImpl implements Api {
 
     @Override
     public boolean active(String testId) {
-        HashMap<Integer, String> ws = this.workspaces();
+        HashMap<Integer, String> ws;
+        try {
+            ws = workspaces();
+        } catch (Exception e) {
+            logger.error("Failed to get workspaces: " + e);
+            return false;
+        }
+
         Set<Integer> wsk = ws.keySet();
         for (Integer k : wsk) {
             String url = urlManager.activeTests(APP_KEY, k);
