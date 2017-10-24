@@ -53,12 +53,12 @@ public class Utils {
         }
     }
 
-    public static File mkReportDir(BuildRunnerContext context, String reportDir) {
+    public static File mkReportDir(String defaultRootDir, String reportDir) {
         File reportFile = null;
         if (StringUtil.isNotEmpty(reportDir) && (reportDir.startsWith("/") | reportDir.matches("(^[a-zA-Z][:][\\\\].+)"))) {
             reportFile = new File(FilenameUtils.normalize(reportDir));
         } else {
-            reportFile = new File(FilenameUtils.normalize(context.getWorkingDirectory()
+            reportFile = new File(FilenameUtils.normalize(defaultRootDir
                     + "/" + (reportDir == null ? "" : reportDir)));
         }
         try {
@@ -66,9 +66,9 @@ public class Utils {
                 FileUtils.forceMkdir(reportFile);
             }
         } catch (FileNotFoundException fnfe) {
-            reportFile = new File(context.getWorkingDirectory(), reportDir);
+            reportFile = new File(defaultRootDir, reportDir);
         } catch (IOException e) {
-            reportFile = new File(context.getWorkingDirectory(), reportDir);
+            reportFile = new File(defaultRootDir, reportDir);
         } finally {
             return reportFile;
         }

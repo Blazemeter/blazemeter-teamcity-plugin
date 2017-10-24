@@ -239,7 +239,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     private void downloadJUnitReport(String masterId) {
         if (junit) {
-            File junitDir = Utils.mkReportDir(this.buildRunCtxt, this.junitPath);
+            File junitDir = Utils.mkReportDir(getDefaultReportDir(), this.junitPath);
             bzmBuild.junitXml(masterId, junitDir);
         }
     }
@@ -247,11 +247,17 @@ public class BzmBuildProcess implements BuildProcess {
     private void downloadJTLReport(String masterId) {
         if (jtl) {
             try {
-                File jtlDir = Utils.mkReportDir(this.buildRunCtxt, this.jtlPath);
+                File jtlDir = Utils.mkReportDir(getDefaultReportDir(), this.jtlPath);
                 bzmBuild.jtlReports(masterId, jtlDir);
             } catch (Exception je) {
                 logger.error("Failed to download jtl-report: " + je.getMessage());
             }
         }
+    }
+
+    private String getDefaultReportDir() {
+        return this.agent.getConfiguration().getAgentLogsDirectory().getAbsolutePath() + "/"
+                + agentRunningBuild.getProjectName() + "/"
+                + agentRunningBuild.getBuildNumber();
     }
 }
