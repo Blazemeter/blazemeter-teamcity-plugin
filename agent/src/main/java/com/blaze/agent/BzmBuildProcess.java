@@ -132,7 +132,7 @@ public class BzmBuildProcess implements BuildProcess {
 
         String masterId = null;
         try {
-            masterId = bzmBuild.startTest(testId, logger);
+            masterId = bzmBuild.startTest(testId);
         } catch (Exception e) {
             logger.error("Failed to start test: testId = " + this.testId + "->" + e.getMessage());
         }
