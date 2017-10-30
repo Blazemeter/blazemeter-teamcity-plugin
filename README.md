@@ -12,6 +12,8 @@ Plugins adds an additional build step to TeamCity, which can be used in CI&CD pi
 - [Changelog](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Changelog)
 - [Stop terminate BlazeMeter test from plugin](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Stop-terminate-BlazeMeter-test-from-plugin)
 
+[Download latest version](https://s3.amazonaws.com/bzmpub/TeamCity/BlazeMeter.zip)
+
 
 
 
