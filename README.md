@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cd802083755d41d59c0b89b92c509349)](https://www.codacy.com/app/dzmitrykashlach/blazemeter-teamcity-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Blazemeter/blazemeter-teamcity-plugin&amp;utm_campaign=Badge_Grade)
 BlazeMeter has a plugin to TeamCity to simplify your load testing needs.  
 Plugins adds an additional build step to TeamCity, which can be used in CI&CD pipeline.
 
