@@ -1,9 +1,16 @@
 # Compiled source #
 ###################
 *.class
+.classpath
+.project
 
 # Packages #
+*.jar
+*.war
+*.ear
 *.zip
+*.tar.gz
+*.rar
 
 # Logs and databases #
 *.log
@@ -13,5 +20,7 @@ bin/
 dist/
 out/
 temp/
-.classpath
-.project
+*/target/
+*/.idea/
+/.idea/
+*.iml
