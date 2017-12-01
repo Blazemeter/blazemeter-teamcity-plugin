@@ -13,12 +13,8 @@ public class TCBlazeMeterUtils extends BlazeMeterUtils {
 
     public static String TEAM_CITY_PLUGIN_INFO = APP_KEY + CLIENT_IDENTIFICATION;
 
-    public TCBlazeMeterUtils(String apiKeyId, String apiKeySecret, String address, String dataAddress, UserNotifier notifier, Logger logger) {
-        super(apiKeyId, apiKeySecret, address, dataAddress, notifier, logger);
-    }
-
-    public TCBlazeMeterUtils(String address, String dataAddress, UserNotifier notifier, Logger logger) {
-        super(address, dataAddress, notifier, logger);
+    public TCBlazeMeterUtils(String apiKeyId, String apiKeySecret, String address, UserNotifier notifier, Logger logger) {
+        super(apiKeyId, apiKeySecret, address, "data_address", notifier, logger);
     }
 
     @Override
