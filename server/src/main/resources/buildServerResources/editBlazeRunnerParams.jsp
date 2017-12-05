@@ -2,51 +2,34 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
-<jsp:useBean id="api" class="com.blaze.api.ApiImpl"/>
-<jsp:useBean id="url" class="com.blaze.api.urlmanager.UrlManagerImpl"/>
 
-<c:set target="${api}" property="apiKeyID" value="${propertiesBean.defaultProperties['API_KEY_ID']}"/>
-<c:set target="${api}" property="apiKeySecret" value="${propertiesBean.defaultProperties['API_KEY_SECRET']}"/>
-<c:set target="${url}" property="serverUrl" value="${propertiesBean.defaultProperties['BLAZEMETER_URL']}"/>
+<jsp:useBean id="bzmUtils" class="com.blaze.runner.utils.BzmServerUtils"/>
+<c:set target="${bzmUtils}" property="apiKeyId" value="${propertiesBean.defaultProperties['API_KEY_ID']}"/>
+<c:set target="${bzmUtils}" property="apiKeySecret" value="${propertiesBean.defaultProperties['API_KEY_SECRET']}"/>
+<c:set target="${bzmUtils}" property="address" value="${propertiesBean.defaultProperties['BLAZEMETER_URL']}"/>
 
-<c:set target="${api}" property="urlManager" value="${url}"/>
+<jsp:useBean id="testUtils" class="com.blaze.runner.utils.TestsUtils"/>
+<c:set target="${testUtils}" property="utils" value="${bzmUtils}"/>
 
-<c:set var="isFirstOptionItem" value="true"/>
 <l:settingsGroup title="BlazeMeter">
     <tr>
         <th><label>BlazeMeter tests:</label></th>
         <td>
-
             <props:selectProperty name="all_tests" className="longField">
-                <c:set var="testsCollection" value="${api.testsMultiMap}"/>
+                <c:set var="testsMap" value="${testUtils.getTests()}"/>
                 <c:choose>
-                    <c:when test="${testsCollection.size() == 0}">
+                    <c:when test="${testsMap.size() == 0}">
                         <props:option value="">No tests for this account</props:option>
                     </c:when>
                     <c:otherwise>
-                        <c:forEach var="test" items="${testsCollection}">
-                            <c:forEach var="value" items="${test.value}">
-                                <c:choose>
-                                    <c:when test="${test.key.contains('.workspace')}">
-                                        <c:choose>
-                                            <c:when test="${isFirstOptionItem}">
-                                                <c:set var="isFirstOptionItem" value="false"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                </optgroup>
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <optgroup label="${value}">
-                                    </c:when>
-                                    <c:otherwise>
-                                        <props:option value="${test.key}" selected="false" title="${test.key}" id="${test.key}">
-                                            ${value}
-                                        </props:option>
-                                    </c:otherwise>
-                                </c:choose>
+                        <c:forEach var="workspace" items="${testsMap.keySet()}">
+                            <optgroup label="${workspace.getName()}(${workspace.getId()})"/>
+                            <c:forEach var="test" items="${testsMap.get(workspace)}">
+                               <props:option value="${test.getId()}.${test.getTestType()}" selected="false" id="${test.getId()}.${test.getTestType()}">
+                                            ${test.getName()}(${test.getId()}.${test.getTestType()})
+                               </props:option>
                             </c:forEach>
                         </c:forEach>
-                        </optgroup>
                     </c:otherwise>
                 </c:choose>
             </props:selectProperty>
