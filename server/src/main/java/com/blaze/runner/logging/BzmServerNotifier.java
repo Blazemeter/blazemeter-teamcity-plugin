@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of `com.blazemeter.api.logging.UserNotifier`
  */
-public class BzmUserNotifier implements UserNotifier {
+public class BzmServerNotifier implements UserNotifier {
 
     private Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
