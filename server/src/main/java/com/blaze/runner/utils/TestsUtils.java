@@ -70,7 +70,6 @@ public class TestsUtils {
                 addTestsForAccount(account, result);
             }
         } catch (IOException ex) {
-            utils.getNotifier().notifyAbout("Failed to get accounts. Reason is: " + ex.getMessage());
             utils.getLogger().error("Failed to get accounts. Reason is: " + ex.getMessage(), ex);
         }
         return result;
