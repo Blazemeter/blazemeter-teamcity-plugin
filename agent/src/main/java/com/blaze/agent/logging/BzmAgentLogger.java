@@ -2,6 +2,7 @@ package com.blaze.agent.logging;
 
 
 import com.blaze.runner.Constants;
+import jetbrains.buildServer.RunBuildException;
 
 import java.io.IOException;
 import java.util.logging.FileHandler;
@@ -15,8 +16,12 @@ public class BzmAgentLogger implements com.blazemeter.api.logging.Logger {
     private Logger logger = Logger.getLogger("bzm-log");
     private FileHandler fileHandler;
 
-    public BzmAgentLogger(String logFile) throws IOException {
-        fileHandler = new FileHandler(logFile);
+    public BzmAgentLogger(String logFile) throws RunBuildException {
+        try {
+            fileHandler = new FileHandler(logFile);
+        } catch (IOException ex) {
+            throw new RunBuildException("Cannot create file handler for log file", ex);
+        }
         logger.addHandler(fileHandler);
         logger.setUseParentHandlers(false);
     }
