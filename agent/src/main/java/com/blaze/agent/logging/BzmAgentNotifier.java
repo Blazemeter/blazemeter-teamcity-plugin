@@ -15,7 +15,17 @@ public class BzmAgentNotifier implements UserNotifier {
     }
 
     @Override
-    public void notifyAbout(String s) {
-        logger.message(s);
+    public void notifyInfo(String info) {
+        logger.message(info);
+    }
+
+    @Override
+    public void notifyWarning(String warning) {
+        logger.warning(warning);
+    }
+
+    @Override
+    public void notifyError(String error) {
+        logger.error(error);
     }
 }
