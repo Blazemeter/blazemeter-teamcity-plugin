@@ -70,7 +70,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     private String createLogFile() throws RunBuildException {
         try {
-            File logFile = new File(createArtifactDirectory(), "bzm-log.log");
+            File logFile = new File(createArtifactDirectory(), "bzm-log");
             FileUtils.touch(logFile);
             logFile.setWritable(true);
             return logFile.getAbsolutePath();
@@ -107,9 +107,7 @@ public class BzmBuildProcess implements BuildProcess {
         String junitPath = params.get(Constants.SETTINGS_JUNIT_PATH);
         String jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
 
-        String workspace = getDefaultReportDir();
-        logger.error("WSP: " + workspace);
-        return new CiPostProcess(isDownloadJtl, isDownloadJunit, junitPath, jtlPath, workspace, utils.getNotifier(), utils.getLogger());
+        return new CiPostProcess(isDownloadJtl, isDownloadJunit, junitPath, jtlPath, getDefaultReportDir(), utils.getNotifier(), utils.getLogger());
     }
 
 
@@ -118,6 +116,7 @@ public class BzmBuildProcess implements BuildProcess {
         if (build != null && master != null) {
             build.doPostProcess(master);
         }
+        closeLogger();
     }
 
     @Override
@@ -146,21 +145,25 @@ public class BzmBuildProcess implements BuildProcess {
     @Override
     public BuildFinishedStatus waitFor() throws RunBuildException {
         try {
-            build.waitForFinish(master);
-        } catch (InterruptedException e) {
-            interrupted = true;
-            utils.getLogger().warn("Wait for finish has been interrupted", e);
-            logger.message("Build has been interrupted");
-            build.doPostProcess(master);
-            return BuildFinishedStatus.INTERRUPTED;
-        } catch (IOException e) {
-            utils.getLogger().warn("Caught exception while waiting for build", e);
-            logger.message("Build has been interrupted");
-            return BuildFinishedStatus.FINISHED_FAILED;
-        }
+            try {
+                build.waitForFinish(master);
+            } catch (InterruptedException e) {
+                interrupted = true;
+                utils.getLogger().warn("Wait for finish has been interrupted", e);
+                logger.message("Build has been interrupted");
+                build.doPostProcess(master);
+                return BuildFinishedStatus.INTERRUPTED;
+            } catch (IOException e) {
+                utils.getLogger().warn("Caught exception while waiting for build", e);
+                logger.message("Build has been interrupted");
+                return BuildFinishedStatus.FINISHED_FAILED;
+            }
 
-        finished = true;
-        return mappedBuildResult(build.doPostProcess(master));
+            finished = true;
+            return mappedBuildResult(build.doPostProcess(master));
+        } finally {
+            closeLogger();
+        }
     }
 
     private BuildFinishedStatus mappedBuildResult(BuildResult buildResult) {
