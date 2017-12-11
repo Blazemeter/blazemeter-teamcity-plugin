@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Implementation of `com.blazemeter.api.logging.Logger`
@@ -22,8 +23,10 @@ public class BzmAgentLogger implements com.blazemeter.api.logging.Logger {
         } catch (IOException ex) {
             throw new RunBuildException("Cannot create file handler for log file", ex);
         }
+        fileHandler.setFormatter(new SimpleFormatter());
         logger.addHandler(fileHandler);
         logger.setUseParentHandlers(false);
+        logger.setLevel(Level.FINE);
     }
 
     public void close() {
