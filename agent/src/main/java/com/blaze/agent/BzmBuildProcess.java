@@ -45,6 +45,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     private boolean finished = false;
     private boolean interrupted = false;
+    private boolean hasReport = false;
     private final BlazeMeterUtils utils;
     private final CiBuild build;
     private final BuildProgressLogger logger;
@@ -113,10 +114,19 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void interrupt() {
+        interrupted = true;
         if (build != null && master != null) {
-            build.doPostProcess(master);
+            try {
+                logger.message("Build has been interrupted");
+                hasReport = build.interrupt(master);
+                if (hasReport) {
+                    logger.message("Get reports after interrupt");
+                    build.doPostProcess(master);
+                }
+            } catch (IOException e) {
+                logger.error("Failed to interrupt build " + e.getMessage());
+            }
         }
-        closeLogger();
     }
 
     @Override
@@ -151,7 +161,7 @@ public class BzmBuildProcess implements BuildProcess {
                 interrupted = true;
                 utils.getLogger().warn("Wait for finish has been interrupted", e);
                 logger.message("Build has been interrupted");
-                build.doPostProcess(master);
+                interrupt();
                 return BuildFinishedStatus.INTERRUPTED;
             } catch (IOException e) {
                 utils.getLogger().warn("Caught exception while waiting for build", e);
@@ -159,6 +169,9 @@ public class BzmBuildProcess implements BuildProcess {
                 return BuildFinishedStatus.FINISHED_FAILED;
             }
 
+            if (interrupted) {
+                return BuildFinishedStatus.INTERRUPTED;
+            }
             finished = true;
             return mappedBuildResult(build.doPostProcess(master));
         } finally {
