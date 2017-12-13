@@ -21,7 +21,6 @@ public interface Constants {
     String API_KEY_ID = "API_KEY_ID";
     String API_KEY_SECRET = "API_KEY_SECRET";
     String BLAZEMETER_URL = "BLAZEMETER_URL";
-    String UNKNOWN_TYPE = "unknown_type";
 
     String SETTINGS_ALL_TESTS_ID = "all_tests";
     String SETTINGS_JUNIT = "blazeMeterPlugin.request.junit";
@@ -31,21 +30,4 @@ public interface Constants {
     String SETTINGS_NOTES = "blazeMeterPlugin.notes";
     String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
     String BZM_PROPERTIES_FILE = "/userKeyFile.properties";
-
-    String REPORT_URL = "reportUrl_";
-    String REPORT_URL_F = "reportUrl";
-    String PROBLEM_WITH_VALIDATING = "Problem with validating testId, serverUrl, userKey";
-    String PROXY_HOST = "http.proxyHost";
-    String PROXY_PORT = "http.proxyPort";
-    String PROXY_USER = "http.proxyUser";
-    String PROXY_PASS = "http.proxyPass";
-    String HTTP_LOG = "http-log";
-    String THREE_DOTS = "...";
-
-    String NO_TESTS = "No tests for this api-key";
-    String FILL_API_KEY = "Please, enter api-key";
-    String INCORRECT_KEY = "Incorrect key";
-    String CHECK_ACCOUNT = "Please, check your account";
-    String CHECK_SETTINGS="Check blazemeter & proxy-settings";
-    String EMPTY_API_KEY = "Empty api-key";
 }
