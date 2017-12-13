@@ -19,8 +19,6 @@ import java.util.Properties;
 
 public class Utils {
 
-    private Utils() {
-    }
 
     public static String version() {
         Properties props = new Properties();
