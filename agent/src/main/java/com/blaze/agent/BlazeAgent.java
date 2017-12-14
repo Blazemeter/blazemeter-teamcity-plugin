@@ -14,6 +14,7 @@
 
 package com.blaze.agent;
 
+import com.blaze.runner.Constants;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentBuildRunner;
 import jetbrains.buildServer.agent.AgentBuildRunnerInfo;
@@ -22,8 +23,7 @@ import jetbrains.buildServer.agent.BuildAgent;
 import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-
-import com.blaze.runner.Constants;
+import org.jetbrains.annotations.NotNull;
 
 public class BlazeAgent implements AgentBuildRunner {
 
@@ -36,7 +36,8 @@ public class BlazeAgent implements AgentBuildRunner {
     }
 
     @Override
-    public BuildProcess createBuildProcess(AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext)
+    @NotNull
+    public BuildProcess createBuildProcess(@NotNull AgentRunningBuild agentRunningBuild, @NotNull BuildRunnerContext buildRunnerContext)
             throws RunBuildException {
 
         buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext);
@@ -45,16 +46,18 @@ public class BlazeAgent implements AgentBuildRunner {
     }
 
     @Override
+    @NotNull
     public AgentBuildRunnerInfo getRunnerInfo() {
         runnerInfo = new AgentBuildRunnerInfo() {
 
             @Override
+            @NotNull
             public String getType() {
                 return Constants.RUNNER_TYPE;
             }
 
             @Override
-            public boolean canRun(BuildAgentConfiguration buildAgentConfig) {
+            public boolean canRun(@NotNull BuildAgentConfiguration buildAgentConfig) {
                 return true;
             }
         };
