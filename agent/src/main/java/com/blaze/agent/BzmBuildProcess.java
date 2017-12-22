@@ -18,8 +18,10 @@ import com.blaze.agent.logging.BzmAgentLogger;
 import com.blaze.agent.logging.BzmAgentNotifier;
 import com.blaze.runner.Constants;
 import com.blaze.utils.TCBzmUtils;
+import com.blaze.utils.TestDetector;
 import com.blaze.utils.Utils;
 import com.blazemeter.api.explorer.Master;
+import com.blazemeter.api.explorer.test.AbstractTest;
 import com.blazemeter.api.logging.Logger;
 import com.blazemeter.api.utils.BlazeMeterUtils;
 import com.blazemeter.ciworkflow.BuildResult;
@@ -99,7 +101,32 @@ public class BzmBuildProcess implements BuildProcess {
         String properties = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
         String notes = params.get(Constants.SETTINGS_NOTES);
 
-        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
+        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params)) {
+            @Override
+            public Master start() throws IOException {
+                notifier.notifyInfo("CiBuild is started.");
+                AbstractTest test = TestDetector.detectTest(utils, testId);
+                if (test == null) {
+                    logger.error("Failed to detect test type. Test with id=" + testId + " not found.");
+                    notifier.notifyError("Failed to detect test type. Test with id = " + testId + " not found.");
+                    return null;
+                }
+                notifier.notifyInfo(String.format("Start test id : %s, name : %s", test.getId(), test.getName()));
+                return startTest(test);
+            }
+
+            private Master startTest(AbstractTest test) throws IOException {
+                Master master = test.start();
+                notifier.notifyInfo("Test has been started successfully. Master id=" + master.getId());
+
+                publicReport = master.getPublicReport();
+                notifier.notifyInfo("Test report will be available at " + publicReport);
+
+                master.postNotes(notes);
+                master.postProperties(properties);
+                return master;
+            }
+        };
     }
 
     private CiPostProcess createCiPostProcess(Map<String, String> params) {
@@ -145,7 +172,7 @@ public class BzmBuildProcess implements BuildProcess {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
             master = build.start();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             closeLogger();
             throw new RunBuildException("Failed to start build", e);
         }
