@@ -156,7 +156,12 @@ public class BzmBuildProcess implements BuildProcess {
     public BuildFinishedStatus waitFor() throws RunBuildException {
         try {
             try {
-                build.waitForFinish(master);
+                if (master != null) {
+                    build.waitForFinish(master);
+                } else {
+                    logger.error("Failed to start test");
+                    return BuildFinishedStatus.FINISHED_FAILED;
+                }
             } catch (InterruptedException e) {
                 interrupted = true;
                 utils.getLogger().warn("Wait for finish has been interrupted", e);
