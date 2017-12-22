@@ -48,7 +48,7 @@ public class TestsUtils {
         logger.info("Get test label for testId=" + numberTestId);
         try {
             AbstractTest test = TestDetector.detectTest(utils, numberTestId);
-            return test.getName();
+            return test.getName() + "(" + testId + ")";
         } catch (Throwable e) {
             logger.warn("Failed to get Test Label", e);
             return "Failed to get Test Label. " + e.getMessage();
