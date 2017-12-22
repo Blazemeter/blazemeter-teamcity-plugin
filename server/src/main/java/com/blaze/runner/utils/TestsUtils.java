@@ -1,5 +1,6 @@
 package com.blaze.runner.utils;
 
+import com.blaze.utils.TestDetector;
 import com.blaze.utils.Utils;
 import com.blazemeter.api.explorer.Account;
 import com.blazemeter.api.explorer.User;
@@ -7,7 +8,6 @@ import com.blazemeter.api.explorer.Workspace;
 import com.blazemeter.api.explorer.test.AbstractTest;
 import com.blazemeter.api.explorer.test.MultiTest;
 import com.blazemeter.api.explorer.test.SingleTest;
-import com.blazemeter.api.explorer.test.TestDetector;
 import com.blazemeter.api.logging.Logger;
 
 import java.io.IOException;
@@ -49,9 +49,9 @@ public class TestsUtils {
         try {
             AbstractTest test = TestDetector.detectTest(utils, numberTestId);
             return test.getName();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             logger.warn("Failed to get Test Label", e);
-            return testId;
+            return "Failed to get Test Label. " + e.getMessage();
         }
     }
 
@@ -69,8 +69,11 @@ public class TestsUtils {
             for (Account account : accounts) {
                 addTestsForAccount(account, result);
             }
-        } catch (IOException ex) {
-            utils.getLogger().error("Failed to get accounts. Reason is: " + ex.getMessage(), ex);
+        } catch (Throwable ex) {
+            utils.getLogger().error("Failed to get tests. Reason is: " + ex.getMessage(), ex);
+            if (result.isEmpty()) {
+                result.put(new Workspace(utils, ex.getMessage(), "Failed to get tests. "), Collections.<AbstractTest>emptyList());
+            }
         }
         return result;
     }
