@@ -74,6 +74,7 @@ public class TestsUtils {
             utils.getLogger().error("Failed to get tests. Reason is: " + ex.getMessage(), ex);
             if (result.isEmpty()) {
                 result.put(new Workspace(utils, ex.getMessage(), "Failed to get tests. "), Collections.<AbstractTest>emptyList());
+                return result;
             }
         }
         return checkForEmptyTests(result);
