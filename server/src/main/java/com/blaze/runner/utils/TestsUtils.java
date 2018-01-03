@@ -1,6 +1,5 @@
 package com.blaze.runner.utils;
 
-import com.blaze.utils.TestDetector;
 import com.blaze.utils.Utils;
 import com.blazemeter.api.explorer.Account;
 import com.blazemeter.api.explorer.User;
@@ -8,6 +7,7 @@ import com.blazemeter.api.explorer.Workspace;
 import com.blazemeter.api.explorer.test.AbstractTest;
 import com.blazemeter.api.explorer.test.MultiTest;
 import com.blazemeter.api.explorer.test.SingleTest;
+import com.blazemeter.api.explorer.test.TestDetector;
 import com.blazemeter.api.logging.Logger;
 
 import java.io.IOException;
