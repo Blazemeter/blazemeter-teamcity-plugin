@@ -17,21 +17,14 @@
         <td>
             <props:selectProperty name="all_tests" className="longField">
                 <c:set var="testsMap" value="${testUtils.getTests()}"/>
-                <c:choose>
-                    <c:when test="${testsMap.size() == 0}">
-                        <props:option value="">No tests for this account</props:option>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach var="workspace" items="${testsMap.keySet()}">
-                            <optgroup label="${workspace.getName()}(${workspace.getId()})"/>
-                            <c:forEach var="test" items="${testsMap.get(workspace)}">
-                               <props:option value="${test.getId()}.${test.getTestType()}" selected="false" id="${test.getId()}.${test.getTestType()}">
-                                            ${test.getName()}(${test.getId()}.${test.getTestType()})
-                               </props:option>
-                            </c:forEach>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
+                <c:forEach var="workspace" items="${testsMap.keySet()}">
+                    <optgroup label="${workspace.getName()}(${workspace.getId()})"/>
+                    <c:forEach var="test" items="${testsMap.get(workspace)}">
+                       <props:option value="${test.getId()}.${test.getTestType()}" selected="false" id="${test.getId()}.${test.getTestType()}">
+                                    ${test.getName()}(${test.getId()}.${test.getTestType()})
+                       </props:option>
+                    </c:forEach>
+                </c:forEach>
             </props:selectProperty>
             <span class="error" id="error_all_tests"></span>
             <span class="smallNote">Select the test to execute.</span>
