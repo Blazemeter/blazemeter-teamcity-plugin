@@ -108,7 +108,7 @@ public class BlazeRunTypeController extends BaseController {
                 User user = User.getUser(utils);
                 assert user.getId() != null;
             } catch (Exception e) {
-                logger.info("Invalid user credentials or/and server url, please check it: " + e.getMessage());
+                logger.info("Invalid user credentials or/and server url, please check it: " + e.getMessage(), e);
                 result += "Invalid user credentials or/and server url, please check it ("  + e.getMessage() + ")";
             }
         }

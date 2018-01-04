@@ -3,6 +3,8 @@ package com.blaze.utils;
 import com.blazemeter.api.logging.Logger;
 import com.blazemeter.api.logging.UserNotifier;
 import com.blazemeter.api.utils.BlazeMeterUtils;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 
 public class TCBzmUtils extends BlazeMeterUtils {
 
@@ -22,5 +24,22 @@ public class TCBzmUtils extends BlazeMeterUtils {
         return url.contains("?") ?
                 (url + '&' + TEAM_CITY_PLUGIN_INFO) :
                 (url + '?' + TEAM_CITY_PLUGIN_INFO);
+    }
+
+    @Override
+    protected String extractErrorMessage(String response) {
+        if (response != null && !response.isEmpty()) {
+            try {
+                JSONObject jsonResponse = JSONObject.fromObject(response);
+                JSONObject errorObj = jsonResponse.getJSONObject("error");
+                if (errorObj.containsKey("message")) {
+                    return errorObj.getString("message");
+                }
+            } catch (JSONException ex) {
+                logger.debug("Cannot parse response: " + response, ex);
+                return "Cannot parse response: " + response;
+            }
+        }
+        return null;
     }
 }
