@@ -34,6 +34,8 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +102,20 @@ public class BzmBuildProcess implements BuildProcess {
         String properties = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
         String notes = params.get(Constants.SETTINGS_NOTES);
 
-        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
+        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params)) {
+            @Override
+            protected Master startTest(AbstractTest test) throws IOException {
+                Master master = super.startTest(test);
+                // TODO: remove it
+                if (!StringUtils.isBlank(notes)) {
+                    notifier.notifyInfo("Sent notes: " + notes);
+                }
+                if (!StringUtils.isBlank(properties)) {
+                    notifier.notifyInfo("Sent properties: " + properties);
+                }
+                return master;
+            }
+        };
     }
 
     private CiPostProcess createCiPostProcess(Map<String, String> params) {
@@ -109,7 +124,13 @@ public class BzmBuildProcess implements BuildProcess {
         String junitPath = params.get(Constants.SETTINGS_JUNIT_PATH);
         String jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
 
-        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils.getNotifier(), utils.getLogger());
+        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils.getNotifier(), utils.getLogger()) {
+            // TODO: move it to blazemeter-api-client
+            @Override
+            protected File getParentDirWithPermissionsCheck(File dir, String workspaceDir) throws IOException {
+                return new File(FilenameUtils.normalize(super.getParentDirWithPermissionsCheck(dir, workspaceDir).getAbsolutePath()));
+            }
+        };
     }
 
 
