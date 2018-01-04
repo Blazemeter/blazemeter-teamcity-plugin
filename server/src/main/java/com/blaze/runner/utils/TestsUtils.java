@@ -5,8 +5,6 @@ import com.blazemeter.api.explorer.Account;
 import com.blazemeter.api.explorer.User;
 import com.blazemeter.api.explorer.Workspace;
 import com.blazemeter.api.explorer.test.AbstractTest;
-import com.blazemeter.api.explorer.test.MultiTest;
-import com.blazemeter.api.explorer.test.SingleTest;
 import com.blazemeter.api.explorer.test.TestDetector;
 import com.blazemeter.api.logging.Logger;
 
@@ -105,31 +103,35 @@ public class TestsUtils {
         try {
             List<Workspace> workspaces = account.getWorkspaces();
             for (Workspace workspace : workspaces) {
-                final List<AbstractTest> tests = new ArrayList<>();
-                tests.addAll(getSingleTestsForWorkspace(workspace));
-                tests.addAll(getMultiTestsForWorkspace(workspace));
-                result.put(workspace, tests);
+                addTestsForWorkspace(result, workspace);
             }
         } catch (IOException e) {
             utils.getLogger().error("Failed to get workspaces for account id =" + account.getId() + ". Reason is: " + e.getMessage(), e);
         }
     }
 
-    private List<SingleTest> getSingleTestsForWorkspace(Workspace workspace) {
+    private void addTestsForWorkspace(Map<Workspace, List<AbstractTest>> result, Workspace workspace) {
+        final List<AbstractTest> tests = new ArrayList<>();
+        boolean hasError = false;
         try {
-            return workspace.getSingleTests();
-        } catch (IOException e) {
+            tests.addAll(workspace.getSingleTests());
+        } catch (Exception e) {
             utils.getLogger().error("Failed to get single tests for workspace id =" + workspace.getId() + ". Reason is: " + e.getMessage(), e);
+            hasError = true;
         }
-        return Collections.emptyList();
-    }
 
-    private List<MultiTest> getMultiTestsForWorkspace(Workspace workspace) {
         try {
-            return workspace.getMultiTests();
-        } catch (IOException e) {
+            tests.addAll(workspace.getMultiTests());
+        } catch (Exception e) {
             utils.getLogger().error("Failed to get multi tests for workspace id =" + workspace.getId() + ". Reason is: " + e.getMessage(), e);
+            hasError = true;
         }
-        return Collections.emptyList();
+
+        if (tests.isEmpty() && !hasError) {
+            workspace.setId(workspace.getId() + ")(No tests for this workspace");
+        } else if (hasError) {
+            workspace.setId(workspace.getId() + ")(Failed to get tests");
+        }
+        result.put(workspace, tests);
     }
 }
