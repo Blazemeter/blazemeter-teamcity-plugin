@@ -26,20 +26,4 @@ public class TCBzmUtils extends BlazeMeterUtils {
                 (url + '?' + TEAM_CITY_PLUGIN_INFO);
     }
 
-    @Override
-    protected String extractErrorMessage(String response) {
-        if (response != null && !response.isEmpty()) {
-            try {
-                JSONObject jsonResponse = JSONObject.fromObject(response);
-                JSONObject errorObj = jsonResponse.getJSONObject("error");
-                if (errorObj.containsKey("message")) {
-                    return errorObj.getString("message");
-                }
-            } catch (JSONException ex) {
-                logger.debug("Cannot parse response: " + response, ex);
-                return "Cannot parse response: " + response;
-            }
-        }
-        return null;
-    }
 }
