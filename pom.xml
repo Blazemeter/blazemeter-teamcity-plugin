@@ -7,8 +7,19 @@
     </properties>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
-    <version>2.1</version>
+    <version>2.2</version>
     <packaging>pom</packaging>
+
+    <name>BlazeMeter plugin</name>
+    <description>This is a plugin which allows a developer to run a set of performance tests against the BlazeMeter Cluster</description>
+    <url>https://github.com/Blazemeter/blazemeter-teamcity-plugin</url>
+    <inceptionYear>March 2018</inceptionYear>
+
+    <organization>
+        <name>BlazeMeter</name>
+        <url>http://www.blazemeter.com</url>
+    </organization>
+
     <repositories>
         <repository>
             <id>JetBrains</id>
@@ -19,17 +30,21 @@
             <url>https://repository-saucelabs.forge.cloudbees.com/release</url>
         </repository>
     </repositories>
+
     <scm>
         <connection>scm:git:git://github.com/Blazemeter/blazemeter-teamcity-plugin.git</connection>
         <developerConnection>scm:git:git@github.com/Blazemeter/blazemeter-teamcity-plugin.git</developerConnection>
         <url>git@github.com/Blazemeter/blazemeter-teamcity-plugin.git</url>
     </scm>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
+
     <distributionManagement>
     </distributionManagement>
     <build>

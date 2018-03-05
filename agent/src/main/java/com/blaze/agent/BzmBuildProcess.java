@@ -102,20 +102,7 @@ public class BzmBuildProcess implements BuildProcess {
         String properties = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
         String notes = params.get(Constants.SETTINGS_NOTES);
 
-        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params)) {
-            @Override
-            protected Master startTest(AbstractTest test) throws IOException {
-                Master master = super.startTest(test);
-                // TODO: remove it
-                if (!StringUtils.isBlank(notes)) {
-                    notifier.notifyInfo("Sent notes: " + notes);
-                }
-                if (!StringUtils.isBlank(properties)) {
-                    notifier.notifyInfo("Sent properties: " + properties);
-                }
-                return master;
-            }
-        };
+        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
     }
 
     private CiPostProcess createCiPostProcess(Map<String, String> params) {
@@ -124,13 +111,7 @@ public class BzmBuildProcess implements BuildProcess {
         String junitPath = params.get(Constants.SETTINGS_JUNIT_PATH);
         String jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
 
-        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils.getNotifier(), utils.getLogger()) {
-            // TODO: move it to blazemeter-api-client
-            @Override
-            protected File getParentDirWithPermissionsCheck(File dir, String workspaceDir) throws IOException {
-                return new File(FilenameUtils.normalize(super.getParentDirWithPermissionsCheck(dir, workspaceDir).getAbsolutePath()));
-            }
-        };
+        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils.getNotifier(), utils.getLogger());
     }
 
 
