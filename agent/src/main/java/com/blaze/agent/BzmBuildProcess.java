@@ -74,7 +74,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     private String createLogFile() throws RunBuildException {
         try {
-            File logFile = new File(createArtifactDirectory(), "bzm-log");
+            File logFile = new File(createArtifactDirectory(), "bzm-log-" + System.currentTimeMillis());
             FileUtils.touch(logFile);
             logFile.setWritable(true);
             return logFile.getAbsolutePath();
