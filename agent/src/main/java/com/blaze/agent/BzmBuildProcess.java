@@ -111,7 +111,7 @@ public class BzmBuildProcess implements BuildProcess {
         String junitPath = params.get(Constants.SETTINGS_JUNIT_PATH);
         String jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
 
-        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils.getNotifier(), utils.getLogger());
+        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils);
     }
 
 
