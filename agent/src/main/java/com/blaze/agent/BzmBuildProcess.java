@@ -117,10 +117,10 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void interrupt() {
+        logger.message("Build has been interrupted");
         interrupted = true;
         if (build != null && master != null) {
             try {
-                logger.message("Build has been interrupted");
                 hasReport = build.interrupt(master);
                 if (hasReport) {
                     logger.message("Get reports after interrupt");
@@ -148,9 +148,6 @@ public class BzmBuildProcess implements BuildProcess {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
             master = build.start();
-            if (interrupted) {
-                interrupt();
-            }
         } catch (Throwable e) {
             utils.getLogger().error("Failed to start build: ", e);
             closeLogger();
@@ -165,6 +162,10 @@ public class BzmBuildProcess implements BuildProcess {
         try {
             try {
                 if (master != null) {
+                    if (interrupted) {
+                        interrupt();
+                        return BuildFinishedStatus.INTERRUPTED;
+                    }
                     build.waitForFinish(master);
                 } else {
                     logger.error("Failed to start test");
