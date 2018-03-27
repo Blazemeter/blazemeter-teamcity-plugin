@@ -148,6 +148,9 @@ public class BzmBuildProcess implements BuildProcess {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
             master = build.start();
+            if (interrupted) {
+                interrupt();
+            }
         } catch (Throwable e) {
             utils.getLogger().error("Failed to start build: ", e);
             closeLogger();
