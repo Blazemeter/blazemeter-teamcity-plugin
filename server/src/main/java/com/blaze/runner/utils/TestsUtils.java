@@ -11,6 +11,7 @@ import com.blazemeter.api.logging.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +133,13 @@ public class TestsUtils {
         } else if (hasError) {
             workspace.setId(workspace.getId() + ")(Failed to get tests");
         }
+
+        Collections.sort(tests, new Comparator<AbstractTest>() {
+            @Override
+            public int compare(AbstractTest o1, AbstractTest o2) {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
         result.put(workspace, tests);
     }
 }
