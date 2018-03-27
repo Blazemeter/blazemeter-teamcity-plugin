@@ -149,8 +149,10 @@ public class BzmBuildProcess implements BuildProcess {
         try {
             master = build.start();
         } catch (Throwable e) {
+            utils.getLogger().error("Failed to start build: ", e);
             closeLogger();
-            throw new RunBuildException("Failed to start build", e);
+            logger.error(e.getMessage());
+//            throw new RunBuildException("Failed to start build: " + e.getMessage());
         }
     }
 
