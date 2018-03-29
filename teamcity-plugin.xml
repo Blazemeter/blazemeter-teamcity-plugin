@@ -4,6 +4,7 @@
   <info>
     <name>BlazeMeter</name>
     <display-name>BlazeMeter</display-name>
+    <description>This is a plugin which allows a developer to run a set of performance tests against the BlazeMeter Cluster</description>
     <version>@version@</version>
   </info>
   <deployment use-separate-classloader="true"/>
