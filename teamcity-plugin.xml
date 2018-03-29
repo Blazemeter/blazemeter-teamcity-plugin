@@ -6,6 +6,13 @@
     <display-name>BlazeMeter</display-name>
     <description>This is a plugin which allows a developer to run a set of performance tests against the BlazeMeter Cluster</description>
     <version>@version@</version>
+    <download-url>https://plugins.jetbrains.com/plugin/9020-blazemeter</download-url>
+    <email>support@blazemeter.com</email>
+    <vendor>
+      <name>CA BlazeMeter</name>
+      <url>https://www.blazemeter.com</url>
+      <logo>https://www.blazemeter.com/new_images/home_page/BmCaLogo.png</logo>
+    </vendor>
   </info>
   <deployment use-separate-classloader="true"/>
 </teamcity-plugin>
