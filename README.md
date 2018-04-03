@@ -1,21 +1,17 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cd802083755d41d59c0b89b92c509349)](https://www.codacy.com/app/dzmitrykashlach/blazemeter-teamcity-plugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Blazemeter/blazemeter-teamcity-plugin&amp;utm_campaign=Badge_Grade)
-BlazeMeter has a plugin to TeamCity to simplify your load testing needs.  
-Plugins adds an additional build step to TeamCity, which can be used in CI&CD pipeline.
+####  What's this?
 
-- [Installation](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Installation)
-- [Setting credentials](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Setting-build-result-logic)
-- [Adding jmeter properties to test session](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Adding-jmeter-properties-to-test-session)
-- [Reports](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Reports)
-- [Proxy settings](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Proxy-settings)
-- [Setting build result logic](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Setting-build-result-logic)
-- [Logging](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Logging)
-- [Setting notes to test session](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Adding-jmeter-properties-to-test-session)
-- [Changelog](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Changelog)
-- [Stop terminate BlazeMeter test from plugin](https://github.com/Blazemeter/blazemeter-teamcity-plugin/wiki/Stop-terminate-BlazeMeter-test-from-plugin)
+This is [TeamCity](https://www.jetbrains.com/teamcity/) plugin for running performance test at [load testing platform](http://blazemeter.com).
 
-[Download latest version](https://s3.amazonaws.com/bzmpub/TeamCity/BlazeMeter.zip)
+BlazeMeter has a plugin to TeamCity to simplify your load testing needs. You only need to connect your BlazeMeter account to TeamCity, configure a simple build step and you are good to go. You can configure TeamCity to run the BlazeMeter build step whenever you want, and the test will start with your pre-configured settings.
 
+####  Installation & usage
 
+Please, refer to [plugin's guide](https://guide.blazemeter.com/hc/en-us/articles/207420395-BlazeMeter-s-TeamCity-plugin-BlazeMeter's-TeamCity-plugin) for further instructions. 
 
+#### [Changelog](https://github.com/Blazemeter/blazemeter-teamcity-plugin/blob/master/CHANGELOG.md)
 
+#### [Download latest version](https://plugins.jetbrains.com/plugin/9020-blazemeter)
 
+#### License
+ 
+    Apache License, Version 2.0
