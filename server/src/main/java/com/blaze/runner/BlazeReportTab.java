@@ -3,6 +3,7 @@ package com.blaze.runner;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.web.openapi.PagePlaces;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.ViewLogTab;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,9 +21,9 @@ public class BlazeReportTab extends ViewLogTab {
      * @param pagePlaces used to register the tab
      * @param server     server object
      */
-    public BlazeReportTab(@NotNull PagePlaces pagePlaces, @NotNull SBuildServer server) {
+    public BlazeReportTab(@NotNull PagePlaces pagePlaces, @NotNull SBuildServer server, @NotNull final PluginDescriptor pluginDescriptor) {
         super("BlazeMeter Report", "bzm", pagePlaces, server);
-//        setIncludeUrl(pluginDescriptor.getPluginResourcesPath("reportTab.jsp"));
+        setIncludeUrl(pluginDescriptor.getPluginResourcesPath("reportTab.jsp"));
     }
 
     @Override
