@@ -33,9 +33,11 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,16 +54,19 @@ public class BzmBuildProcess implements BuildProcess {
     private final BlazeMeterUtils utils;
     private final CiBuild build;
     private final BuildProgressLogger logger;
+    private ArtifactsWatcher artifactsWatcher;
 
     private Master master;
 
-    public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext) throws RunBuildException {
+    public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild,
+                           BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher) throws RunBuildException {
         this.agentRunningBuild = agentRunningBuild;
         this.agent = buildAgent;
         this.logger = agentRunningBuild.getBuildLogger();
         this.finished = false;
         this.utils = createBzmUtils(agentRunningBuild.getSharedConfigParameters());
         this.build = createCiBuild(buildRunnerContext.getRunnerParameters());
+        this.artifactsWatcher = artifactsWatcher;
     }
 
     private BlazeMeterUtils createBzmUtils(Map<String, String> buildParams) throws RunBuildException {
@@ -148,6 +153,7 @@ public class BzmBuildProcess implements BuildProcess {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
             master = build.start();
+            artifactsWatcher.addNewArtifactsPath(master.getPublicReport());
         } catch (Throwable e) {
             utils.getLogger().error("Failed to start build: ", e);
             closeLogger();
