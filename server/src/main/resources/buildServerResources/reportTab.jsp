@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="successStatusBlock statusBlock">
+<div class="successStatusBlock statusBlock" style="margin-top: 0.5em;">
     <table class="statusTable">
         <tbody>
             <tr><td></td></tr>
@@ -15,3 +15,6 @@
         </tbody>
     </table>
 </div>
+
+
+<div class="icon_before icon16 attentionComment" id="blazeWarningMessage">${url}</div>
