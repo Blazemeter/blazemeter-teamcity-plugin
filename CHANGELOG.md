@@ -1,5 +1,10 @@
 ## Changelog
 
+### v.2.3.* (upcoming)
+
+- `FIXED` - crashed server if config has not server information/credentials
+
+
 ### v.2.2.114
 
 - `FIXED` - bzm-log file contains logs only from one Master
