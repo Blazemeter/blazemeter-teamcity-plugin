@@ -19,12 +19,15 @@ import jetbrains.buildServer.serverSide.BuildStartContext;
 import jetbrains.buildServer.serverSide.BuildStartContextProcessor;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for update BuildStartContext before it is started on a build agent.
  * Add some admin properties for send on Agent
  */
 public class BlazeBuildStartContextProcessor implements BuildStartContextProcessor {
+    private Logger logger = LoggerFactory.getLogger("com.blazemeter");
 
     private AdminSettings pluginSettings;
     private ExtensionHolder extensionHolder;
@@ -36,9 +39,18 @@ public class BlazeBuildStartContextProcessor implements BuildStartContextProcess
 
     @Override
     public void updateParameters(@NotNull BuildStartContext buildStartContext) {
-        buildStartContext.addSharedParameter(Constants.API_KEY_ID, pluginSettings.getApiKeyID());
-        buildStartContext.addSharedParameter(Constants.API_KEY_SECRET, pluginSettings.getApiKeySecret());
-        buildStartContext.addSharedParameter(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
+        logger.info("Add Shared Parameter user creds to build context");
+        buildStartContext.addSharedParameter(Constants.API_KEY_ID, validateValue(pluginSettings.getApiKeyID()));
+        buildStartContext.addSharedParameter(Constants.API_KEY_SECRET, validateValue(pluginSettings.getApiKeySecret()));
+        buildStartContext.addSharedParameter(Constants.BLAZEMETER_URL, validateValue(pluginSettings.getBlazeMeterUrl()));
+    }
+
+    private String validateValue(String value) {
+        if (value == null) {
+            logger.warn("User credential contains NULL value, check your credentials in 'Administration -> BlazeMeter' page");
+            return "";
+        }
+        return value;
     }
 
     public void register() {
