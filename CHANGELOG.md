@@ -2,6 +2,7 @@
 
 ### v.2.3.* (upcoming)
 
+- `FEATURE` - added BlazeMeter Report tab in build results
 - `FIXED` - crashed server if config has not server information/credentials
 
 
