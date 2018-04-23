@@ -28,4 +28,6 @@
 		<constructor-arg index="3" value="BlazeMeter" />
 		<property name="mainSettings" ref="blazeServerSettings"/>
 	</bean>
+
+	<bean class="com.blaze.runner.BlazeReportTab"/>
 </beans>

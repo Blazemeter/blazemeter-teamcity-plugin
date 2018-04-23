@@ -16,15 +16,14 @@ package com.blaze.agent;
 
 import com.blaze.agent.logging.BzmAgentLogger;
 import com.blaze.agent.logging.BzmAgentNotifier;
+import com.blaze.agent.utils.TeamCityCiBuild;
 import com.blaze.runner.Constants;
 import com.blaze.utils.TCBzmUtils;
 import com.blaze.utils.Utils;
 import com.blazemeter.api.explorer.Master;
-import com.blazemeter.api.explorer.test.AbstractTest;
 import com.blazemeter.api.logging.Logger;
 import com.blazemeter.api.utils.BlazeMeterUtils;
 import com.blazemeter.ciworkflow.BuildResult;
-import com.blazemeter.ciworkflow.CiBuild;
 import com.blazemeter.ciworkflow.CiPostProcess;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
@@ -33,12 +32,14 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 public class BzmBuildProcess implements BuildProcess {
@@ -50,18 +51,21 @@ public class BzmBuildProcess implements BuildProcess {
     private boolean interrupted = false;
     private boolean hasReport = false;
     private final BlazeMeterUtils utils;
-    private final CiBuild build;
+    private final TeamCityCiBuild build;
     private final BuildProgressLogger logger;
+    private ArtifactsWatcher artifactsWatcher;
 
     private Master master;
 
-    public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild, BuildRunnerContext buildRunnerContext) throws RunBuildException {
+    public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild,
+                           BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher) throws RunBuildException {
         this.agentRunningBuild = agentRunningBuild;
         this.agent = buildAgent;
         this.logger = agentRunningBuild.getBuildLogger();
         this.finished = false;
         this.utils = createBzmUtils(agentRunningBuild.getSharedConfigParameters());
         this.build = createCiBuild(buildRunnerContext.getRunnerParameters());
+        this.artifactsWatcher = artifactsWatcher;
     }
 
     private BlazeMeterUtils createBzmUtils(Map<String, String> buildParams) throws RunBuildException {
@@ -97,12 +101,12 @@ public class BzmBuildProcess implements BuildProcess {
         }
     }
 
-    private CiBuild createCiBuild(Map<String, String> params) {
+    private TeamCityCiBuild createCiBuild(Map<String, String> params) {
         String testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
         String properties = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
         String notes = params.get(Constants.SETTINGS_NOTES);
 
-        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
+        return new TeamCityCiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
     }
 
     private CiPostProcess createCiPostProcess(Map<String, String> params) {
@@ -148,12 +152,34 @@ public class BzmBuildProcess implements BuildProcess {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
             master = build.start();
+            publishArtifacts(build);
         } catch (Throwable e) {
             utils.getLogger().error("Failed to start build: ", e);
             closeLogger();
             logger.error(e.getMessage());
 //            throw new RunBuildException("Failed to start build: " + e.getMessage());
         }
+    }
+
+    private void publishArtifacts(TeamCityCiBuild build) {
+        File buildDirectory = new File(agentRunningBuild.getBuildTempDirectory() + "/" + agentRunningBuild.getProjectName() + "/" + agentRunningBuild.getBuildTypeName() + "/" + agentRunningBuild.getBuildNumber() + "/BlazeMeter");
+        File file = new File(buildDirectory, Constants.BZM_REPORTS_FILE);
+        try {
+            FileUtils.touch(file);
+            appendStringToFile(file, "BlazeMeter report: " + build.getCurrentTest().getName() + "\r\n");
+            appendStringToFile(file, build.getPublicReport() + "\r\n");
+        } catch (IOException e) {
+            logger.warning("Failed to generate BlazeMeter report: " + e.getMessage());
+            if (utils.getLogger() != null) {
+                utils.getLogger().error("Failed to generate BlazeMeter report", e);
+            }
+            return;
+        }
+        artifactsWatcher.addNewArtifactsPath(file + "=>" + Constants.RUNNER_DISPLAY_NAME);
+    }
+
+    private void appendStringToFile(File file, String content) throws IOException {
+        Files.write(Paths.get(file.toURI()), content.getBytes(), StandardOpenOption.APPEND);
     }
 
     @SuppressWarnings("static-access")

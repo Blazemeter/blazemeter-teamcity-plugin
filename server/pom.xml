@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.blazemeter.teamcity</groupId>
         <artifactId>blazemeterplugin</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
     <artifactId>BlazeMeter</artifactId>
     <packaging>jar</packaging>

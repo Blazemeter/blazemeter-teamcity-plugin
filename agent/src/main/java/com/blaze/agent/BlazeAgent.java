@@ -23,6 +23,7 @@ import jetbrains.buildServer.agent.BuildAgent;
 import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import org.jetbrains.annotations.NotNull;
 
 public class BlazeAgent implements AgentBuildRunner {
@@ -30,9 +31,11 @@ public class BlazeAgent implements AgentBuildRunner {
     private AgentBuildRunnerInfo runnerInfo;
     private BzmBuildProcess buildProcess;
     private BuildAgent buildAgent;
+    private ArtifactsWatcher artifactsWatcher;
 
-    public BlazeAgent(BuildAgent buildAgent) {
+    public BlazeAgent(BuildAgent buildAgent, @NotNull final ArtifactsWatcher artifactsWatcher) {
         this.buildAgent = buildAgent;
+        this.artifactsWatcher = artifactsWatcher;
     }
 
     @Override
@@ -40,7 +43,7 @@ public class BlazeAgent implements AgentBuildRunner {
     public BuildProcess createBuildProcess(@NotNull AgentRunningBuild agentRunningBuild, @NotNull BuildRunnerContext buildRunnerContext)
             throws RunBuildException {
 
-        buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext);
+        buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher);
 
         return buildProcess;
     }
