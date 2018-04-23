@@ -165,10 +165,14 @@ public class BzmBuildProcess implements BuildProcess {
         File buildDirectory = new File(agentRunningBuild.getBuildTempDirectory() + "/" + agentRunningBuild.getProjectName() + "/" + agentRunningBuild.getBuildTypeName() + "/" + agentRunningBuild.getBuildNumber() + "/BlazeMeter");
         File file = new File(buildDirectory, Constants.BZM_REPORTS_FILE);
         try {
+            FileUtils.touch(file);
             appendStringToFile(file, "BlazeMeter report: " + build.getCurrentTest().getName() + "\r\n");
             appendStringToFile(file, build.getPublicReport() + "\r\n");
         } catch (IOException e) {
-            logger.error("Failed to generate BlazeMeter report: " + e.getMessage());
+            logger.warning("Failed to generate BlazeMeter report: " + e.getMessage());
+            if (utils.getLogger() != null) {
+                utils.getLogger().error("Failed to generate BlazeMeter report", e);
+            }
             return;
         }
         artifactsWatcher.addNewArtifactsPath(file + "=>" + Constants.RUNNER_DISPLAY_NAME);
