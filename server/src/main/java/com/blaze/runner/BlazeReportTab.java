@@ -47,18 +47,18 @@ public class BlazeReportTab extends ViewLogTab {
             try {
                 final Map<String, String> links = getReports(artifact.getInputStream());
                 if (!links.isEmpty()) {
-                    model.put("bzm.reports", links);
+                    model.put("bzmReports", links);
                 } else {
-                    model.put("bzm.msg", "There is no report for this build");
+                    model.put("bzmMsg", "There is no report for this build");
                 }
 
             } catch (IOException e) {
                 logger.error("Failed to get the report: ", e);
-                model.put("bzm.msg", "Failed to get the report: " + e.getMessage());
+                model.put("bzmMsg", "Failed to get the report: " + e.getMessage());
             }
         } else {
             logger.info("No BlazeMeter artifacts for this build");
-            model.put("bzm.msg", "No BlazeMeter artifacts for this build");
+            model.put("bzmMsg", "No BlazeMeter artifacts for this build");
         }
     }
 
