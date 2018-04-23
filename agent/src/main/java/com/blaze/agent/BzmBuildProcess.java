@@ -16,6 +16,7 @@ package com.blaze.agent;
 
 import com.blaze.agent.logging.BzmAgentLogger;
 import com.blaze.agent.logging.BzmAgentNotifier;
+import com.blaze.agent.utils.TeamCityCiBuild;
 import com.blaze.runner.Constants;
 import com.blaze.utils.TCBzmUtils;
 import com.blaze.utils.Utils;
@@ -52,7 +53,7 @@ public class BzmBuildProcess implements BuildProcess {
     private boolean interrupted = false;
     private boolean hasReport = false;
     private final BlazeMeterUtils utils;
-    private final CiBuild build;
+    private final TeamCityCiBuild build;
     private final BuildProgressLogger logger;
     private ArtifactsWatcher artifactsWatcher;
 
@@ -102,12 +103,12 @@ public class BzmBuildProcess implements BuildProcess {
         }
     }
 
-    private CiBuild createCiBuild(Map<String, String> params) {
+    private TeamCityCiBuild createCiBuild(Map<String, String> params) {
         String testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
         String properties = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
         String notes = params.get(Constants.SETTINGS_NOTES);
 
-        return new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
+        return new TeamCityCiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
     }
 
     private CiPostProcess createCiPostProcess(Map<String, String> params) {
@@ -153,13 +154,26 @@ public class BzmBuildProcess implements BuildProcess {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
             master = build.start();
-            artifactsWatcher.addNewArtifactsPath(master.getPublicReport());
+            publishArtifacts(build);
         } catch (Throwable e) {
             utils.getLogger().error("Failed to start build: ", e);
             closeLogger();
             logger.error(e.getMessage());
 //            throw new RunBuildException("Failed to start build: " + e.getMessage());
         }
+    }
+
+    private void publishArtifacts(TeamCityCiBuild build) {
+        File buildDirectory = new File(agentRunningBuild.getBuildTempDirectory() + "/" + agentRunningBuild.getProjectName() + "/" + agentRunningBuild.getBuildTypeName() + "/" + agentRunningBuild.getBuildNumber() + "/BlazeMeter");
+        File file = new File(buildDirectory, "BlazeMeterReports");
+        try {
+            FileUtils.writeStringToFile(file, "BlazeMeter report: " + build.getCurrentTest().getName() + "\r\n");
+            FileUtils.writeStringToFile(file, build.getPublicReport() + "\r\n");
+        } catch (IOException e) {
+            logger.error("Failed to generate BlazeMeter report: " + e.getMessage());
+            return;
+        }
+        artifactsWatcher.addNewArtifactsPath(file + "=>" + "BlazeMeter");
     }
 
     @SuppressWarnings("static-access")
