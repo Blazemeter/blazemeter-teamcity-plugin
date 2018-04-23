@@ -30,4 +30,5 @@ public interface Constants {
     String SETTINGS_NOTES = "blazeMeterPlugin.notes";
     String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
     String BZM_PROPERTIES_FILE = "/userKeyFile.properties";
+    String BZM_REPORTS_FILE = "BlazeMeterReports";
 }
