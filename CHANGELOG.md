@@ -3,6 +3,7 @@
 ### v.2.3.* (upcoming)
 
 - `FEATURE` - added BlazeMeter Report tab in build results
+- `FEATURE` - added workspace selection
 - `FIXED` - crashed server if config has not server information/credentials
 
 
