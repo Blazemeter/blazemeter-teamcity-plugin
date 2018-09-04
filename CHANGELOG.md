@@ -1,6 +1,6 @@
 ## Changelog
 
-### v.2.3.* (upcoming)
+### v.2.3.120 
 
 - `FEATURE` - added BlazeMeter Report tab in build results
 - `FEATURE` - added workspace selection
