@@ -17,6 +17,7 @@ package com.blaze.agent;
 import com.blaze.agent.logging.BzmAgentLogger;
 import com.blaze.agent.logging.BzmAgentNotifier;
 import com.blaze.agent.utils.TeamCityCiBuild;
+import com.blaze.plugins.PluginInfo;
 import com.blaze.runner.Constants;
 import com.blaze.utils.TCBzmUtils;
 import com.blaze.utils.Utils;
@@ -151,6 +152,7 @@ public class BzmBuildProcess implements BuildProcess {
     public void start() throws RunBuildException {
         logger.message("BlazeMeter agent started: version = " + Utils.version());
         try {
+            checkUpdates();
             master = build.start();
             publishArtifacts(build);
         } catch (Throwable e) {
@@ -158,6 +160,14 @@ public class BzmBuildProcess implements BuildProcess {
             closeLogger();
             logger.error(e.getMessage());
 //            throw new RunBuildException("Failed to start build: " + e.getMessage());
+        }
+    }
+
+    private void checkUpdates() {
+        PluginInfo info = new PluginInfo(build.getUtils());
+        if (info.hasUpdates()) {
+            logger.message("A new version of BlazeMeter's TeamCity plugin is available. Please got to plugin's page to download a new version");
+            logger.message("https://plugins.jetbrains.com/plugin/9020-blazemeter");
         }
     }
 
