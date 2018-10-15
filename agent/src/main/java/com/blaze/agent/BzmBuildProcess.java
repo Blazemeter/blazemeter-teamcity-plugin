@@ -16,16 +16,13 @@ package com.blaze.agent;
 
 import com.blaze.agent.logging.BzmAgentLogger;
 import com.blaze.agent.logging.BzmAgentNotifier;
-import com.blaze.agent.utils.TeamCityCiBuild;
+import com.blaze.agent.utils.BzmProcess;
 import com.blaze.plugins.PluginInfo;
 import com.blaze.runner.Constants;
 import com.blaze.utils.TCBzmUtils;
 import com.blaze.utils.Utils;
-import com.blazemeter.api.explorer.Master;
 import com.blazemeter.api.logging.Logger;
 import com.blazemeter.api.utils.BlazeMeterUtils;
-import com.blazemeter.ciworkflow.BuildResult;
-import com.blazemeter.ciworkflow.CiPostProcess;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildAgent;
@@ -38,35 +35,86 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class BzmBuildProcess implements BuildProcess {
 
     private BuildAgent agent;
     private AgentRunningBuild agentRunningBuild;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private BzmProcess bzmProcess;
+    private Future<BuildFinishedStatus> processFuture;
 
-    private boolean finished = false;
-    private boolean interrupted = false;
-    private boolean hasReport = false;
     private final BlazeMeterUtils utils;
-    private final TeamCityCiBuild build;
     private final BuildProgressLogger logger;
-    private ArtifactsWatcher artifactsWatcher;
-
-    private Master master;
 
     public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild,
                            BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher) throws RunBuildException {
         this.agentRunningBuild = agentRunningBuild;
         this.agent = buildAgent;
         this.logger = agentRunningBuild.getBuildLogger();
-        this.finished = false;
         this.utils = createBzmUtils(agentRunningBuild.getSharedConfigParameters());
-        this.build = createCiBuild(buildRunnerContext.getRunnerParameters());
-        this.artifactsWatcher = artifactsWatcher;
+        this.bzmProcess = new BzmProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher, utils);
+    }
+
+
+    @Override
+    public void interrupt() {
+        logger.message("Build has been interrupted");
+        if (processFuture != null) {
+            processFuture.cancel(true);
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return processFuture.isDone();
+    }
+
+    @Override
+    public boolean isInterrupted() {
+        return processFuture.isCancelled() && isFinished();
+    }
+
+
+    @Override
+    public void start() throws RunBuildException {
+        logger.message("BlazeMeter agent started: version = " + Utils.version());
+        checkUpdates();
+        processFuture = executor.submit(bzmProcess);
+    }
+
+    private void checkUpdates() {
+        PluginInfo info = new PluginInfo(utils);
+        if (info.hasUpdates()) {
+            logger.message("A new version of BlazeMeter's TeamCity plugin is available. Please got to plugin's page to download a new version");
+            logger.message("https://plugins.jetbrains.com/plugin/9020-blazemeter");
+        }
+    }
+
+
+    @SuppressWarnings("static-access")
+    @Override
+    public BuildFinishedStatus waitFor() throws RunBuildException {
+        try {
+            return processFuture.get();
+        } catch (final InterruptedException | CancellationException e) {
+            logger.error("Build process was interrupted ");
+            utils.getLogger().warn("Wait for finish has been interrupted", e);
+            return BuildFinishedStatus.INTERRUPTED;
+        } catch (final ExecutionException e) {
+            utils.getLogger().warn("Caught exception while waiting for build", e);
+            logger.message("Build has been interrupted");
+            return BuildFinishedStatus.FINISHED_FAILED;
+        } finally {
+            closeLogger();
+            executor.shutdown();
+        }
     }
 
     private BlazeMeterUtils createBzmUtils(Map<String, String> buildParams) throws RunBuildException {
@@ -88,13 +136,14 @@ public class BzmBuildProcess implements BuildProcess {
         }
     }
 
+
     private File createArtifactDirectory() throws RunBuildException {
         File agentLogsDirectory = agent.getConfiguration().getAgentLogsDirectory();
         String projectName = agentRunningBuild.getProjectName();
         String buildNumber = agentRunningBuild.getBuildNumber();
 
         try {
-            File logDirectory = new File(agentLogsDirectory, projectName + "/" + buildNumber);
+            File logDirectory = new File(agentLogsDirectory, projectName + File.separator + buildNumber);
             FileUtils.forceMkdir(logDirectory);
             return logDirectory;
         } catch (IOException ex) {
@@ -102,160 +151,12 @@ public class BzmBuildProcess implements BuildProcess {
         }
     }
 
-    private TeamCityCiBuild createCiBuild(Map<String, String> params) {
-        String testId = params.get(Constants.SETTINGS_ALL_TESTS_ID);
-        String properties = params.get(Constants.SETTINGS_JMETER_PROPERTIES);
-        String notes = params.get(Constants.SETTINGS_NOTES);
-
-        return new TeamCityCiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
-    }
-
-    private CiPostProcess createCiPostProcess(Map<String, String> params) {
-        boolean isDownloadJtl = Boolean.valueOf(params.get(Constants.SETTINGS_JTL));
-        boolean isDownloadJunit = Boolean.valueOf(params.get(Constants.SETTINGS_JUNIT));
-        String junitPath = params.get(Constants.SETTINGS_JUNIT_PATH);
-        String jtlPath = params.get(Constants.SETTINGS_JTL_PATH);
-
-        return new CiPostProcess(isDownloadJtl, isDownloadJunit, jtlPath, junitPath, getDefaultReportDir(), utils);
-    }
-
-
-    @Override
-    public void interrupt() {
-        logger.message("Build has been interrupted");
-        interrupted = true;
-        if (build != null && master != null) {
-            try {
-                hasReport = build.interrupt(master);
-                if (hasReport) {
-                    logger.message("Get reports after interrupt");
-                    build.doPostProcess(master);
-                }
-            } catch (IOException e) {
-                logger.error("Failed to interrupt build " + e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public boolean isFinished() {
-        return finished;
-    }
-
-    @Override
-    public boolean isInterrupted() {
-        return interrupted;
-    }
-
-
-    @Override
-    public void start() throws RunBuildException {
-        logger.message("BlazeMeter agent started: version = " + Utils.version());
-        try {
-            checkUpdates();
-            master = build.start();
-            publishArtifacts(build);
-        } catch (Throwable e) {
-            utils.getLogger().error("Failed to start build: ", e);
-            closeLogger();
-            logger.error(e.getMessage());
-//            throw new RunBuildException("Failed to start build: " + e.getMessage());
-        }
-    }
-
-    private void checkUpdates() {
-        PluginInfo info = new PluginInfo(build.getUtils());
-        if (info.hasUpdates()) {
-            logger.message("A new version of BlazeMeter's TeamCity plugin is available. Please got to plugin's page to download a new version");
-            logger.message("https://plugins.jetbrains.com/plugin/9020-blazemeter");
-        }
-    }
-
-    private void publishArtifacts(TeamCityCiBuild build) {
-        File buildDirectory = new File(agentRunningBuild.getBuildTempDirectory() + "/" + agentRunningBuild.getProjectName() + "/" + agentRunningBuild.getBuildTypeName() + "/" + agentRunningBuild.getBuildNumber() + "/BlazeMeter");
-        File file = new File(buildDirectory, Constants.BZM_REPORTS_FILE);
-        try {
-            FileUtils.touch(file);
-            appendStringToFile(file, "BlazeMeter report: " + build.getCurrentTest().getName() + "\r\n");
-            appendStringToFile(file, build.getPublicReport() + "\r\n");
-        } catch (IOException e) {
-            logger.warning("Failed to generate BlazeMeter report: " + e.getMessage());
-            if (utils.getLogger() != null) {
-                utils.getLogger().error("Failed to generate BlazeMeter report", e);
-            }
-            return;
-        }
-        artifactsWatcher.addNewArtifactsPath(file + "=>" + Constants.RUNNER_DISPLAY_NAME);
-    }
-
-    private void appendStringToFile(File file, String content) throws IOException {
-        Files.write(Paths.get(file.toURI()), content.getBytes(), StandardOpenOption.APPEND);
-    }
-
-    @SuppressWarnings("static-access")
-    @Override
-    public BuildFinishedStatus waitFor() throws RunBuildException {
-        try {
-            try {
-                if (master != null) {
-                    if (interrupted) {
-                        interrupt();
-                        return BuildFinishedStatus.INTERRUPTED;
-                    }
-                    build.waitForFinish(master);
-                } else {
-                    logger.error("Failed to start test");
-                    return BuildFinishedStatus.FINISHED_FAILED;
-                }
-            } catch (InterruptedException e) {
-                interrupted = true;
-                utils.getLogger().warn("Wait for finish has been interrupted", e);
-                logger.message("Build has been interrupted");
-                interrupt();
-                return BuildFinishedStatus.INTERRUPTED;
-            } catch (IOException e) {
-                utils.getLogger().warn("Caught exception while waiting for build", e);
-                logger.message("Build has been interrupted");
-                return BuildFinishedStatus.FINISHED_FAILED;
-            }
-
-            if (interrupted) {
-                return BuildFinishedStatus.INTERRUPTED;
-            }
-            finished = true;
-            return mappedBuildResult(build.doPostProcess(master));
-        } finally {
-            closeLogger();
-        }
-    }
-
-    private BuildFinishedStatus mappedBuildResult(BuildResult buildResult) {
-        switch (buildResult) {
-            case SUCCESS:
-                return BuildFinishedStatus.FINISHED_SUCCESS;
-            case ABORTED:
-                return BuildFinishedStatus.INTERRUPTED;
-            case ERROR:
-                return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
-            case FAILED:
-                return BuildFinishedStatus.FINISHED_FAILED;
-            default:
-                return BuildFinishedStatus.FINISHED_WITH_PROBLEMS;
-        }
-    }
-
     private void closeLogger() {
         if (utils != null) {
             Logger logger = utils.getLogger();
-            if (logger != null && (logger instanceof BzmAgentLogger)) {
+            if (logger instanceof BzmAgentLogger) {
                 ((BzmAgentLogger) logger).close();
             }
         }
-    }
-
-    private String getDefaultReportDir() {
-        return this.agent.getConfiguration().getAgentLogsDirectory().getAbsolutePath() + "/"
-                + agentRunningBuild.getProjectName() + "/"
-                + agentRunningBuild.getBuildNumber();
     }
 }

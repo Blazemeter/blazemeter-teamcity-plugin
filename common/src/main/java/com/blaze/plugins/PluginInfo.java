@@ -37,14 +37,19 @@ public class PluginInfo {
     }
 
     public boolean hasUpdates() {
-        List<String> versions = getVersions();
-        if (versions.isEmpty()) {
+        try {
+            List<String> versions = getVersions();
+            if (versions.isEmpty()) {
+                return false;
+            }
+            Collections.sort(versions, versionComparator);
+            String maxVersion = versions.get(versions.size() - 1);
+            String currentVersion = Utils.version();
+            return !maxVersion.equals(currentVersion);
+        } catch (Throwable ex) {
+            logger.warn("Can not check for updates, because thrown an error", ex);
             return false;
         }
-        Collections.sort(versions, versionComparator);
-        String maxVersion = versions.get(versions.size() - 1);
-        String currentVersion = Utils.version();
-        return !maxVersion.equals(currentVersion);
     }
 
     public List<String> getVersions() {
