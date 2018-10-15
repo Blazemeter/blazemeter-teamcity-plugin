@@ -13,7 +13,6 @@
 <c:set var="testsMap" value="${testUtils.getTests()}"/>
 
 
-
 <script>
     $j(document).ready(function(){
 
@@ -90,7 +89,11 @@
 </script>
 
 <l:settingsGroup title="BlazeMeter">
-
+    <c:if test="${testUtils.hasUpdates()}">
+        <tr>
+            <div class="icon_before icon16 attentionComment" id="updateMsg">A new version of BlazeMeter's TeamCity plugin is available. Please got to <a href="https://plugins.jetbrains.com/plugin/9020-blazemeter">plugin's page</a> to download a new version</div>
+        </tr>
+    </c:if>
     <tr>
         <th><label>BlazeMeter workspace:</label></th>
         <td>

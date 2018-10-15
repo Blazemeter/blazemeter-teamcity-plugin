@@ -1,5 +1,6 @@
 package com.blaze.runner.utils;
 
+import com.blaze.plugins.PluginInfo;
 import com.blaze.utils.Utils;
 import com.blazemeter.api.explorer.Account;
 import com.blazemeter.api.explorer.User;
@@ -34,6 +35,14 @@ public class TestsUtils {
 
     public void setUtils(BzmServerUtils utils) {
         this.utils = utils;
+    }
+
+    /**
+     * Check if this plugin has updates
+     */
+    public boolean hasUpdates() {
+        PluginInfo info = new PluginInfo(utils);
+        return info.hasUpdates();
     }
 
     /**
