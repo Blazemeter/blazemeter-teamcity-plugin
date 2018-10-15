@@ -1,5 +1,11 @@
 ## Changelog
 
+### v.2.4.*
+- `ADDED` : upgrade notification
+- `FIXED` : send jmeter properties to New Taurus test
+- `FIXED` : interrupt build when plugin send properties/notes
+- `FIXED` : Retry Interceptor. Use Java property `bzm.request.retries.count` for config retries count (by default it is 3). Will retry only `GET` requests in case if response code was not 2** or was throw `SocketTimeoutException`
+
 ### v.2.3.120 
 
 - `FEATURE` - added BlazeMeter Report tab in build results
