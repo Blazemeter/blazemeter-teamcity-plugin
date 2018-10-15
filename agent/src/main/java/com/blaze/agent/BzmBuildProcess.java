@@ -65,7 +65,7 @@ public class BzmBuildProcess implements BuildProcess {
 
     @Override
     public void interrupt() {
-        logger.message("Build has been interrupted");
+        logger.message("Interrupt BlazeMeter build step");
         if (processFuture != null) {
             processFuture.cancel(true);
         }
@@ -104,12 +104,10 @@ public class BzmBuildProcess implements BuildProcess {
         try {
             return processFuture.get();
         } catch (final InterruptedException | CancellationException e) {
-            logger.error("Build process was interrupted ");
             utils.getLogger().warn("Wait for finish has been interrupted", e);
             return BuildFinishedStatus.INTERRUPTED;
         } catch (final ExecutionException e) {
             utils.getLogger().warn("Caught exception while waiting for build", e);
-            logger.message("Build has been interrupted");
             return BuildFinishedStatus.FINISHED_FAILED;
         } finally {
             closeLogger();
