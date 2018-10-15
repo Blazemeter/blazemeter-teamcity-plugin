@@ -48,7 +48,7 @@
                 <replacements>
                     <replacement>
                         <token>@version@</token>
-                        <value>${project.version}.${jenkins.build.number}</value>
+                        <value>${project.version}</value>
                     </replacement>
                 </replacements>                        
             </configuration>
