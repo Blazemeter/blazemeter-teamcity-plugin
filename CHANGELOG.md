@@ -1,6 +1,6 @@
 ## Changelog
 
-### v.2.4.*
+### v.2.4.126
 - `ADDED` : upgrade notification
 - `FIXED` : send jmeter properties to New Taurus test
 - `FIXED` : interrupt build when plugin send properties/notes
