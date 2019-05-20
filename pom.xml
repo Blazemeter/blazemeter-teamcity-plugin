@@ -22,12 +22,8 @@
 
     <repositories>
         <repository>
-            <id>JetBrains</id>
-            <url>http://repository.jetbrains.com/all</url>
-        </repository>
-        <repository>
-            <id>Sauce Maven Repository</id>
-            <url>https://repository-saucelabs.forge.cloudbees.com/release</url>
+            <id>jetbrains-all</id>
+            <url>http://download.jetbrains.com/teamcity-repository</url>
         </repository>
     </repositories>
 
