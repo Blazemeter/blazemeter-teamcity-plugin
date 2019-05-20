@@ -1,5 +1,8 @@
 ## Changelog
 
+### v.2.5.*
+- `FIXED` : save user keys for NOT ROOT servers
+
 ### v.2.4.126
 - `ADDED` : upgrade notification
 - `FIXED` : send jmeter properties to New Taurus test

@@ -56,7 +56,7 @@ public class BlazeRunTypeController extends BaseController {
     }
 
     public void register() {
-        myManager.registerController("/saveUserKeys/", this);
+        myManager.registerController("/admin/saveUserKeys/", this);
     }
 
     @Override

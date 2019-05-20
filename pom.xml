@@ -7,7 +7,7 @@
     </properties>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
-    <version>2.4</version>
+    <version>2.5</version>
     <packaging>pom</packaging>
 
     <name>BlazeMeter plugin</name>
@@ -22,12 +22,8 @@
 
     <repositories>
         <repository>
-            <id>JetBrains</id>
-            <url>http://repository.jetbrains.com/all</url>
-        </repository>
-        <repository>
-            <id>Sauce Maven Repository</id>
-            <url>https://repository-saucelabs.forge.cloudbees.com/release</url>
+            <id>jetbrains-all</id>
+            <url>http://download.jetbrains.com/teamcity-repository</url>
         </repository>
     </repositories>
 
