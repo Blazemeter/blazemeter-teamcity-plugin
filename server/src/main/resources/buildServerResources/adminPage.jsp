@@ -50,7 +50,7 @@
 
 <h3>Set BlazeMeter configuration:</h3>
 
-<form id="BlazeMeterAdminPageForm" action="/saveUserKeys/" method="post" onSubmit="">
+<form id="BlazeMeterAdminPageForm" action="./saveUserKeys/" method="post" onSubmit="">
     <div>
         <table class="runnerFormTable">
             <tr>
