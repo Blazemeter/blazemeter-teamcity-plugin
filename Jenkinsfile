@@ -29,4 +29,11 @@ pipeline
             }
         }
     }
+    post
+    {
+        always
+        {
+            archiveArtifacts artifacts: 'target/BlazeMeter.zip', onlyIfSuccessful: true
+        }
+    }
 }
