@@ -4,10 +4,12 @@ clearWorkspaceAsRoot()
 pipeline
 {
     agent
-    docker
     {
-        image 'maven:3.5.0-jdk-8'
-        args '-u root'
+        docker
+        {
+            image 'maven:3.5.0-jdk-8'
+            args '-u root'
+        }
     }
     options
     {
