@@ -1,7 +1,6 @@
 clearWorkspaceAsRoot()
 @Library ("jenkins_library@WAP-15611-migrate-jenkins-GKE") _
 
-
 pipeline
 {
     /*agent
