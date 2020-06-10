@@ -3,21 +3,13 @@ clearWorkspaceAsRoot()
 
 pipeline
 {
-    /*agent
+    agent
     {
         docker
         {
             image 'maven:3.5.0-jdk-8'
             args '-u root'
         }
-    }*/
-    agent
-    {
-       kubernetes
-       {
-           label 'jenkins-agent-common'
-           defaultContainer 'jenkins-agent-common'
-       }
     }
     options
     {
