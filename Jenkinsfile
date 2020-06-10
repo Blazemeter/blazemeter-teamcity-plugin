@@ -27,7 +27,7 @@ pipeline
     }
     stages
     {
-        stage('Build Maven')
+        stage('Install & Build Maven')
         {
             steps
             {
