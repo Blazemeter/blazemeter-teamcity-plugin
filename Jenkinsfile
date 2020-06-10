@@ -32,6 +32,7 @@ pipeline
             steps
             {
                 sh """
+                    apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.4/main/ maven;
                     mvn clean install -Djenkins.build.number=${BUILD_NUMBER}
                     """
             }
