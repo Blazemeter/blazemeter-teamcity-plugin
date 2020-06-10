@@ -1,7 +1,6 @@
 clearWorkspaceAsRoot()
 @Library ("jenkins_library") _
 
-
 pipeline
 {
     agent {
