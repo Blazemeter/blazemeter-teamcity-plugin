@@ -97,11 +97,11 @@
     <tr>
         <th><label>BlazeMeter workspace:</label></th>
         <td>
-            <select id="all_workspaces" >
+            <props:selectProperty name="all_workspaces">
                 <c:forEach var="workspace" items="${testsMap.keySet()}">
-                    <option value="${workspace.getId()}">${workspace.getName()}(${workspace.getId()})</option>
+                    <props:option value="${workspace.getId()}" id="${workspace.getId()}" >${workspace.getName()}(${workspace.getId()})</props:option>
                 </c:forEach>
-            </select>
+            </props:selectProperty>
         </td>
     </tr>
 
