@@ -1,5 +1,10 @@
 ## Changelog
 
+### v.2.5.132
+- `ADDED` : Server Report url for FunctionalGui tests
+- `FIXED` : FunctionalGui tests always showing SUCCESS
+- `FIXED` : FunctionalGui public report video generating properly
+
 ### v.2.5.*
 - `FIXED` : save user keys for NOT ROOT servers
 
