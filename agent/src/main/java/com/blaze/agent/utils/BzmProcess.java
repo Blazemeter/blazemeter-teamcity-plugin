@@ -133,7 +133,8 @@ public class BzmProcess implements Callable<BuildFinishedStatus> {
         String notes = params.get(Constants.SETTINGS_NOTES);
 
         CiBuild build = new CiBuild(utils, Utils.getTestId(testId), properties, notes, createCiPostProcess(params));
-        build.setWorkspaceId(params.get("all_workspaces"));
+        build.setWorkspaceId(params.get(Constants.SETTINGS_ALL_WORKSPACES));
+        build.setReportName(params.get(Constants.SETTINGS_REPORT_NAME));
         return build;
     }
 
