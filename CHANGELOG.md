@@ -1,5 +1,8 @@
 ## Changelog
 
+### v.2.5.138
+- ADDED` : Added Report Name in Advance Option
+
 ### v.2.5.132
 - `ADDED` : Server Report url for FunctionalGui tests
 - `FIXED` : FunctionalGui tests always showing SUCCESS
