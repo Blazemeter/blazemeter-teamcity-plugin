@@ -84,8 +84,8 @@
         if (!isSelected && testsSelect.options.length > 0) {
             testsSelect.options[0].selected = true;
         }
-
     });
+
 </script>
 
 <l:settingsGroup title="BlazeMeter">
@@ -122,6 +122,7 @@
             <span class="smallNote">Select the test to execute.</span>
         </td>
     </tr>
+
 <tr>
     <th><label>Download JUnit report:</label></th>
     <td>
@@ -137,6 +138,13 @@
 
 <%--Advanced options start --%>
 
+<tr class="advancedSetting advanced_hidden">
+    <th><label>Report name:</label></th>
+    <td>
+        <props:textProperty name="blazeMeterPlugin.reportName"/>
+        <span class="smallNote">Optional, specify to change the report name. Default Report name is Test name.</span>
+    </td>
+</tr>
 
 <tr class="advancedSetting advanced_hidden">
     <th><label>JUnit report path:</label></th>

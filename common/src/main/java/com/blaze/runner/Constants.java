@@ -23,6 +23,8 @@ public interface Constants {
     String BLAZEMETER_URL = "BLAZEMETER_URL";
 
     String SETTINGS_ALL_TESTS_ID = "all_tests";
+    String SETTINGS_ALL_WORKSPACES = "all_workspaces";
+    String SETTINGS_REPORT_NAME = "blazeMeterPlugin.reportName";
     String SETTINGS_JUNIT = "blazeMeterPlugin.request.junit";
     String SETTINGS_JUNIT_PATH = "blazeMeterPlugin.request.junit.path";
     String SETTINGS_JTL = "blazeMeterPlugin.request.jtl";
