@@ -1,5 +1,8 @@
 ## Changelog
 
+### v.2.5.144
+- ADDED` : Added No data/ Not set Condition
+
 ### v.2.5.138
 - ADDED` : Added Report Name in Advance Option
 
