@@ -85,7 +85,6 @@
             testsSelect.options[0].selected = true;
         }
     });
-
 </script>
 
 <l:settingsGroup title="BlazeMeter">
@@ -122,7 +121,22 @@
             <span class="smallNote">Select the test to execute.</span>
         </td>
     </tr>
-
+ <tr>
+     <th><label>Webhook Notification:</label></th>
+     <td>
+         <props:radioButtonProperty name="notificationType" value="slack"/>
+         <label for="slackRadio">Slack</label>
+         <props:radioButtonProperty name="notificationType" value="teams"/>
+         <label for="teamsRadio">Teams</label>
+     </td>
+ </tr>
+ <tr>
+     <th><label>Enter Webhook URL:</label></th>
+     <td>
+         <props:textProperty name="blazeMeterPlugin.webhookURL"/>
+         <span class="smallNote">Required, for configure webhook notification</span>
+     </td>
+ </tr>
 <tr>
     <th><label>Download JUnit report:</label></th>
     <td>
@@ -135,7 +149,6 @@
         <props:checkboxProperty name="blazeMeterPlugin.request.jtl"/>
     </td>
 </tr>
-
 <%--Advanced options start --%>
 
 <tr class="advancedSetting advanced_hidden">
@@ -145,7 +158,7 @@
         <span class="smallNote">Optional, specify to change the report name. Default Report name is Test name.</span>
     </td>
 </tr>
-
+include
 <tr class="advancedSetting advanced_hidden">
     <th><label>JUnit report path:</label></th>
     <td>

@@ -30,6 +30,8 @@ public interface Constants {
     String SETTINGS_JTL = "blazeMeterPlugin.request.jtl";
     String SETTINGS_JTL_PATH = "blazeMeterPlugin.request.jtl.path";
     String SETTINGS_NOTES = "blazeMeterPlugin.notes";
+    String SETTING_NOTIFICATION_TYPE = "notificationType";
+    String SETING_WEBHOOK_URL ="blazeMeterPlugin.webhookURL";
     String SETTINGS_JMETER_PROPERTIES = "blazeMeterPlugin.jmeter.properties";
     String BZM_PROPERTIES_FILE = "/userKeyFile.properties";
     String BZM_REPORTS_FILE = "BlazeMeterReports";
