@@ -108,5 +108,11 @@ public class BlazeRunType extends RunType {
     public void setPluginSettings(AdminSettings pluginSettings) {
         this.pluginSettings = pluginSettings;
     }
+    @Nullable
+    public Map<String, String> getDefaultParameters() {
+        final HashMap<String, String> map = new HashMap<String, String>();
+        map.put(Constants.SETTING_NOTIFICATION_TYPE, "slack");
+        return map;
+    }
 
 }

@@ -32,6 +32,7 @@ public class BlazeAgent implements AgentBuildRunner {
     private BzmBuildProcess buildProcess;
     private BuildAgent buildAgent;
     private ArtifactsWatcher artifactsWatcher;
+    private BuildRunnerContext buildRunnerContext;
 
     public BlazeAgent(BuildAgent buildAgent, @NotNull final ArtifactsWatcher artifactsWatcher) {
         this.buildAgent = buildAgent;
@@ -43,7 +44,7 @@ public class BlazeAgent implements AgentBuildRunner {
     public BuildProcess createBuildProcess(@NotNull AgentRunningBuild agentRunningBuild, @NotNull BuildRunnerContext buildRunnerContext)
             throws RunBuildException {
         try {
-            buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher);
+            buildProcess = new BzmBuildProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher,buildRunnerContext);
         } catch (RuntimeException e) {
             throw new RunBuildException("Failed to create BlazeMeter build", e);
         }

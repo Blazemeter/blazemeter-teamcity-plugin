@@ -54,12 +54,12 @@ public class BzmBuildProcess implements BuildProcess {
     private final BuildProgressLogger logger;
 
     public BzmBuildProcess(BuildAgent buildAgent, AgentRunningBuild agentRunningBuild,
-                           BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher) throws RunBuildException {
+                           BuildRunnerContext buildRunnerContext, ArtifactsWatcher artifactsWatcher,BuildRunnerContext context) throws RunBuildException {
         this.agentRunningBuild = agentRunningBuild;
         this.agent = buildAgent;
         this.logger = agentRunningBuild.getBuildLogger();
         this.utils = createBzmUtils(agentRunningBuild.getSharedConfigParameters());
-        this.bzmProcess = new BzmProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher, utils);
+        this.bzmProcess = new BzmProcess(buildAgent, agentRunningBuild, buildRunnerContext, artifactsWatcher, utils,context);
     }
 
 
