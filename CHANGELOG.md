@@ -1,5 +1,8 @@
 ## Changelog
 
+### v.2.5.150
+- ADDED` : Added webhook notification for slack and team app
+
 ### v.2.5.144
 - ADDED` : Added No data/ Not set Condition
 
