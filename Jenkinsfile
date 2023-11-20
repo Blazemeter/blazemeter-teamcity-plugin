@@ -1,39 +1,42 @@
-clearWorkspaceAsRoot()
-@Library ("jenkins_library") _
-
-pipeline
-{
-    agent
-    {
-        docker
-        {
-            image 'maven:3.5.0-jdk-8'
-            args '-u root'
+pipeline {
+    agent {
+        docker {
+            registryUrl 'https://us-docker.pkg.dev'
+            image 'verdant-bulwark-278/bzm-plugin-base-image/bzm-plugin-base-image:latest'
+            registryCredentialsId 'push-to-gar-enc'
+            args '-u root -v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:/build'
         }
     }
-    options
-    {
-        buildDiscarder(logRotator(daysToKeepStr: '20',numToKeepStr: '50'))
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "10"))
         ansiColor('xterm')
         timestamps()
+        disableConcurrentBuilds()
     }
-    stages
-    {
-        stage('Build Maven')
-        {
-            steps
-            {
-                sh """
-                    mvn clean install -Djenkins.build.number=${BUILD_NUMBER}
-                    """
+
+    environment {
+        JETBRAIN-TOKEN = credentials('blazerunner_jetbrains_token')
+    }
+
+    stages {
+        stage('Build Release') {
+            steps {
+                script {
+                    sh'''
+                    mvn clean install
+                    '''
+                }
             }
         }
-    }
-    post
-    {
-        always
-        {
-            archiveArtifacts artifacts: 'target/BlazeMeter.zip', onlyIfSuccessful: true
+        stage('Publish Release') {
+            steps {
+                script {
+                    sh"""
+                    curl -i --header "Authorization: Bearer ${JETBRAIN-TOKEN}" -F pluginId=BlazeMeter -F file=@target/BlazeMeter.zip -F channel=Stable https://plugins.jetbrains.com/plugin/uploadPlugin
+                    """
+                }
+            }
         }
     }
 }
