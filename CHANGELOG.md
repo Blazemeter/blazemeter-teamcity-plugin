@@ -1,13 +1,16 @@
 ## Changelog
 
+### v.2.5.151
+- `FIXED` : Fix thread safety issue causing concurrentModificationException with teamcity versioned settings
+
 ### v.2.5.150
-- ADDED` : Added webhook notification for slack and team app
+- `ADDED` : Added webhook notification for slack and team app
 
 ### v.2.5.144
-- ADDED` : Added No data/ Not set Condition
+- `ADDED` : Added No data/ Not set Condition
 
 ### v.2.5.138
-- ADDED` : Added Report Name in Advance Option
+- `ADDED` : Added Report Name in Advance Option
 
 ### v.2.5.132
 - `ADDED` : Server Report url for FunctionalGui tests

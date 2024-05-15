@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <teamcity-version>9.0</teamcity-version>
-        <jenkins.build.number>150</jenkins.build.number>
+        <jenkins.build.number>151</jenkins.build.number>
     </properties>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
