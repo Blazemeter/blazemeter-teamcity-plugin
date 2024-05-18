@@ -37,8 +37,6 @@ public class BlazeRunType extends RunType {
     @NotNull
     private final String viewParamsPageName = "viewBlazeRunnerParams.jsp";
 
-    Map<String, String> defaultProperties = null;
-
     private AdminSettings pluginSettings;
 
     public BlazeRunType(final RunTypeRegistry runTypeRegistry,
@@ -67,23 +65,11 @@ public class BlazeRunType extends RunType {
 
     @Nullable
     public Map<String, String> getDefaultRunnerProperties() {
-        if (defaultProperties == null) {
-            defaultProperties = new HashMap<>();
-        }
-        setupDefaultProperties(defaultProperties);
-        return defaultProperties;
-    }
-
-    private void setupDefaultProperties(Map<String, String> params) {
-
-        if (pluginSettings != null) {
-            params.remove(Constants.API_KEY_ID);
-            params.remove(Constants.API_KEY_SECRET);
-            params.remove(Constants.BLAZEMETER_URL);
-            params.put(Constants.API_KEY_ID, pluginSettings.getApiKeyID());
-            params.put(Constants.API_KEY_SECRET, pluginSettings.getApiKeySecret());
-            params.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
-        }
+        final Map<String, String> defaultProps = new HashMap<String, String>();
+        defaultProps.put(Constants.API_KEY_ID, pluginSettings.getApiKeyID());
+        defaultProps.put(Constants.API_KEY_SECRET, pluginSettings.getApiKeySecret());
+        defaultProps.put(Constants.BLAZEMETER_URL, pluginSettings.getBlazeMeterUrl());
+        return defaultProps;
     }
 
     @Nullable
