@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <teamcity-version>9.0</teamcity-version>
-        <jenkins.build.number>150</jenkins.build.number>
+        <jenkins.build.number>151</jenkins.build.number>
     </properties>
     <groupId>com.blazemeter.teamcity</groupId>
     <artifactId>blazemeterplugin</artifactId>
@@ -23,7 +23,7 @@
     <repositories>
         <repository>
             <id>jetbrains-all</id>
-            <url>http://download.jetbrains.com/teamcity-repository</url>
+            <url>https://download.jetbrains.com/teamcity-repository</url>
         </repository>
     </repositories>
 
@@ -69,8 +69,8 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                     </configuration>
                 </plugin>
             </plugins>
